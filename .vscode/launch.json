@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Build + Deploy relayTester to Raspberry Pi",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build-rpi/relayTester",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "noDebug": true,
+      "externalConsole": false,
+      "preLaunchTask": "Build + Deploy relayTester to Raspberry Pi",
+      "logging": {
+        "engineLogging": false,
+        "trace": false,
+        "traceResponse": false
+      },
+      "visualizerFile": "c:\\Users\\xavie\\AppData\\Roaming\\Code\\User\\workspaceStorage\\6e7909562df95db08ed65303424885d2\\tonka3000.qtvsctools\\qt.natvis.xml"
+    }
+  ]
+}

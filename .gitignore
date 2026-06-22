@@ -54,3 +54,7 @@ compile_commands.json
 *creator.user*
 
 *_qmlcache.qrc
+
+relayTester/
+.vscode/rpi-deploy.env
+.qtcreator

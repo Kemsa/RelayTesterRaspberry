@@ -1,0 +1,29 @@
+# Raspberry Pi 3 cross-compilation toolchain for Debian Bullseye
+# Set RASPI3_BULLSEYE_TOOLCHAIN_ROOT externally to override the default path.
+if(NOT DEFINED RASPI3_BULLSEYE_TOOLCHAIN_ROOT)
+  set(RASPI3_BULLSEYE_TOOLCHAIN_ROOT "/opt/rpi-toolchain")
+endif()
+set(TOOLCHAIN_ROOT "${RASPI3_BULLSEYE_TOOLCHAIN_ROOT}")
+
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR arm)
+set(CMAKE_SYSTEM_VERSION 1)
+
+set(CMAKE_C_COMPILER "${TOOLCHAIN_ROOT}/bin/arm-linux-gnueabihf-gcc")
+set(CMAKE_CXX_COMPILER "${TOOLCHAIN_ROOT}/bin/arm-linux-gnueabihf-g++")
+set(CMAKE_ASM_COMPILER "${TOOLCHAIN_ROOT}/bin/arm-linux-gnueabihf-gcc")
+
+set(CMAKE_SYSROOT "${TOOLCHAIN_ROOT}/sysroot")
+set(CMAKE_FIND_ROOT_PATH "${CMAKE_SYSROOT}")
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# Qt5 cross compile helpers
+if(NOT DEFINED Qt5_DIR)
+  set(Qt5_DIR "${CMAKE_SYSROOT}/usr/lib/arm-linux-gnueabihf/cmake/Qt5")
+endif()
+set(CMAKE_PREFIX_PATH "${Qt5_DIR};${CMAKE_PREFIX_PATH}")

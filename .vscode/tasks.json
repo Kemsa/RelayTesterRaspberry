@@ -1,0 +1,97 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build relayTester (Docker)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "cd \"${workspaceFolder}\" && bash ./build-rpi-docker.sh"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build + Deploy relayTester to Raspberry Pi",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-lc", "cd \"${workspaceFolder}\" && bash ./deploy-rpi.sh"],
+      "dependsOn": ["Build relayTester (Docker)"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Configure relayTester (Windows)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "cd \"${workspaceFolder}\" && cmake --preset windows-debug --fresh"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build relayTester (Windows)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "cd \"${workspaceFolder}\" && cmake --build --preset windows-debug"
+      ],
+      "dependsOn": ["Configure relayTester (Windows)"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Deploy Qt Runtime (Windows)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "cd \"${workspaceFolder}\" && /c/Qt/5.15.2/mingw81_64/bin/windeployqt.exe --debug --force build/relayTester.exe"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Prepare relayTester (Windows)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Build relayTester (Windows)",
+        "Deploy Qt Runtime (Windows)"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}
