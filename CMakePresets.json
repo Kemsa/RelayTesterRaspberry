@@ -18,7 +18,6 @@
       "description": "Native Windows debug build",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "RELAYTESTER_USE_QT6": "OFF",
         "CMAKE_PREFIX_PATH": "C:/Qt/5.15.2/mingw81_64/lib/cmake",
         "CMAKE_C_COMPILER": "C:/Qt/Tools/mingw810_64/bin/gcc.exe",
         "CMAKE_CXX_COMPILER": "C:/Qt/Tools/mingw810_64/bin/g++.exe"
@@ -30,9 +29,7 @@
       "description": "Cross-compile for Raspberry Pi 3 Bullseye",
       "binaryDir": "${sourceDir}/build-rpi",
       "toolchainFile": "${sourceDir}/cmake/toolchains/raspi3-bullseye.cmake",
-      "cacheVariables": {
-        "RELAYTESTER_USE_QT6": "OFF"
-      }
+      "cacheVariables": {}
     }
   ],
   "buildPresets": [
