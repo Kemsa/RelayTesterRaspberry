@@ -1,0 +1,6 @@
+[submodule "libs/Wiringpi_Wrapper"]
+	path = libs/Wiringpi_Wrapper
+	url = https://github.com/Kemsa/Wiringpi_Wrapper.git
+[submodule "libs/Picolog_lib"]
+	path = libs/Picolog_lib
+	url = https://github.com/Kemsa/Picolog_lib.git
