@@ -1,9 +1,9 @@
-# Raspberry Pi 3 cross-compilation toolchain for Debian Bullseye
-# Set RASPI3_BULLSEYE_TOOLCHAIN_ROOT externally to override the default path.
-if(NOT DEFINED RASPI3_BULLSEYE_TOOLCHAIN_ROOT)
-  set(RASPI3_BULLSEYE_TOOLCHAIN_ROOT "/opt/rpi-toolchain")
+# Raspberry Pi 3 cross-compilation toolchain for Debian BOOKWORM
+# Set RASPI3_BOOKWORM_TOOLCHAIN_ROOT externally to override the default path.
+if(NOT DEFINED RASPI3_BOOKWORM_TOOLCHAIN_ROOT)
+  set(RASPI3_BOOKWORM_TOOLCHAIN_ROOT "/opt/rpi-toolchain")
 endif()
-set(TOOLCHAIN_ROOT "${RASPI3_BULLSEYE_TOOLCHAIN_ROOT}")
+set(TOOLCHAIN_ROOT "${RASPI3_BOOKWORM_TOOLCHAIN_ROOT}")
 
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR arm)

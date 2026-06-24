@@ -24,12 +24,21 @@
       }
     },
     {
-      "name": "raspi3-bullseye",
+      "name": "raspi3-crosscompile",
       "inherits": "default",
-      "description": "Cross-compile for Raspberry Pi 3 Bullseye",
+      "description": "Cross-compile for Raspberry Pi 3 Bookworm",
       "binaryDir": "${sourceDir}/build-rpi",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/raspi3-bullseye.cmake",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/raspi3-crosscompile.cmake",
       "cacheVariables": {}
+    },
+    {
+      "name": "raspi-native",
+      "inherits": "default",
+      "description": "Native build directly on Raspberry Pi",
+      "binaryDir": "${sourceDir}/build-native",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
     }
   ],
   "buildPresets": [
@@ -39,8 +48,12 @@
       "configuration": "Debug"
     },
     {
-      "name": "raspi3-bullseye",
-      "configurePreset": "raspi3-bullseye"
+      "name": "raspi3-crosscompile",
+      "configurePreset": "raspi3-crosscompile"
+    },
+    {
+      "name": "raspi-native",
+      "configurePreset": "raspi-native"
     }
   ]
 }
