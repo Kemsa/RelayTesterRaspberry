@@ -1,9 +1,9 @@
-FROM debian:bookworm
+FROM --platform=linux/arm/v7 debian:bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV RASPI3_BULLSEYE_TOOLCHAIN_ROOT=/opt/rpi-toolchain
-ENV RASPI3_BULLSEYE_SYSROOT=/opt/rpi-sysroot
-ENV PATH=${RASPI3_BULLSEYE_TOOLCHAIN_ROOT}/bin:${PATH}
+ENV RASPI3_BOOKWORM_TOOLCHAIN_ROOT=/opt/rpi-toolchain
+ENV RASPI3_BOOKWORM_SYSROOT=/opt/rpi-sysroot
+ENV PATH=${RASPI3_BOOKWORM_TOOLCHAIN_ROOT}/bin:${PATH}
 
 RUN dpkg --add-architecture armhf \
   && apt-get update \
@@ -25,13 +25,33 @@ RUN dpkg --add-architecture armhf \
   gnupg2 \
   && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p ${RASPI3_BULLSEYE_TOOLCHAIN_ROOT}/bin ${RASPI3_BULLSEYE_SYSROOT}
-RUN ln -s /usr/bin/arm-linux-gnueabihf-gcc ${RASPI3_BULLSEYE_TOOLCHAIN_ROOT}/bin/arm-linux-gnueabihf-gcc \
-  && ln -s /usr/bin/arm-linux-gnueabihf-g++ ${RASPI3_BULLSEYE_TOOLCHAIN_ROOT}/bin/arm-linux-gnueabihf-g++ \
-  && ln -s ${RASPI3_BULLSEYE_SYSROOT} ${RASPI3_BULLSEYE_TOOLCHAIN_ROOT}/sysroot
+RUN mkdir -p ${RASPI3_BOOKWORM_TOOLCHAIN_ROOT}/bin ${RASPI3_BOOKWORM_SYSROOT} \
+  && ln -s /usr/bin/arm-linux-gnueabihf-gcc ${RASPI3_BOOKWORM_TOOLCHAIN_ROOT}/bin/arm-linux-gnueabihf-gcc \
+  && ln -s /usr/bin/arm-linux-gnueabihf-g++ ${RASPI3_BOOKWORM_TOOLCHAIN_ROOT}/bin/arm-linux-gnueabihf-g++ \
+  && ln -s ${RASPI3_BOOKWORM_SYSROOT} ${RASPI3_BOOKWORM_TOOLCHAIN_ROOT}/sysroot
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends --download-only \
+  && apt-get install -y --no-install-recommends --download-only --reinstall \
+  libc6:armhf \
+  libc6-dev:armhf \
+  linux-libc-dev:armhf \
+  zlib1g:armhf \
+  libdouble-conversion3:armhf \
+  libicu72:armhf \
+  libpcre2-16-0:armhf \
+  libpcre2-8-0:armhf \
+  libzstd1:armhf \
+  libglib2.0-0:armhf \
+  libusb-1.0-0:armhf \
+  libudev1:armhf \
+  libgles2:armhf \
+  libglvnd0:armhf \
+  libpng16-16:armhf \
+  libharfbuzz0b:armhf \
+  libfreetype6:armhf \
+  libbrotli1:armhf \
+  libgraphite2-3:armhf \
+  libmd4c0:armhf \
   qtbase5-dev:armhf \
   libqt5core5a:armhf \
   libqt5gui5:armhf \
@@ -43,8 +63,8 @@ RUN apt-get update \
   libxext6:armhf \
   libxrender1:armhf \
   libxcb-xinerama0:armhf \
-  && mkdir -p ${RASPI3_BULLSEYE_SYSROOT} \
-  && for deb in /var/cache/apt/archives/*.deb; do dpkg-deb -x "$deb" ${RASPI3_BULLSEYE_SYSROOT}; done \
+  && mkdir -p ${RASPI3_BOOKWORM_SYSROOT} \
+  && for deb in /var/cache/apt/archives/*.deb; do dpkg-deb -x "$deb" ${RASPI3_BOOKWORM_SYSROOT}; done \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 RUN bash -c 'wget -O- https://labs.picotech.com/Release.gpg.key | gpg --dearmor > /usr/share/keyrings/picotech-archive-keyring.gpg' \
