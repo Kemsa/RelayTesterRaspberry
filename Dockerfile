@@ -1,4 +1,4 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV RASPI3_BULLSEYE_TOOLCHAIN_ROOT=/opt/rpi-toolchain
@@ -21,6 +21,8 @@ RUN dpkg --add-architecture armhf \
   qttools5-dev-tools \
   wget \
   xz-utils \
+  build-essential \
+  gnupg2 \
   && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p ${RASPI3_BULLSEYE_TOOLCHAIN_ROOT}/bin ${RASPI3_BULLSEYE_SYSROOT}
@@ -44,6 +46,11 @@ RUN apt-get update \
   && mkdir -p ${RASPI3_BULLSEYE_SYSROOT} \
   && for deb in /var/cache/apt/archives/*.deb; do dpkg-deb -x "$deb" ${RASPI3_BULLSEYE_SYSROOT}; done \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+RUN bash -c 'wget -O- https://labs.picotech.com/Release.gpg.key | gpg --dearmor > /usr/share/keyrings/picotech-archive-keyring.gpg' \
+  && bash -c 'echo "deb [signed-by=/usr/share/keyrings/picotech-archive-keyring.gpg] https://labs.picotech.com/picoscope7/debian/ picoscope main" >/etc/apt/sources.list.d/picoscope7.list' \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends libpicohrdl
 
 WORKDIR /src
 

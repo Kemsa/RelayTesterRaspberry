@@ -10,6 +10,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
+# Try to add Picolog submodule; it's optional if SDK is not available
+add_subdirectory(libs/Picolog_lib)
+
 qt5_wrap_ui(UI_HEADERS mainwindow.ui)
 add_executable(relayTester
   main.cpp
@@ -17,8 +20,17 @@ add_executable(relayTester
   mainwindow.h
   ${UI_HEADERS}
 )
-target_include_directories(relayTester PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(relayTester PRIVATE Qt5::Widgets)
+target_include_directories(relayTester PRIVATE
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/libs/Picolog_lib/src
+)
+
+# Link picolog24 only if it was built
+if(TARGET picolog24)
+  target_link_libraries(relayTester PRIVATE Qt5::Widgets picolog24)
+else()
+  target_link_libraries(relayTester PRIVATE Qt5::Widgets)
+endif()
 
 # Deploy Qt runtime dependencies on Windows
 if(WIN32)
@@ -27,6 +39,24 @@ if(WIN32)
     ARGS --debug --force $<TARGET_FILE:relayTester>
     COMMENT "Deploying Qt5 runtime dependencies..."
   )
+  
+  # Deploy Pico HRDL DLL if available
+  find_file(PICO_SDK_HRDL_DLL
+    NAMES PicoHRDL.dll picohrdl.dll
+    PATHS
+      "C:/Program Files/Pico Technology/SDK/bin"
+      "C:/Program Files/Pico Technology/SDK/lib"
+    NO_DEFAULT_PATH
+  )
+  
+  if(PICO_SDK_HRDL_DLL)
+    add_custom_command(TARGET relayTester POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${PICO_SDK_HRDL_DLL}"
+        "$<TARGET_FILE_DIR:relayTester>/PicoHRDL.dll"
+      COMMENT "Deploying PicoHRDL.dll..."
+    )
+  endif()
 endif()
 
 set_target_properties(relayTester PROPERTIES
