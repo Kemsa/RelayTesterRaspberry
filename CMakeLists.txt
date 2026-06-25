@@ -13,6 +13,9 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 # Try to add Picolog submodule; it's optional if SDK is not available
 add_subdirectory(libs/Picolog_lib)
 
+# Add WiringPi wrapper library.
+add_subdirectory(libs/Wiringpi_Wrapper)
+
 qt5_wrap_ui(UI_HEADERS mainwindow.ui)
 add_executable(relayTester
   main.cpp
@@ -25,15 +28,24 @@ target_include_directories(relayTester PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/libs/Picolog_lib/src
 )
 
-# Link picolog24 only if it was built
-if(TARGET picolog24)
-  target_link_libraries(relayTester PRIVATE Qt5::Widgets picolog24)
-else()
-  target_link_libraries(relayTester PRIVATE Qt5::Widgets)
-endif()
+set(RELAYTESTER_LIBS
+  Qt5::Widgets
+  wiringpi_wrapper
+  picolog24)
+
+target_link_libraries(relayTester PRIVATE ${RELAYTESTER_LIBS})
 
 # Deploy Qt runtime dependencies on Windows
 if(WIN32)
+  if(TARGET wiringpi_wrapper)
+    add_custom_command(TARGET relayTester POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:wiringpi_wrapper>
+        $<TARGET_FILE_DIR:relayTester>
+      COMMENT "Deploying wiringpi_wrapper runtime library..."
+    )
+  endif()
+
   add_custom_command(TARGET relayTester POST_BUILD
     COMMAND ${Qt5_DIR}/../../../bin/windeployqt.exe
     ARGS --debug --force $<TARGET_FILE:relayTester>

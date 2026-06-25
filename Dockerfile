@@ -72,6 +72,9 @@ RUN bash -c 'wget -O- https://labs.picotech.com/Release.gpg.key | gpg --dearmor 
   && apt-get update \
   && apt-get install -y --no-install-recommends libpicohrdl
 
+RUN wget https://github.com/WiringPi/WiringPi/releases/download/3.18/wiringpi_3.18_armhf.deb \
+  && dpkg -i wiringpi_3.18_armhf.deb
+
 WORKDIR /src
 
 CMD ["bash"]
