@@ -16,16 +16,22 @@ add_subdirectory(libs/Picolog_lib)
 # Add WiringPi wrapper library.
 add_subdirectory(libs/Wiringpi_Wrapper)
 
-qt5_wrap_ui(UI_HEADERS mainwindow.ui)
+
+qt5_wrap_ui(UI_HEADERS src/widgets/mainWindow.ui)
 add_executable(relayTester
-  main.cpp
-  mainwindow.cpp
-  mainwindow.h
   ${UI_HEADERS}
+  main.cpp src/widgets/mainWindow.cpp src/widgets/mainWindow.h
+  src/widgets/homescreen.h src/widgets/homescreen.cpp src/widgets/homescreen.ui
+  src/widgets/calibration.h src/widgets/calibration.cpp src/widgets/calibration.ui
+  src/controls/navigator.h src/controls/navigator.cpp
+
 )
 target_include_directories(relayTester PRIVATE
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/libs/Picolog_lib/src
+  src
+  src/widgets
+  src/controls
 )
 
 set(RELAYTESTER_LIBS
@@ -35,7 +41,20 @@ set(RELAYTESTER_LIBS
 
 target_link_libraries(relayTester PRIVATE ${RELAYTESTER_LIBS})
 
-# Deploy Qt runtime dependencies on Windows
+set(RELAYTESTER_ASSETS
+  styles.css
+  colors.csv
+)
+
+add_custom_target(copy_relaytester_assets ALL
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${RELAYTESTER_ASSETS}
+    $<TARGET_FILE_DIR:relayTester>
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMENT "Copying relayTester style assets..."
+)
+
+# Deploy library runtime dependencies on Windows
 if(WIN32)
   if(TARGET wiringpi_wrapper)
     add_custom_command(TARGET relayTester POST_BUILD
@@ -79,4 +98,8 @@ include(GNUInstallDirs)
 install(TARGETS relayTester
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(FILES ${RELAYTESTER_ASSETS}
+  DESTINATION ${CMAKE_INSTALL_BINDIR}
 )

@@ -1,0 +1,14 @@
+QWidget{
+background-color: @dark-grey;
+color: @light-grey;
+}
+
+QPushButton {
+background-color: @grey;
+border-radius:5;
+padding:10px;
+}
+
+QStatusBar {
+background-color: @grey;
+}
