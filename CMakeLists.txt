@@ -22,8 +22,11 @@ add_executable(relayTester
   ${UI_HEADERS}
   main.cpp src/widgets/mainWindow.cpp src/widgets/mainWindow.h
   src/widgets/homescreen.h src/widgets/homescreen.cpp src/widgets/homescreen.ui
-  src/widgets/calibration.h src/widgets/calibration.cpp src/widgets/calibration.ui
+  src/widgets/calibrationscreen.h src/widgets/calibrationscreen.cpp src/widgets/calibrationscreen.ui
   src/controls/navigator.h src/controls/navigator.cpp
+  src/widgets/contactselectwidget.h src/widgets/contactselectwidget.cpp src/widgets/contactselectwidget.ui
+  src/controls/contactselector.h src/controls/contactselector.cpp
+  config.h
 
 )
 target_include_directories(relayTester PRIVATE
@@ -90,9 +93,12 @@ if(WIN32)
   endif()
 endif()
 
-set_target_properties(relayTester PROPERTIES
-    WIN32_EXECUTABLE TRUE
-)
+if(WIN32)
+  # Show a console in Debug for qDebug/stdout visibility, keep GUI subsystem otherwise.
+  set_target_properties(relayTester PROPERTIES
+      WIN32_EXECUTABLE $<$<CONFIG:Debug>:FALSE>$<$<NOT:$<CONFIG:Debug>>:TRUE>
+  )
+endif()
 
 include(GNUInstallDirs)
 install(TARGETS relayTester

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
-#include "calibration.h"
+#include "calibrationscreen.h"
 #include "homescreen.h"
+#include "navigator.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget* parent)

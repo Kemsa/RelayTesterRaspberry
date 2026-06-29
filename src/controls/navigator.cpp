@@ -1,5 +1,5 @@
 #include "navigator.h"
-#include "calibration.h"
+#include "calibrationscreen.h"
 #include "homescreen.h"
 #include <QDebug>
 
@@ -21,7 +21,7 @@ Navigator::Navigator(QMainWindow* mainWindow, QStackedWidget* stackedWidget)
     : m_mainWindow(mainWindow), m_stackedWidget(stackedWidget) {
 
     addWidgetForScreen(Home_screen, new HomeScreen(m_stackedWidget));
-    addWidgetForScreen(Calibration_screen, new Calibration(m_stackedWidget));
+    addWidgetForScreen(Calibration_screen, new CalibrationScreen(m_stackedWidget));
 
     navigateTo(Home_screen); // Show HomeScreen by default
 }

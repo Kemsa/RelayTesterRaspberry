@@ -1,6 +1,8 @@
 #include "ADC24.h"
 #include "ADCBase.h"
 #include "GPIOHandler.h"
+#include "config.h"
+#include "contactselector.h"
 #include "mainWindow.h"
 #include <QApplication>
 #include <QDebug>
@@ -95,14 +97,16 @@ static QString loadResolvedStyleSheet(const QString& styleSheetPath,
 int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
 
+    // initialize components
+    ADC24 adc;
+    GPIOHandler* gpioHandler = GPIOHandler::setupInstance(false);
+    ContactSelector::initialize(CONTACT_SELECT_S0, CONTACT_SELECT_S1, CONTACT_SELECT_S2, CONTACT_SELECT_EN);
+
     const QString styleSheet = loadResolvedStyleSheet("styles.css", "colors.csv");
     if (!styleSheet.isEmpty()) {
         a.setStyleSheet(styleSheet);
         qDebug() << "Stylesheet applied successfully: <<" << styleSheet;
     }
-
-    ADC24 adc;
-    GPIOHandler* gpioHandler = GPIOHandler::setupInstance(false);
 
     MainWindow w;
     w.show();
