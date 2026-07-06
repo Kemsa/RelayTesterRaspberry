@@ -20,25 +20,26 @@ add_subdirectory(libs/Wiringpi_Wrapper)
 add_subdirectory(libs/PowerSupply)
 
 
-qt5_wrap_ui(UI_HEADERS src/widgets/mainWindow.ui)
+qt5_wrap_ui(UI_HEADERS src/UI/screens/mainWindow.ui)
 add_executable(relayTester
   ${UI_HEADERS}
-  main.cpp src/widgets/mainWindow.cpp src/widgets/mainWindow.h
-  src/widgets/homescreen.h src/widgets/homescreen.cpp src/widgets/homescreen.ui
-  src/widgets/calibrationscreen.h src/widgets/calibrationscreen.cpp src/widgets/calibrationscreen.ui
+  main.cpp src/UI/screens/mainWindow.cpp src/UI/screens/mainWindow.h
+  src/UI/screens/homescreen.h src/UI/screens/homescreen.cpp src/UI/screens/homescreen.ui
+  src/UI/screens/calibrationscreen.h src/UI/screens/calibrationscreen.cpp src/UI/screens/calibrationscreen.ui
   src/controls/navigator.h src/controls/navigator.cpp
-  src/widgets/contactselectwidget.h src/widgets/contactselectwidget.cpp src/widgets/contactselectwidget.ui
+  src/UI/widgets/contactselectwidget.h src/UI/widgets/contactselectwidget.cpp src/UI/widgets/contactselectwidget.ui
   src/controls/contactselector.h src/controls/contactselector.cpp
   config.h
-  src/widgets/powersupplysetupwidget.h src/widgets/powersupplysetupwidget.cpp src/widgets/powersupplysetupwidget.ui
-  src/widgets/led.h src/widgets/led.cpp
+  src/UI/widgets/powersupplysetupwidget.h src/UI/widgets/powersupplysetupwidget.cpp src/UI/widgets/powersupplysetupwidget.ui
+  src/UI/widgets/led.h src/UI/widgets/led.cpp
 
 )
 target_include_directories(relayTester PRIVATE
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/libs/Picolog_lib/src
   src
-  src/widgets
+  src/UI/screens
+  src/UI/widgets
   src/controls
 )
 
