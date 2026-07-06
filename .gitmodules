@@ -4,3 +4,6 @@
 [submodule "libs/Picolog_lib"]
 	path = libs/Picolog_lib
 	url = https://github.com/Kemsa/Picolog_lib.git
+[submodule "libs/PowerSupply"]
+	path = libs/PowerSupply
+	url = https://github.com/Kemsa/PowerSupply.git

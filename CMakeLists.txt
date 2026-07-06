@@ -8,13 +8,16 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets SerialPort REQUIRED)
 
 # Try to add Picolog submodule; it's optional if SDK is not available
 add_subdirectory(libs/Picolog_lib)
 
 # Add WiringPi wrapper library.
 add_subdirectory(libs/Wiringpi_Wrapper)
+
+# Add the power supply library with a Windows-safe mock backend.
+add_subdirectory(libs/PowerSupply)
 
 
 qt5_wrap_ui(UI_HEADERS src/widgets/mainWindow.ui)
@@ -27,6 +30,8 @@ add_executable(relayTester
   src/widgets/contactselectwidget.h src/widgets/contactselectwidget.cpp src/widgets/contactselectwidget.ui
   src/controls/contactselector.h src/controls/contactselector.cpp
   config.h
+  src/widgets/powersupplysetupwidget.h src/widgets/powersupplysetupwidget.cpp src/widgets/powersupplysetupwidget.ui
+  src/widgets/led.h src/widgets/led.cpp
 
 )
 target_include_directories(relayTester PRIVATE
@@ -39,8 +44,10 @@ target_include_directories(relayTester PRIVATE
 
 set(RELAYTESTER_LIBS
   Qt5::Widgets
+  Qt5::SerialPort
   wiringpi_wrapper
-  picolog24)
+  picolog24
+  PowerSupplyLib)
 
 target_link_libraries(relayTester PRIVATE ${RELAYTESTER_LIBS})
 
@@ -68,6 +75,13 @@ if(WIN32)
     )
   endif()
 
+  add_custom_command(TARGET relayTester POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${Qt5_DIR}/../../../bin/Qt5SerialPort.dll"
+      "$<TARGET_FILE_DIR:relayTester>"
+    COMMENT "Deploying Qt5SerialPort.dll..."
+  )
+  
   add_custom_command(TARGET relayTester POST_BUILD
     COMMAND ${Qt5_DIR}/../../../bin/windeployqt.exe
     ARGS --debug --force $<TARGET_FILE:relayTester>

@@ -27,4 +27,10 @@
 #define H_BRIDGE2 7
 #define H_BRIDGE3 8
 
+#ifdef Q_OS_LINUX
+#define SERIAL_PORT_NAME "/dev/ttyUSB0"
+#else
+#define SERIAL_PORT_NAME "COM5"
+#endif
+
 #endif // CONFIG_H
