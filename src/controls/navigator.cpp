@@ -40,13 +40,15 @@ void Navigator::goBack() {
         if (!m_navigationHistory.isEmpty()) {
             NavigationScreen previousScreen = m_navigationHistory.top();
             navigateTo(previousScreen);
+        } else {
+            navigateTo(Home_screen); // If no previous screen, go to HomeScreen
         }
     }
 }
 
 void Navigator::goHome() {
-    navigateTo(Home_screen);
     m_navigationHistory.clear();
+    navigateTo(Home_screen);
 }
 
 void Navigator::addWidgetForScreen(NavigationScreen screen, QWidget* widget) {
