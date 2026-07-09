@@ -3,7 +3,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_DIR="${SCRIPT_DIR}/build-rpi"
-LOCAL_BINARY="${BUILD_DIR}/relayTester"
+PACKAGE_DIR="${BUILD_DIR}/package"
+LOCAL_BINARY="${PACKAGE_DIR}/relayTester"
 
 RPI_USER="${RPI_USER:-pi}"
 RPI_HOST="${RPI_HOST:-192.168.1.11}"
@@ -37,7 +38,13 @@ fi
 # No cleanup needed
 
 if [ ! -f "${LOCAL_BINARY}" ]; then
-  echo "Error: compiled binary not found: ${LOCAL_BINARY}"
+  echo "Error: packaged binary not found: ${LOCAL_BINARY}"
+  echo "Run ./build-rpi-docker.sh first, then retry."
+  exit 1
+fi
+
+if [ ! -f "${PACKAGE_DIR}/UI/styles.css" ] || [ ! -f "${PACKAGE_DIR}/UI/colors.csv" ]; then
+  echo "Error: packaged UI assets not found in ${PACKAGE_DIR}/UI"
   echo "Run ./build-rpi-docker.sh first, then retry."
   exit 1
 fi
@@ -46,7 +53,7 @@ if [ ! -x "${LOCAL_BINARY}" ]; then
   echo "Warning: local binary is not executable on this host, but it will be made executable on the Raspberry Pi."
 fi
 
-echo "Deploying ${LOCAL_BINARY} to ${RPI_USER}@${RPI_HOST}:${RPI_REMOTE_DIR}"
+echo "Deploying package ${PACKAGE_DIR} to ${RPI_USER}@${RPI_HOST}:${RPI_REMOTE_DIR}"
 
 # Create remote directory
 echo "[1/3] Creating remote directory..."
@@ -55,11 +62,10 @@ if ! ssh "${SSH_OPTS[@]}" "${RPI_USER}@${RPI_HOST}" mkdir -p "${RPI_REMOTE_DIR}"
   exit 1
 fi
 
-# Copy binary
-echo "[2/3] Copying binary..."
-if ! scp -P "${RPI_PORT}" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
-  "${LOCAL_BINARY}" "${RPI_USER}@${RPI_HOST}:${RPI_REMOTE_DIR}/"; then
-  echo "Error: Failed to copy binary"
+# Copy packaged app contents
+echo "[2/3] Copying packaged files..."
+if ! tar -C "${PACKAGE_DIR}" -h -cf - . | ssh "${SSH_OPTS[@]}" "${RPI_USER}@${RPI_HOST}" tar -C "${RPI_REMOTE_DIR}" -xf -; then
+  echo "Error: Failed to copy packaged files"
   exit 1
 fi
 

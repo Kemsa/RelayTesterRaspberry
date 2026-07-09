@@ -56,6 +56,8 @@ RUN apt-get update \
   libqt5core5a:armhf \
   libqt5gui5:armhf \
   libqt5widgets5:armhf \
+  libqt5serialport5:armhf \
+  libqt5serialport5-dev:armhf \
   libqt5dbus5:armhf \
   libqt5network5:armhf \
   libxcb1:armhf \

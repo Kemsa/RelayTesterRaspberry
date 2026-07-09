@@ -8,15 +8,17 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+
+#ifdef Q_OS_LINUX
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    this->setWindowState(this->windowState() | Qt::WindowFullScreen);
+#else
     this->setFixedSize(800, 480);
+#endif
 
     connect(&LogBus::instance(), &LogBus::messageLogged, this, [this](QtMsgType type, const QString& msg) {
         displayMessage(type, msg);
     });
-
-#ifdef Q_OS_LINUX
-    this->setWindowFlags(Qt::FramelessWindowHint);
-#endif
 
     Navigator::initialize(this, ui->stackedWidget);
 

@@ -56,6 +56,20 @@ set(RELAYTESTER_LIBS
 
 target_link_libraries(relayTester PRIVATE ${RELAYTESTER_LIBS})
 
+if(UNIX AND NOT APPLE)
+  set_target_properties(relayTester PROPERTIES
+    BUILD_RPATH "$ORIGIN"
+    INSTALL_RPATH "$ORIGIN"
+  )
+
+  if(TARGET wiringpi_wrapper)
+    set_target_properties(wiringpi_wrapper PROPERTIES
+      BUILD_RPATH "$ORIGIN"
+      INSTALL_RPATH "$ORIGIN"
+    )
+  endif()
+endif()
+
 set(RELAYTESTER_ASSETS
   src/UI/styles.css
   src/UI/colors.csv
@@ -126,6 +140,49 @@ install(TARGETS relayTester
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
+if(TARGET wiringpi_wrapper)
+  install(TARGETS wiringpi_wrapper
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+endif()
+
 install(FILES ${RELAYTESTER_ASSETS}
   DESTINATION ${CMAKE_INSTALL_BINDIR}/UI
 )
+
+if(UNIX AND NOT APPLE)
+  install(CODE [[
+    file(GET_RUNTIME_DEPENDENCIES
+      RESOLVED_DEPENDENCIES_VAR resolved_deps
+      UNRESOLVED_DEPENDENCIES_VAR unresolved_deps
+      EXECUTABLES "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/relayTester"
+      DIRECTORIES
+        "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
+        "/opt/picoscope/lib"
+        "/usr/lib"
+        "/usr/lib/arm-linux-gnueabihf"
+        "/lib/arm-linux-gnueabihf"
+        "/opt/rpi-toolchain/sysroot/usr/lib/arm-linux-gnueabihf"
+        "/opt/rpi-toolchain/sysroot/lib/arm-linux-gnueabihf"
+        "/opt/rpi-toolchain/sysroot/usr/lib"
+        "/opt/rpi-toolchain/sysroot/lib"
+      PRE_EXCLUDE_REGEXES
+        "linux-vdso.*"
+        "ld-linux.*"
+    )
+
+    if(unresolved_deps)
+      message(WARNING "Unresolved runtime dependencies: ${unresolved_deps}")
+    endif()
+
+    foreach(dep IN LISTS resolved_deps)
+      file(INSTALL
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
+        TYPE SHARED_LIBRARY
+        FOLLOW_SYMLINK_CHAIN
+        FILES "${dep}"
+      )
+    endforeach()
+  ]])
+endif()
