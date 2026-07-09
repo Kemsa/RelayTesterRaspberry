@@ -8,6 +8,7 @@
 #include "readings.h"
 #include <QApplication>
 #include <QDebug>
+#include <QFont>
 
 QtMessageHandler prevLoggerHandler = nullptr;
 
@@ -23,6 +24,7 @@ void logToFile(QtMsgType type, const QMessageLogContext& context, const QString&
 
 int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
+    a.setFont(QFont("Arial"));
 
     LogBus::instance().installQtMessageHandler();
 

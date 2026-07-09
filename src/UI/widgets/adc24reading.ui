@@ -10,6 +10,12 @@
     <height>200</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>Arial</family>
+    <pointsize>8</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -32,8 +38,20 @@
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>10</number>
+      </property>
+      <property name="rightMargin">
+       <number>10</number>
+      </property>
       <item>
        <widget class="QPushButton" name="getValues_PB">
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Acquérir les valeurs</string>
         </property>
@@ -41,6 +59,12 @@
       </item>
       <item>
        <widget class="QSpinBox" name="NValues_SB">
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
         <property name="value">
          <number>3</number>
         </property>
@@ -49,7 +73,14 @@
      </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="values_TBL"/>
+     <widget class="QTableWidget" name="values_TBL">
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>6</pointsize>
+       </font>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
