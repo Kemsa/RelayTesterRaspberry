@@ -18,4 +18,6 @@ public:
 
 private:
     Ui::MainWindow* ui;
+
+    void displayMessage(QtMsgType type, const QString& msg);
 };

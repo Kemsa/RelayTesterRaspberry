@@ -24,6 +24,7 @@ qt5_wrap_ui(UI_HEADERS src/UI/screens/mainWindow.ui)
 add_executable(relayTester
   ${UI_HEADERS}
   main.cpp src/UI/screens/mainWindow.cpp src/UI/screens/mainWindow.h
+  src/controls/logbus.cpp src/controls/logbus.h
   src/UI/screens/homescreen.h src/UI/screens/homescreen.cpp src/UI/screens/homescreen.ui
   src/UI/screens/calibrationscreen.h src/UI/screens/calibrationscreen.cpp src/UI/screens/calibrationscreen.ui
   src/controls/navigator.h src/controls/navigator.cpp
@@ -56,14 +57,15 @@ set(RELAYTESTER_LIBS
 target_link_libraries(relayTester PRIVATE ${RELAYTESTER_LIBS})
 
 set(RELAYTESTER_ASSETS
-  styles.css
-  colors.csv
+  src/UI/styles.css
+  src/UI/colors.csv
 )
 
 add_custom_command(TARGET relayTester POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:relayTester>/UI
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     ${RELAYTESTER_ASSETS}
-    $<TARGET_FILE_DIR:relayTester>
+    $<TARGET_FILE_DIR:relayTester>/UI
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "Copying relayTester style assets..."
 )
@@ -125,5 +127,5 @@ install(TARGETS relayTester
 )
 
 install(FILES ${RELAYTESTER_ASSETS}
-  DESTINATION ${CMAKE_INSTALL_BINDIR}
+  DESTINATION ${CMAKE_INSTALL_BINDIR}/UI
 )
