@@ -32,15 +32,18 @@ add_executable(relayTester
   config.h
   src/UI/widgets/powersupplysetupwidget.h src/UI/widgets/powersupplysetupwidget.cpp src/UI/widgets/powersupplysetupwidget.ui
   src/UI/widgets/led.h src/UI/widgets/led.cpp
+  src/UI/widgets/adc24reading.h src/UI/widgets/adc24reading.cpp src/UI/widgets/adc24reading.ui
+  src/controls/readings.cpp src/controls/readings.h
 
 )
 target_include_directories(relayTester PRIVATE
   ${CMAKE_CURRENT_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/
   ${CMAKE_CURRENT_SOURCE_DIR}/libs/Picolog_lib/src
-  src
-  src/UI/screens
-  src/UI/widgets
-  src/controls
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/UI/screens
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/UI/widgets
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/controls
 )
 
 set(RELAYTESTER_LIBS
@@ -57,7 +60,7 @@ set(RELAYTESTER_ASSETS
   colors.csv
 )
 
-add_custom_target(copy_relaytester_assets ALL
+add_custom_command(TARGET relayTester POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     ${RELAYTESTER_ASSETS}
     $<TARGET_FILE_DIR:relayTester>

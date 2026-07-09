@@ -1,10 +1,9 @@
-#include "ADC24.h"
-#include "ADCBase.h"
 #include "GPIOHandler.h"
 #include "config.h"
 #include "contactselector.h"
 #include "mainWindow.h"
 #include "powerSupply.h"
+#include "readings.h"
 #include <QApplication>
 #include <QDebug>
 #include <QFile>
@@ -99,10 +98,9 @@ int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
 
     // initialize components
-    ADC24 adc;
+    Readings::initialize();
     GPIOHandler* gpioHandler = GPIOHandler::setupInstance(false);
     ContactSelector::initialize(CONTACT_SELECT_S0, CONTACT_SELECT_S1, CONTACT_SELECT_S2, CONTACT_SELECT_EN);
-
     powerSupply::initialize(powerSupply::SupplyType::DMP86xx, SERIAL_PORT_NAME);
     powerSupply::instance()->connect();
 
@@ -116,5 +114,6 @@ int main(int argc, char* argv[]) {
     w.show();
 
     // return a.exec();
-    return QApplication::exec();
+    const int appExitCode = QApplication::exec();
+    return appExitCode;
 }

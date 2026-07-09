@@ -29,6 +29,22 @@
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="0">
+     <widget class="PowerSupplySetupWidget" name="frame_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label">
       <property name="sizePolicy">
@@ -44,22 +60,6 @@
       </property>
       <property name="text">
        <string>Étalonnage</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="PowerSupplySetupWidget" name="frame_2">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
     </item>
@@ -86,17 +86,20 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+     <widget class="ADC24Reading" name="frame_3">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
       </property>
-     </spacer>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -112,6 +115,12 @@
    <class>PowerSupplySetupWidget</class>
    <extends>QFrame</extends>
    <header>powersupplysetupwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ADC24Reading</class>
+   <extends>QFrame</extends>
+   <header location="global">adc24reading.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

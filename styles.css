@@ -9,6 +9,18 @@ border-radius:5;
 padding:10px;
 }
 
+QPushButton:pressed {
+background-color: @light-grey;
+}
+
 QStatusBar {
 background-color: @grey;
+}
+
+QHeaderView::section {
+background-color: @grey;
+}
+
+QHeaderView {
+background-color: @dark-grey;
 }
