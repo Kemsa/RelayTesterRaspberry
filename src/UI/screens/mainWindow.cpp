@@ -48,7 +48,7 @@ void MainWindow::displayMessage(QtMsgType type, const QString& msg) {
     case QtCriticalMsg:
     case QtFatalMsg:
         this->ui->statusbar->setStyleSheet("color: Red"); // Set the text color to blue for info messages
-        this->ui->statusbar->showMessage(msg);
+        this->ui->statusbar->showMessage(msg, 10000);     // Display the message for 10 seconds
         break;
     }
 }

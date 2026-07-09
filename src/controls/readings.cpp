@@ -1,6 +1,7 @@
 #include "readings.h"
 #include "ADC24.h"
 #include "config.h"
+#include <QDebug>
 #include <memory>
 #include <vector>
 
@@ -25,10 +26,18 @@ Readings* Readings::initialize() {
 }
 
 bool Readings::checkOpen() const {
-    if (!m_adc->isOpen()) {
+    bool res = m_adc->isOpen();
+
+    // if ADC not open, try to open it
+    if (!res) {
         m_adc->open();
+        res = m_adc->isOpen();
+        if (!res) {
+            qCritical() << "Readings: Failed to open ADC device";
+        }
     }
-    return m_adc->isOpen();
+
+    return res;
 }
 
 bool Readings::getReading(ReadingFlags type, std::shared_ptr<ADCValue> reading, ADCBase::ADCCaliber caliber) {
@@ -37,6 +46,7 @@ bool Readings::getReading(ReadingFlags type, std::shared_ptr<ADCValue> reading, 
     }
 
     if (reading == nullptr) {
+        qWarning() << "Readings: Reading pointer is null";
         return false;
     }
 
@@ -44,6 +54,7 @@ bool Readings::getReading(ReadingFlags type, std::shared_ptr<ADCValue> reading, 
         caliber = selectCaliberForChannel(type, reading);
 
         if (caliber < 0 || caliber >= ADCBase::Caliber_Max) {
+            qWarning() << "Readings: Invalid caliber selected for channel";
             return false;
         }
     }
@@ -51,6 +62,7 @@ bool Readings::getReading(ReadingFlags type, std::shared_ptr<ADCValue> reading, 
     configureValueForChannel(type, reading, caliber);
 
     if (!m_adc->getSingleValue(reading.get())) {
+        qWarning() << "Readings: Failed to get reading for channel";
         return false;
     }
 
@@ -63,6 +75,7 @@ int Readings::getNReadings(ReadingFlags type, int nReadings, ADCValue readings[]
     }
 
     if (nReadings <= 0 || readings == nullptr) {
+        qWarning() << "Readings: Invalid number of readings or readings array is null";
         return 0;
     }
 
@@ -71,6 +84,7 @@ int Readings::getNReadings(ReadingFlags type, int nReadings, ADCValue readings[]
     if (caliber == ADCBase::Caliber_Auto) {
         caliber = selectCaliberForChannel(type, std::make_shared<ADCValue>());
         if (caliber < 0 || caliber >= ADCBase::Caliber_Max) {
+            qWarning() << "Readings: Invalid caliber selected for channel";
             return 0;
         }
     }
