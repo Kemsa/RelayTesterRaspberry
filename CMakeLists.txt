@@ -34,7 +34,7 @@ add_executable(relayTester
   src/UI/widgets/powersupplysetupwidget.h src/UI/widgets/powersupplysetupwidget.cpp src/UI/widgets/powersupplysetupwidget.ui
   src/UI/widgets/led.h src/UI/widgets/led.cpp
   src/UI/widgets/adc24reading.h src/UI/widgets/adc24reading.cpp src/UI/widgets/adc24reading.ui
-  src/controls/readings.cpp src/controls/readings.h
+  src/controls/staticreadings.cpp src/controls/staticreadings.h
   src/controls/coilcontrol.h src/controls/coilcontrol.cpp
 
 )

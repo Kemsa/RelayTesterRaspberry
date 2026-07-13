@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-class Readings {
+class StaticReadings {
 
 public:
     enum class ReadingFlags : uint8_t {
@@ -26,8 +26,8 @@ public:
         all = coils | contacts
     };
 
-    static Readings* getInstance();
-    static Readings* initialize();
+    static StaticReadings* getInstance();
+    static StaticReadings* initialize();
 
     bool getReading(ReadingFlags type, std::shared_ptr<ADCValue> reading, ADCBase::ADCCaliber caliber = ADCBase::Caliber_Auto);
     int getNReadings(ReadingFlags type, int nReadings, ADCValue readings[], ADCBase::ADCCaliber caliber = ADCBase::Caliber_Auto);
@@ -35,10 +35,10 @@ public:
     QMap<ReadingFlags, std::vector<ADCValue>> getMultipleReadings(uint8_t types, int nReadings);
 
 private:
-    static Readings* s_instance;
+    static StaticReadings* s_instance;
 
-    Readings();
-    ~Readings() = default;
+    StaticReadings();
+    ~StaticReadings() = default;
 
     bool checkOpen() const;
     void configureValueForChannel(ReadingFlags type, std::shared_ptr<ADCValue> reading, ADCBase::ADCCaliber caliber);

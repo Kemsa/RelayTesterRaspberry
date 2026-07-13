@@ -1,31 +1,31 @@
-#include "readings.h"
+#include "staticreadings.h"
 #include "ADC24.h"
 #include "config.h"
 #include <QDebug>
 #include <memory>
 #include <vector>
 
-Readings* Readings::s_instance = nullptr;
+StaticReadings* StaticReadings::s_instance = nullptr;
 
-Readings::Readings() {
+StaticReadings::StaticReadings() {
     m_adc = std::unique_ptr<ADCBase>(new ADC24());
 }
 
-Readings* Readings::getInstance() {
+StaticReadings* StaticReadings::getInstance() {
     if (!s_instance) {
-        s_instance = new Readings();
+        s_instance = new StaticReadings();
     }
     return s_instance;
 }
 
-Readings* Readings::initialize() {
-    Readings* instance = getInstance();
+StaticReadings* StaticReadings::initialize() {
+    StaticReadings* instance = getInstance();
     instance->checkOpen();
 
     return instance;
 }
 
-bool Readings::checkOpen() const {
+bool StaticReadings::checkOpen() const {
     bool res = m_adc->isOpen();
 
     // if ADC not open, try to open it
@@ -40,7 +40,7 @@ bool Readings::checkOpen() const {
     return res;
 }
 
-bool Readings::getReading(ReadingFlags type, std::shared_ptr<ADCValue> reading, ADCBase::ADCCaliber caliber) {
+bool StaticReadings::getReading(ReadingFlags type, std::shared_ptr<ADCValue> reading, ADCBase::ADCCaliber caliber) {
     if (!checkOpen()) {
         return false;
     }
@@ -69,7 +69,7 @@ bool Readings::getReading(ReadingFlags type, std::shared_ptr<ADCValue> reading, 
     return true;
 }
 
-int Readings::getNReadings(ReadingFlags type, int nReadings, ADCValue readings[], ADCBase::ADCCaliber caliber) {
+int StaticReadings::getNReadings(ReadingFlags type, int nReadings, ADCValue readings[], ADCBase::ADCCaliber caliber) {
     if (!checkOpen()) {
         return 0;
     }
@@ -100,7 +100,7 @@ int Readings::getNReadings(ReadingFlags type, int nReadings, ADCValue readings[]
     return successfulReadings;
 }
 
-QMap<Readings::ReadingFlags, std::vector<ADCValue>> Readings::getMultipleReadings(uint8_t types, int nReadings) {
+QMap<StaticReadings::ReadingFlags, std::vector<ADCValue>> StaticReadings::getMultipleReadings(uint8_t types, int nReadings) {
     if (!checkOpen()) {
         return QMap<ReadingFlags, std::vector<ADCValue>>();
     }
@@ -124,7 +124,7 @@ QMap<Readings::ReadingFlags, std::vector<ADCValue>> Readings::getMultipleReading
     return result;
 }
 
-ADCBase::ADCCaliber Readings::selectCaliberForChannel(ReadingFlags type, std::shared_ptr<ADCValue> reading) {
+ADCBase::ADCCaliber StaticReadings::selectCaliberForChannel(ReadingFlags type, std::shared_ptr<ADCValue> reading) {
 
     std::shared_ptr<ADCValue> tempValue = std::make_shared<ADCValue>();
     configureValueForChannel(type, tempValue, ADCBase::Caliber_2500mV);
@@ -153,7 +153,7 @@ ADCBase::ADCCaliber Readings::selectCaliberForChannel(ReadingFlags type, std::sh
     }
 }
 
-void Readings::configureValueForChannel(ReadingFlags type, std::shared_ptr<ADCValue> reading, ADCBase::ADCCaliber caliber) {
+void StaticReadings::configureValueForChannel(ReadingFlags type, std::shared_ptr<ADCValue> reading, ADCBase::ADCCaliber caliber) {
 
     switch (type) {
     case ReadingFlags::coil1Voltage:

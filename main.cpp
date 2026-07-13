@@ -6,7 +6,7 @@
 #include "logbus.h"
 #include "mainWindow.h"
 #include "powerSupply.h"
-#include "readings.h"
+#include "staticreadings.h"
 #include <QApplication>
 #include <QDebug>
 #include <QFont>
@@ -33,9 +33,9 @@ int main(int argc, char* argv[]) {
     prevLoggerHandler = qInstallMessageHandler(logToFile);
 
     // initialize components
-    Readings::initialize();
     GPIOHandler* gpioHandler = GPIOHandler::setupInstance(false);
     CoilControl::initialize(COIL1_ENABLE, COIL2_ENABLE);
+    StaticReadings::initialize();
     ContactSelector::initialize(CONTACT_SELECT_S0, CONTACT_SELECT_S1, CONTACT_SELECT_S2, CONTACT_SELECT_EN);
     powerSupply::initialize(powerSupply::SupplyType::DMP86xx, SERIAL_PORT_NAME);
     powerSupply::instance()->connect();

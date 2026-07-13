@@ -1,5 +1,5 @@
 #include "adc24reading.h"
-#include "readings.h"
+#include "staticreadings.h"
 #include "ui_adc24reading.h"
 #include <QDebug>
 
@@ -22,8 +22,8 @@ ADC24Reading::~ADC24Reading() {
 
 void ADC24Reading::makeMeasureAndDisplay(int nMeasures) {
 
-    auto results = Readings::getInstance()->getMultipleReadings(
-        static_cast<uint8_t>(Readings::ReadingFlags::all),
+    auto results = StaticReadings::getInstance()->getMultipleReadings(
+        static_cast<uint8_t>(StaticReadings::ReadingFlags::all),
         nMeasures);
 
     ui->values_TBL->clearContents();
@@ -35,25 +35,25 @@ void ADC24Reading::makeMeasureAndDisplay(int nMeasures) {
 
         QString headerText;
         switch (flag) {
-        case Readings::ReadingFlags::coil1Voltage:
+        case StaticReadings::ReadingFlags::coil1Voltage:
             headerText = "B1 V";
             break;
-        case Readings::ReadingFlags::coil1Current:
+        case StaticReadings::ReadingFlags::coil1Current:
             headerText = "B1 I";
             break;
-        case Readings::ReadingFlags::coil2Voltage:
+        case StaticReadings::ReadingFlags::coil2Voltage:
             headerText = "B2 V";
             break;
-        case Readings::ReadingFlags::coil2Current:
+        case StaticReadings::ReadingFlags::coil2Current:
             headerText = "B2 I";
             break;
-        case Readings::ReadingFlags::contact12Voltage:
+        case StaticReadings::ReadingFlags::contact12Voltage:
             headerText = "C1 V";
             break;
-        case Readings::ReadingFlags::contact13Voltage:
+        case StaticReadings::ReadingFlags::contact13Voltage:
             headerText = "C2 V";
             break;
-        case Readings::ReadingFlags::contactCurrent:
+        case StaticReadings::ReadingFlags::contactCurrent:
             headerText = "C I";
             break;
         default:
