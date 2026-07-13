@@ -1,5 +1,6 @@
 #include "GPIOHandler.h"
 #include "UI/styling.h"
+#include "coilcontrol.h"
 #include "config.h"
 #include "contactselector.h"
 #include "logbus.h"
@@ -34,6 +35,7 @@ int main(int argc, char* argv[]) {
     // initialize components
     Readings::initialize();
     GPIOHandler* gpioHandler = GPIOHandler::setupInstance(false);
+    CoilControl::initialize(COIL1_ENABLE, COIL2_ENABLE);
     ContactSelector::initialize(CONTACT_SELECT_S0, CONTACT_SELECT_S1, CONTACT_SELECT_S2, CONTACT_SELECT_EN);
     powerSupply::initialize(powerSupply::SupplyType::DMP86xx, SERIAL_PORT_NAME);
     powerSupply::instance()->connect();
