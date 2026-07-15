@@ -3,6 +3,7 @@
 #include "coilcontrol.h"
 #include "config.h"
 #include "contactselector.h"
+#include "dynamicreadings.h"
 #include "logbus.h"
 #include "mainWindow.h"
 #include "powerSupply.h"
@@ -36,6 +37,7 @@ int main(int argc, char* argv[]) {
     GPIOHandler* gpioHandler = GPIOHandler::setupInstance(false);
     CoilControl::initialize(COIL1_ENABLE, COIL2_ENABLE);
     StaticReadings::initialize();
+    DynamicReadings::initialize(COIL1_DETECT, COIL2_DETECT, CONTACT_TRIGGER1, CONTACT_TRIGGER2);
     ContactSelector::initialize(CONTACT_SELECT_S0, CONTACT_SELECT_S1, CONTACT_SELECT_S2, CONTACT_SELECT_EN);
     powerSupply::initialize(powerSupply::SupplyType::DMP86xx, SERIAL_PORT_NAME);
     powerSupply::instance()->connect();

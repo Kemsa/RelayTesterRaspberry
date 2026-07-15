@@ -27,6 +27,29 @@ install Qt5:
 
 Project can now be built and debug using cmake
 
+### standalone unit-test project
+
+A parallel unit-test project is available in `unit-tests/` to keep test builds isolated from the main application build.
+
+Build and run on Windows:
+
+```bash
+cmake --preset windows-debug-with-tests
+cmake --build --preset windows-debug-unit-tests
+ctest --preset windows-debug-unit-tests
+```
+
+You can still use the standalone folder presets from `unit-tests/` when needed.
+
+Build and run on Raspberry Pi:
+
+```bash
+cd unit-tests
+cmake --preset raspi-native
+cmake --build --preset raspi-native
+ctest --preset raspi-native
+```
+
 ### build on raspberry
 
 Raspberry must be bookworm 32bits. As of june 2026, the picolog ADC24 library is not working on Trixie or later and is not compatible with 64 bits.

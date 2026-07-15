@@ -15,7 +15,7 @@
     {
       "name": "windows-debug",
       "inherits": "default",
-      "description": "Native Windows debug build",
+      "description": "Unit tests build on native Windows",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_PREFIX_PATH": "C:/Qt/5.15.2/mingw81_64/lib/cmake",
@@ -24,25 +24,16 @@
       }
     },
     {
-      "name": "windows-debug-with-tests",
-      "inherits": "windows-debug",
-      "description": "Native Windows debug build with unit-test targets",
-      "cacheVariables": {
-        "RELAYTESTER_BUILD_UNIT_TESTS": "ON"
-      }
-    },
-    {
       "name": "raspi3-crosscompile",
       "inherits": "default",
-      "description": "Cross-compile for Raspberry Pi 3 Bookworm",
+      "description": "Cross-compile unit tests for Raspberry Pi 3 Bookworm",
       "binaryDir": "${sourceDir}/build-rpi",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/raspi3-crosscompile.cmake",
-      "cacheVariables": {}
+      "toolchainFile": "${sourceDir}/../cmake/toolchains/raspi3-crosscompile.cmake"
     },
     {
       "name": "raspi-native",
       "inherits": "default",
-      "description": "Native build directly on Raspberry Pi",
+      "description": "Build unit tests directly on Raspberry Pi",
       "binaryDir": "${sourceDir}/build-native",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
@@ -56,19 +47,6 @@
       "configuration": "Debug"
     },
     {
-      "name": "windows-debug-with-tests",
-      "configurePreset": "windows-debug-with-tests",
-      "configuration": "Debug"
-    },
-    {
-      "name": "windows-debug-unit-tests",
-      "configurePreset": "windows-debug-with-tests",
-      "configuration": "Debug",
-      "targets": [
-        "relaytester_unit_tests"
-      ]
-    },
-    {
       "name": "raspi3-crosscompile",
       "configurePreset": "raspi3-crosscompile"
     },
@@ -79,25 +57,22 @@
   ],
   "testPresets": [
     {
-      "name": "windows-debug-with-tests",
-      "configurePreset": "windows-debug-with-tests",
-      "filter": {
-        "include": {
-          "name": "ContactSelectorUnitTest"
-        }
-      },
+      "name": "windows-debug",
+      "configurePreset": "windows-debug",
       "output": {
         "outputOnFailure": true
       }
     },
     {
-      "name": "windows-debug-unit-tests",
-      "configurePreset": "windows-debug-with-tests",
-      "filter": {
-        "include": {
-          "name": "ContactSelectorUnitTest"
-        }
-      },
+      "name": "raspi3-crosscompile",
+      "configurePreset": "raspi3-crosscompile",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "raspi-native",
+      "configurePreset": "raspi-native",
       "output": {
         "outputOnFailure": true
       }

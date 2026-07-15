@@ -8,6 +8,8 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(RELAYTESTER_BUILD_UNIT_TESTS "Build relayTester unit-test targets" OFF)
+
 find_package(Qt5 COMPONENTS Widgets SerialPort REQUIRED)
 
 # Try to add Picolog submodule; it's optional if SDK is not available
@@ -18,6 +20,12 @@ add_subdirectory(libs/Wiringpi_Wrapper)
 
 # Add the power supply library with a Windows-safe mock backend.
 add_subdirectory(libs/PowerSupply)
+
+if(RELAYTESTER_BUILD_UNIT_TESTS)
+  include(CTest)
+  enable_testing()
+  add_subdirectory(unit-tests)
+endif()
 
 
 qt5_wrap_ui(UI_HEADERS src/UI/screens/mainWindow.ui)
@@ -35,7 +43,9 @@ add_executable(relayTester
   src/UI/widgets/led.h src/UI/widgets/led.cpp
   src/UI/widgets/adc24reading.h src/UI/widgets/adc24reading.cpp src/UI/widgets/adc24reading.ui
   src/controls/staticreadings.cpp src/controls/staticreadings.h
+  src/controls/dynamicreadings.h src/controls/dynamicreadings.cpp
   src/controls/coilcontrol.h src/controls/coilcontrol.cpp
+  src/controls/dynamicswitch.h src/controls/dynamicswitch.cpp
 
 )
 target_include_directories(relayTester PRIVATE
