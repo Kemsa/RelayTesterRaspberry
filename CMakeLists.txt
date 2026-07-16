@@ -35,7 +35,7 @@ add_executable(relayTester
   src/controls/logbus.cpp src/controls/logbus.h
   src/UI/screens/homescreen.h src/UI/screens/homescreen.cpp src/UI/screens/homescreen.ui
   src/UI/screens/calibrationscreen.h src/UI/screens/calibrationscreen.cpp src/UI/screens/calibrationscreen.ui
-  src/controls/navigator.h src/controls/navigator.cpp
+  src/UI/navigator.h src/UI/navigator.cpp
   src/UI/widgets/contactselectwidget.h src/UI/widgets/contactselectwidget.cpp src/UI/widgets/contactselectwidget.ui
   src/controls/contactselector.h src/controls/contactselector.cpp
   config.h
@@ -53,6 +53,7 @@ target_include_directories(relayTester PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/
   ${CMAKE_CURRENT_SOURCE_DIR}/libs/Picolog_lib/src
   ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/UI
   ${CMAKE_CURRENT_SOURCE_DIR}/src/UI/screens
   ${CMAKE_CURRENT_SOURCE_DIR}/src/UI/widgets
   ${CMAKE_CURRENT_SOURCE_DIR}/src/controls
