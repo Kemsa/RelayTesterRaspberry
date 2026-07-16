@@ -44,7 +44,7 @@ add_executable(relayTester
   src/UI/widgets/adc24reading.h src/UI/widgets/adc24reading.cpp src/UI/widgets/adc24reading.ui
   src/controls/staticreadings.cpp src/controls/staticreadings.h
   src/controls/dynamicreadings.h src/controls/dynamicreadings.cpp
-  src/controls/coilcontrol.h src/controls/coilcontrol.cpp
+  src/controls/powercontrol.h src/controls/powercontrol.cpp
   src/controls/dynamicswitch.h src/controls/dynamicswitch.cpp
 
 )

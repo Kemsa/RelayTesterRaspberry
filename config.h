@@ -25,11 +25,13 @@
 #define SCL 3
 
 #define REED_PIN 16
-#define HOOD_CLOSE_PIN 4
+#define BOARD_CLOSED_PIN 4
 
 #define H_BRIDGE1 25
 #define H_BRIDGE2 7
 #define H_BRIDGE3 8
+
+#define CONTACT_POWER_ENABLE 5
 
 // #############  Serial port defines ####################
 
