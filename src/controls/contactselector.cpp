@@ -4,9 +4,29 @@
 
 ContactSelector* ContactSelector::s_instance = nullptr;
 
-ContactSelector& ContactSelector::initialize(int s0, int s1, int s2, int en) {
+QString ContactSelector::hBridgeOptionToString(HBridge_options option) {
+    switch (option) {
+    case HBridge_forward_all:
+        return "Forward All";
+    case HBridge_reverse_all:
+        return "Reverse All";
+    case HBridge_forward_p1:
+        return "Forward P1";
+    case HBridge_reverse_p1:
+        return "Reverse P1";
+    case HBridge_forward_p2:
+        return "Forward P2";
+    case HBridge_reverse_p2:
+        return "Reverse P2";
+    }
+
+    return "Unknown";
+}
+
+ContactSelector& ContactSelector::initialize(int s0, int s1, int s2, int en,
+                                             int hbridge1, int hbridge2, int hbridge3) {
     if (!s_instance) {
-        s_instance = new ContactSelector(s0, s1, s2, en);
+        s_instance = new ContactSelector(s0, s1, s2, en, hbridge1, hbridge2, hbridge3);
     }
     return *s_instance;
 }
@@ -16,7 +36,10 @@ ContactSelector& ContactSelector::instance() {
     return *s_instance;
 }
 
-ContactSelector::ContactSelector(int s0, int s1, int s2, int en) : m_s0(s0), m_s1(s1), m_s2(s2), m_en(en) {
+ContactSelector::ContactSelector(int s0, int s1, int s2, int en,
+                                 int hbridge1, int hbridge2, int hbridge3)
+    : m_s0(s0), m_s1(s1), m_s2(s2), m_en(en),
+      m_hbridge1(hbridge1), m_hbridge2(hbridge2), m_hbridge3(hbridge3) {
 
     m_contactMap.insert(0, PinSelection::None);
     m_contactMap.insert(1, PinSelection::Contact1);
@@ -34,8 +57,15 @@ ContactSelector::ContactSelector(int s0, int s1, int s2, int en) : m_s0(s0), m_s
     GPIOHandler::instance()->setPinMode(m_s2, GPIOHandler::PinMode::WPI_OUTPUT);
     GPIOHandler::instance()->setPinMode(m_en, GPIOHandler::PinMode::WPI_OUTPUT);
 
+    GPIOHandler::instance()->setPinMode(m_hbridge1, GPIOHandler::PinMode::WPI_OUTPUT);
+    GPIOHandler::instance()->setPinMode(m_hbridge2, GPIOHandler::PinMode::WPI_OUTPUT);
+    GPIOHandler::instance()->setPinMode(m_hbridge3, GPIOHandler::PinMode::WPI_OUTPUT);
+
     // Set initial state to None (no contact selected)
     selectContact(0);
+
+    // Set initial H-Bridge state to forward all
+    selectHBridge(HBridge_options::HBridge_forward_all);
 }
 
 void ContactSelector::selectContact(int contactIndex) {
@@ -54,4 +84,14 @@ void ContactSelector::selectContact(int contactIndex) {
     m_currentContact = contactIndex;
     // Emit the signal with the selected contact name
     emit contactSelected(contactIndex);
+}
+
+void ContactSelector::selectHBridge(HBridge_options option) {
+
+    qDebug() << "Selecting H-Bridge option:" << hBridgeOptionToString(option);
+    GPIOHandler::instance()->pinWrite(m_hbridge1, (GPIOHandler::Level)((option & hbridge1_mask) > 0));
+    GPIOHandler::instance()->pinWrite(m_hbridge2, (GPIOHandler::Level)((option & hbridge2_mask) > 0));
+    GPIOHandler::instance()->pinWrite(m_hbridge3, (GPIOHandler::Level)((option & hbridge3_mask) > 0));
+
+    emit hBridgeOptionSelected(option);
 }

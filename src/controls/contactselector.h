@@ -3,13 +3,25 @@
 
 #include <QMap>
 #include <QObject>
+#include <QString>
 
 class ContactSelector : public QObject {
     Q_OBJECT
 
 public:
-    static ContactSelector& initialize(int s1, int s2, int s3, int en);
+    enum HBridge_options {
+        HBridge_forward_all = 0x06,
+        HBridge_reverse_all = 0x01,
+        HBridge_forward_p1 = 0x02,
+        HBridge_reverse_p1 = 0x05,
+        HBridge_forward_p2 = 0x04,
+        HBridge_reverse_p2 = 0x03,
+    };
+
+    static ContactSelector& initialize(int s0, int s1, int s2, int en,
+                                       int hbridge1, int hbridge2, int hbridge3);
     static ContactSelector& instance();
+    static QString hBridgeOptionToString(HBridge_options option);
 
     ContactSelector(const ContactSelector&) = delete;
     ContactSelector& operator=(const ContactSelector&) = delete;
@@ -20,8 +32,10 @@ public:
 
 public slots:
     void selectContact(int contactIndex);
+    void selectHBridge(HBridge_options option);
 signals:
     void contactSelected(const int contactIndex);
+    void hBridgeOptionSelected(const HBridge_options option);
 
 private:
     enum PinSelection {
@@ -37,14 +51,21 @@ private:
         None = 0 << 1 | 0
     };
 
-    enum masks {
+    enum select_masks {
         s0_mask = 0x02,
         s1_mask = 0x04,
         s2_mask = 0x08,
         enable_mask = 0x01
     };
 
-    ContactSelector(int s0, int s1, int s2, int en);
+    enum HBridge_masks {
+        hbridge1_mask = 0x01,
+        hbridge2_mask = 0x02,
+        hbridge3_mask = 0x04
+    };
+
+    ContactSelector(int s0, int s1, int s2, int en,
+                    int hbridge1, int hbridge2, int hbridge3);
 
     static ContactSelector* s_instance;
 
@@ -53,8 +74,13 @@ private:
     const int m_s1;
     const int m_s2;
     const int m_en;
+    const int m_hbridge1;
+    const int m_hbridge2;
+    const int m_hbridge3;
 
     QMap<int, PinSelection> m_contactMap;
 };
+
+Q_DECLARE_METATYPE(ContactSelector::HBridge_options)
 
 #endif // CONTACTSELECTOR_H

@@ -38,7 +38,8 @@ int main(int argc, char* argv[]) {
     CoilControl::initialize(COIL1_ENABLE, COIL2_ENABLE);
     StaticReadings::initialize();
     DynamicReadings::initialize(COIL1_DETECT, COIL2_DETECT, CONTACT_TRIGGER1, CONTACT_TRIGGER2);
-    ContactSelector::initialize(CONTACT_SELECT_S0, CONTACT_SELECT_S1, CONTACT_SELECT_S2, CONTACT_SELECT_EN);
+    ContactSelector::initialize(CONTACT_SELECT_S0, CONTACT_SELECT_S1, CONTACT_SELECT_S2, CONTACT_SELECT_EN,
+                                H_BRIDGE1, H_BRIDGE2, H_BRIDGE3);
     powerSupply::initialize(powerSupply::SupplyType::DMP86xx, SERIAL_PORT_NAME);
     powerSupply::instance()->connect();
 
