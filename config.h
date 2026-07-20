@@ -64,4 +64,8 @@
 #define ADC24_CONTACT_CURRENT_CHANNEL HRDL_ANALOG_IN_CHANNEL_11
 #define ADC24_CONTACT_CURRENT_CHANNEL_IS_SINGLE_ENDED true
 
+// #############  I2C defines ####################
+
+#define VAR_RESISTANCE_ADDRESS 0x2e
+
 #endif // CONFIG_H
