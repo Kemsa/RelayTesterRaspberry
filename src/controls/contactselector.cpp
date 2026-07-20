@@ -87,11 +87,15 @@ void ContactSelector::selectContact(int contactIndex) {
 }
 
 void ContactSelector::selectHBridge(HBridge_options option) {
+    if (m_currentHBridgeOption == option) {
+        return;
+    }
 
     qDebug() << "Selecting H-Bridge option:" << hBridgeOptionToString(option);
     GPIOHandler::instance()->pinWrite(m_hbridge1, (GPIOHandler::Level)((option & hbridge1_mask) > 0));
     GPIOHandler::instance()->pinWrite(m_hbridge2, (GPIOHandler::Level)((option & hbridge2_mask) > 0));
     GPIOHandler::instance()->pinWrite(m_hbridge3, (GPIOHandler::Level)((option & hbridge3_mask) > 0));
 
+    m_currentHBridgeOption = option;
     emit hBridgeOptionSelected(option);
 }

@@ -43,6 +43,10 @@ PowerControl* PowerControl::initialize(int coil1Pin, int coil2Pin, int contactPo
 }
 
 bool PowerControl::enableCoil(Coil coil) {
+    if (!checkSafetyStatus()) {
+        qWarning() << "PowerControl: Cannot enable coil, safety status is not safe.";
+        return false;
+    }
 
     switch (coil) {
     case COIL1:
@@ -68,6 +72,11 @@ bool PowerControl::disableCoils() {
 }
 
 // bool PowerControl::enableContactPower() {
+//     if(!checkSafetyStatus()) {
+//         qWarning() << "PowerControl: Cannot enable contact power, safety status is not safe.";
+//         return false;
+//     }
+
 //     m_GPIOHandler->pinWrite(m_contactPowerEnablePin, GPIOHandler::Level::WPI_HIGH);
 //     qDebug() << "PowerControl: contact power enabled";
 //     return true;

@@ -10,6 +10,7 @@ class ContactSelector : public QObject {
 
 public:
     enum HBridge_options {
+        HBridge_none = 0x00,
         HBridge_forward_all = 0x06,
         HBridge_reverse_all = 0x01,
         HBridge_forward_p1 = 0x02,
@@ -70,6 +71,7 @@ private:
     static ContactSelector* s_instance;
 
     int m_currentContact = 0;
+    int m_currentHBridgeOption = HBridge_none;
     const int m_s0;
     const int m_s1;
     const int m_s2;

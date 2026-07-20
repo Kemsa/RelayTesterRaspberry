@@ -20,7 +20,8 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_PREFIX_PATH": "C:/Qt/5.15.2/mingw81_64/lib/cmake",
         "CMAKE_C_COMPILER": "C:/Qt/Tools/mingw810_64/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "C:/Qt/Tools/mingw810_64/bin/g++.exe"
+        "CMAKE_CXX_COMPILER": "C:/Qt/Tools/mingw810_64/bin/g++.exe",
+        "RELAYTESTER_BUILD_UNIT_TESTS": "ON"
       }
     },
     {
@@ -64,9 +65,7 @@
       "name": "windows-debug-unit-tests",
       "configurePreset": "windows-debug-with-tests",
       "configuration": "Debug",
-      "targets": [
-        "relaytester_unit_tests"
-      ]
+      "targets": ["relaytester_unit_tests"]
     },
     {
       "name": "raspi3-crosscompile",
