@@ -2,9 +2,11 @@ add_executable(relaytester_unit_tests
   main.cpp
   test_contactselector.cpp
   test_dynamicreadings.cpp
+  test_powercontrol.cpp
   ${CMAKE_CURRENT_LIST_DIR}/../../src/controls/contactselector.cpp
   ${CMAKE_CURRENT_LIST_DIR}/../../src/controls/dynamicreadings.cpp
   ${CMAKE_CURRENT_LIST_DIR}/../../src/controls/dynamicswitch.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/../../src/controls/powercontrol.cpp
 )
 
 target_include_directories(relaytester_unit_tests
