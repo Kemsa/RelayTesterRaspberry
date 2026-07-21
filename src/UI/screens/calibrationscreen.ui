@@ -88,6 +88,16 @@
       </property>
      </widget>
     </item>
+    <item row="1" column="1">
+     <widget class="DynamicsWidget" name="frame_4">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
  </widget>
@@ -107,7 +117,13 @@
   <customwidget>
    <class>ADC24Reading</class>
    <extends>QFrame</extends>
-   <header location="global">adc24reading.h</header>
+   <header>adc24reading.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DynamicsWidget</class>
+   <extends>QFrame</extends>
+   <header location="global">dynamicswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

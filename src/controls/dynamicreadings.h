@@ -16,7 +16,8 @@ public:
         COIL1,
         COIL2,
         CONTACT1,
-        CONTACT2
+        CONTACT2,
+        BOTH_COILS,
     };
 
     static DynamicReadings* getInstance();

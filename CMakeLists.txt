@@ -47,6 +47,7 @@ add_executable(relayTester
   src/controls/powercontrol.h src/controls/powercontrol.cpp
   src/controls/dynamicswitch.h src/controls/dynamicswitch.cpp
   src/controls/currentadjuster.h src/controls/currentadjuster.cpp
+  src/UI/widgets/dynamicswidget.h src/UI/widgets/dynamicswidget.cpp src/UI/widgets/dynamicswidget.ui
 
 )
 target_include_directories(relayTester PRIVATE

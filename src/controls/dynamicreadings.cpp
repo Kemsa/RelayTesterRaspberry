@@ -90,7 +90,32 @@ std::future<std::shared_ptr<DynamicSwitch>> DynamicReadings::waitAndProcessOneSw
             return;
         }
 
-        GPIOHandler::InterruptStatus statusCoil = getEarlierstInterruptStatus(triggerCoil);
+        GPIOHandler::InterruptStatus statusCoil = {-1, 0, 0, -1};
+        switch (triggerCoil) {
+        case ContactType::COIL1:
+            statusCoil = getEarlierstInterruptStatus(ContactType::COIL1);
+            break;
+        case ContactType::COIL2:
+            statusCoil = getEarlierstInterruptStatus(ContactType::COIL2);
+            break;
+        case ContactType::BOTH_COILS: {
+            GPIOHandler::InterruptStatus statusCoil1 = getEarlierstInterruptStatus(ContactType::COIL1);
+            GPIOHandler::InterruptStatus statusCoil2 = getEarlierstInterruptStatus(ContactType::COIL2);
+            if (statusCoil1.statusOK == -1 && statusCoil2.statusOK == -1) {
+                statusCoil = {-1, 0, 0, -1}; // Default status if no interrupt
+            } else if (statusCoil1.statusOK == -1) {
+                statusCoil = statusCoil2;
+            } else if (statusCoil2.statusOK == -1) {
+                statusCoil = statusCoil1;
+            } else {
+                statusCoil = (statusCoil1.timeStamp_us <= statusCoil2.timeStamp_us) ? statusCoil1 : statusCoil2;
+            }
+            break;
+        }
+        default:
+            break;
+        }
+
         GPIOHandler::InterruptStatus statusContact1 = getLatestInterruptStatus(ContactType::CONTACT1);
         GPIOHandler::InterruptStatus statusContact2 = getLatestInterruptStatus(ContactType::CONTACT2);
 
@@ -134,7 +159,7 @@ GPIOHandler::InterruptStatus DynamicReadings::getEarlierstInterruptStatus(Contac
         return interruptList->at(earliestIdx);
     }
 
-    return {-1, 0, 0, 0}; // Default status if no interrupt
+    return {-1, 0, 0, -1}; // Default status if no interrupt
 }
 
 GPIOHandler::InterruptStatus DynamicReadings::getLatestInterruptStatus(ContactType type) {
