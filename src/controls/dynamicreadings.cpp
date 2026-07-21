@@ -18,8 +18,8 @@ DynamicReadings::DynamicReadings(int coil1Pin, int coil2Pin, int contact1Pin, in
 
     m_GPIOHandler->setupInterrupt(m_coil1Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::COIL1)));
     m_GPIOHandler->setupInterrupt(m_coil2Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::COIL2)));
-    m_GPIOHandler->setupInterrupt(m_contact1Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::CONTACT1)));
-    m_GPIOHandler->setupInterrupt(m_contact2Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::CONTACT2)));
+    m_GPIOHandler->setupInterrupt(m_contact1Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::CONTACT_A)));
+    m_GPIOHandler->setupInterrupt(m_contact2Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::CONTACT_B)));
 }
 
 DynamicReadings* DynamicReadings::getInstance() {
@@ -51,10 +51,10 @@ void DynamicReadings::interruptHandler(ContactType type, GPIOHandler::InterruptS
     case ContactType::COIL2:
         m_interruptStatusesCoil2.append(wfiStatus);
         break;
-    case ContactType::CONTACT1:
+    case ContactType::CONTACT_A:
         m_interruptStatusesContact1.append(wfiStatus);
         break;
-    case ContactType::CONTACT2:
+    case ContactType::CONTACT_B:
         m_interruptStatusesContact2.append(wfiStatus);
         break;
     default:
@@ -116,8 +116,8 @@ std::future<std::shared_ptr<DynamicSwitch>> DynamicReadings::waitAndProcessOneSw
             break;
         }
 
-        GPIOHandler::InterruptStatus statusContact1 = getLatestInterruptStatus(ContactType::CONTACT1);
-        GPIOHandler::InterruptStatus statusContact2 = getLatestInterruptStatus(ContactType::CONTACT2);
+        GPIOHandler::InterruptStatus statusContact1 = getLatestInterruptStatus(ContactType::CONTACT_A);
+        GPIOHandler::InterruptStatus statusContact2 = getLatestInterruptStatus(ContactType::CONTACT_B);
 
         auto switchResult = std::make_shared<DynamicSwitch>(triggerCoil, statusCoil, statusContact1, statusContact2);
 
@@ -138,10 +138,10 @@ GPIOHandler::InterruptStatus DynamicReadings::getEarlierstInterruptStatus(Contac
     case ContactType::COIL2:
         interruptList = &m_interruptStatusesCoil2;
         break;
-    case ContactType::CONTACT1:
+    case ContactType::CONTACT_A:
         interruptList = &m_interruptStatusesContact1;
         break;
-    case ContactType::CONTACT2:
+    case ContactType::CONTACT_B:
         interruptList = &m_interruptStatusesContact2;
         break;
     }
@@ -172,10 +172,10 @@ GPIOHandler::InterruptStatus DynamicReadings::getLatestInterruptStatus(ContactTy
     case ContactType::COIL2:
         interruptList = &m_interruptStatusesCoil2;
         break;
-    case ContactType::CONTACT1:
+    case ContactType::CONTACT_A:
         interruptList = &m_interruptStatusesContact1;
         break;
-    case ContactType::CONTACT2:
+    case ContactType::CONTACT_B:
         interruptList = &m_interruptStatusesContact2;
         break;
     }

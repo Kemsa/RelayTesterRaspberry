@@ -168,10 +168,10 @@ void StaticReadings::configureValueForChannel(ReadingFlags type, std::shared_ptr
     case ReadingFlags::coil2Current:
         reading->setConfiguration(ADC24_COIL2_CURRENT_CHANNEL, static_cast<HRDL_RANGE>(caliber), HRDL_60MS, ADC24_COIL2_CURRENT_CHANNEL_IS_SINGLE_ENDED);
         break;
-    case ReadingFlags::contact12Voltage:
+    case ReadingFlags::contactAVoltage:
         reading->setConfiguration(ADC24_CONTACT12_VOLTAGE_CHANNEL, static_cast<HRDL_RANGE>(caliber), HRDL_60MS, ADC24_CONTACT12_VOLTAGE_CHANNEL_IS_SINGLE_ENDED);
         break;
-    case ReadingFlags::contact13Voltage:
+    case ReadingFlags::contactBVoltage:
         reading->setConfiguration(ADC24_CONTACT13_VOLTAGE_CHANNEL, static_cast<HRDL_RANGE>(caliber), HRDL_60MS, ADC24_CONTACT13_VOLTAGE_CHANNEL_IS_SINGLE_ENDED);
         break;
     case ReadingFlags::contactCurrent:

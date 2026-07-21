@@ -1,17 +1,17 @@
 #include "dynamicswitch.h"
 
-int DynamicSwitch::getContact1SwitchTime() {
+int DynamicSwitch::getContactASwitchTime() {
     return contact1Status.timeStamp_us - coilStatus.timeStamp_us;
 }
 
-int DynamicSwitch::getContact1TransistionType() {
+int DynamicSwitch::getContactATransistionType() {
     return contact1Status.edge;
 }
 
-int DynamicSwitch::getContact2SwitchTime() {
+int DynamicSwitch::getContactBSwitchTime() {
     return contact2Status.timeStamp_us - coilStatus.timeStamp_us;
 }
 
-int DynamicSwitch::getContact2TransistionType() {
+int DynamicSwitch::getContactBTransistionType() {
     return contact2Status.edge;
 }

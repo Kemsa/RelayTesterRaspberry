@@ -48,6 +48,7 @@ add_executable(relayTester
   src/controls/dynamicswitch.h src/controls/dynamicswitch.cpp
   src/controls/currentadjuster.h src/controls/currentadjuster.cpp
   src/UI/widgets/dynamicswidget.h src/UI/widgets/dynamicswidget.cpp src/UI/widgets/dynamicswidget.ui
+  src/UI/screens/relayselect.h src/UI/screens/relayselect.cpp src/UI/screens/relayselect.ui
 
 )
 target_include_directories(relayTester PRIVATE

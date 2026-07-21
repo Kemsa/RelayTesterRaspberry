@@ -15,8 +15,8 @@ public:
     enum class ContactType {
         COIL1,
         COIL2,
-        CONTACT1,
-        CONTACT2,
+        CONTACT_A,
+        CONTACT_B,
         BOTH_COILS,
     };
 

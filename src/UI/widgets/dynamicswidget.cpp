@@ -71,10 +71,10 @@ void DynamicsWidget::handleSwitchResult(std::shared_ptr<DynamicSwitch> switchRes
 
     ui->contact1_LBL->setText(
         QString("contact 1: %1 us, edge=%2")
-            .arg(switchResult->getContact1SwitchTime())
-            .arg(switchResult->getContact1TransistionType()));
+            .arg(switchResult->getContactASwitchTime())
+            .arg(switchResult->getContactATransistionType()));
     ui->contact2_LBL->setText(
         QString("contact 2: %1 us, edge=%2")
-            .arg(switchResult->getContact2SwitchTime())
-            .arg(switchResult->getContact2TransistionType()));
+            .arg(switchResult->getContactBSwitchTime())
+            .arg(switchResult->getContactBTransistionType()));
 }

@@ -54,10 +54,10 @@ void ADC24Reading::makeMeasureAndDisplay(int nMeasures) {
         case StaticReadings::ReadingFlags::coil2Current:
             headerText = "B2 I";
             break;
-        case StaticReadings::ReadingFlags::contact12Voltage:
+        case StaticReadings::ReadingFlags::contactAVoltage:
             headerText = "C1 V";
             break;
-        case StaticReadings::ReadingFlags::contact13Voltage:
+        case StaticReadings::ReadingFlags::contactBVoltage:
             headerText = "C2 V";
             break;
         case StaticReadings::ReadingFlags::contactCurrent:

@@ -16,13 +16,13 @@ public:
         coil1Current = 0x02,
         coil2Voltage = 0x04,
         coil2Current = 0x08,
-        contact12Voltage = 0x10,
-        contact13Voltage = 0x20,
+        contactAVoltage = 0x10,
+        contactBVoltage = 0x20,
         contactCurrent = 0x40,
 
         // easy flags
         coils = coil1Voltage | coil1Current | coil2Voltage | coil2Current,
-        contacts = contact12Voltage | contact13Voltage | contactCurrent,
+        contacts = contactAVoltage | contactBVoltage | contactCurrent,
         all = coils | contacts
     };
 

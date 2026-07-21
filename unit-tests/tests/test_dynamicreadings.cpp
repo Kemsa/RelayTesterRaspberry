@@ -7,13 +7,13 @@
 
 #define COIL1_PIN 1
 #define COIL2_PIN 2
-#define CONTACT1_PIN 3
-#define CONTACT2_PIN 4
+#define CONTACT_A_PIN 3
+#define CONTACT_B_PIN 4
 
 #define COIL1_BCM 10
 #define COIL2_BCM 11
-#define CONTACT1_BCM 12
-#define CONTACT2_BCM 13
+#define CONTACT_A_BCM 12
+#define CONTACT_B_BCM 13
 
 class DynamicReadingsTest : public QObject {
     Q_OBJECT
@@ -31,7 +31,7 @@ private slots:
 
 void DynamicReadingsTest::initTestCase() {
     GPIOHandler::setupInstance(true);
-    DynamicReadings::initialize(COIL1_PIN, COIL2_PIN, CONTACT1_PIN, CONTACT2_PIN); // Use mock GPIO pins for testing
+    DynamicReadings::initialize(COIL1_PIN, COIL2_PIN, CONTACT_A_PIN, CONTACT_B_PIN); // Use mock GPIO pins for testing
 }
 
 void DynamicReadingsTest::cleanupTestCase() {
@@ -52,27 +52,27 @@ void DynamicReadingsTest::testCleanInterrupt() {
 
     // Simulate an interrupt for COIL1
     mock->mockupInterrupt(COIL1_PIN, GPIOHandler::InterruptStatus{1, COIL1_BCM, INT_EDGE_RISING, coilTime});
-    mock->mockupInterrupt(CONTACT1_PIN, GPIOHandler::InterruptStatus{1, CONTACT1_BCM, INT_EDGE_FALLING, contact1Time});
-    mock->mockupInterrupt(CONTACT2_PIN, GPIOHandler::InterruptStatus{1, CONTACT2_BCM, INT_EDGE_RISING, contact2Time});
+    mock->mockupInterrupt(CONTACT_A_PIN, GPIOHandler::InterruptStatus{1, CONTACT_A_BCM, INT_EDGE_FALLING, contact1Time});
+    mock->mockupInterrupt(CONTACT_B_PIN, GPIOHandler::InterruptStatus{1, CONTACT_B_BCM, INT_EDGE_RISING, contact2Time});
 
     auto res = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, 100).get(); // Assuming this triggers the interrupt handler
 
     QVERIFY(res != nullptr);
     QCOMPARE(res->getCoilStatus().pinBCM, COIL1_BCM);
-    QCOMPARE(res->getContact1Status().pinBCM, CONTACT1_BCM);
-    QCOMPARE(res->getContact2Status().pinBCM, CONTACT2_BCM);
+    QCOMPARE(res->getContactAStatus().pinBCM, CONTACT_A_BCM);
+    QCOMPARE(res->getContactBStatus().pinBCM, CONTACT_B_BCM);
 
     QCOMPARE(res->getCoilStatus().statusOK, 1);
-    QCOMPARE(res->getContact1Status().statusOK, 1);
-    QCOMPARE(res->getContact2Status().statusOK, 1);
+    QCOMPARE(res->getContactAStatus().statusOK, 1);
+    QCOMPARE(res->getContactBStatus().statusOK, 1);
 
     QVERIFY(res->isValid());
 
-    QCOMPARE(res->getContact1SwitchTime(), contact1Time - coilTime);
-    QCOMPARE(res->getContact2SwitchTime(), contact2Time - coilTime);
+    QCOMPARE(res->getContactASwitchTime(), contact1Time - coilTime);
+    QCOMPARE(res->getContactBSwitchTime(), contact2Time - coilTime);
 
-    QCOMPARE(res->getContact1TransistionType(), INT_EDGE_FALLING);
-    QCOMPARE(res->getContact2TransistionType(), INT_EDGE_RISING);
+    QCOMPARE(res->getContactATransistionType(), INT_EDGE_FALLING);
+    QCOMPARE(res->getContactBTransistionType(), INT_EDGE_RISING);
 }
 
 void DynamicReadingsTest::testComplexInterruptSequence() {
@@ -92,32 +92,32 @@ void DynamicReadingsTest::testComplexInterruptSequence() {
     mock->mockupInterrupt(COIL1_PIN, GPIOHandler::InterruptStatus{1, COIL1_BCM, INT_EDGE_FALLING, coilTime + 50});
     mock->mockupInterrupt(COIL1_PIN, GPIOHandler::InterruptStatus{1, COIL1_BCM, INT_EDGE_RISING, coilTime + 100});
 
-    mock->mockupInterrupt(CONTACT1_PIN, GPIOHandler::InterruptStatus{1, CONTACT1_BCM, INT_EDGE_FALLING, contact1Time - 100});
-    mock->mockupInterrupt(CONTACT1_PIN, GPIOHandler::InterruptStatus{1, CONTACT1_BCM, INT_EDGE_RISING, contact1Time - 50});
-    mock->mockupInterrupt(CONTACT1_PIN, GPIOHandler::InterruptStatus{1, CONTACT1_BCM, INT_EDGE_FALLING, contact1Time});
+    mock->mockupInterrupt(CONTACT_A_PIN, GPIOHandler::InterruptStatus{1, CONTACT_A_BCM, INT_EDGE_FALLING, contact1Time - 100});
+    mock->mockupInterrupt(CONTACT_A_PIN, GPIOHandler::InterruptStatus{1, CONTACT_A_BCM, INT_EDGE_RISING, contact1Time - 50});
+    mock->mockupInterrupt(CONTACT_A_PIN, GPIOHandler::InterruptStatus{1, CONTACT_A_BCM, INT_EDGE_FALLING, contact1Time});
 
-    mock->mockupInterrupt(CONTACT2_PIN, GPIOHandler::InterruptStatus{1, CONTACT2_BCM, INT_EDGE_RISING, contact2Time - 100});
-    mock->mockupInterrupt(CONTACT2_PIN, GPIOHandler::InterruptStatus{1, CONTACT2_BCM, INT_EDGE_FALLING, contact2Time - 50});
-    mock->mockupInterrupt(CONTACT2_PIN, GPIOHandler::InterruptStatus{1, CONTACT2_BCM, INT_EDGE_RISING, contact2Time});
+    mock->mockupInterrupt(CONTACT_B_PIN, GPIOHandler::InterruptStatus{1, CONTACT_B_BCM, INT_EDGE_RISING, contact2Time - 100});
+    mock->mockupInterrupt(CONTACT_B_PIN, GPIOHandler::InterruptStatus{1, CONTACT_B_BCM, INT_EDGE_FALLING, contact2Time - 50});
+    mock->mockupInterrupt(CONTACT_B_PIN, GPIOHandler::InterruptStatus{1, CONTACT_B_BCM, INT_EDGE_RISING, contact2Time});
 
     auto res = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, 100).get(); // Assuming this triggers the interrupt handler
 
     QVERIFY(res != nullptr);
     QCOMPARE(res->getCoilStatus().pinBCM, COIL1_BCM);
-    QCOMPARE(res->getContact1Status().pinBCM, CONTACT1_BCM);
-    QCOMPARE(res->getContact2Status().pinBCM, CONTACT2_BCM);
+    QCOMPARE(res->getContactAStatus().pinBCM, CONTACT_A_BCM);
+    QCOMPARE(res->getContactBStatus().pinBCM, CONTACT_B_BCM);
 
     QCOMPARE(res->getCoilStatus().statusOK, 1);
-    QCOMPARE(res->getContact1Status().statusOK, 1);
-    QCOMPARE(res->getContact2Status().statusOK, 1);
+    QCOMPARE(res->getContactAStatus().statusOK, 1);
+    QCOMPARE(res->getContactBStatus().statusOK, 1);
 
     QVERIFY(res->isValid());
 
-    QCOMPARE(res->getContact1SwitchTime(), contact1Time - coilTime);
-    QCOMPARE(res->getContact2SwitchTime(), contact2Time - coilTime);
+    QCOMPARE(res->getContactASwitchTime(), contact1Time - coilTime);
+    QCOMPARE(res->getContactBSwitchTime(), contact2Time - coilTime);
 
-    QCOMPARE(res->getContact1TransistionType(), INT_EDGE_FALLING);
-    QCOMPARE(res->getContact2TransistionType(), INT_EDGE_RISING);
+    QCOMPARE(res->getContactATransistionType(), INT_EDGE_FALLING);
+    QCOMPARE(res->getContactBTransistionType(), INT_EDGE_RISING);
 }
 
 void DynamicReadingsTest::testTotalFailure() {
@@ -134,8 +134,8 @@ void DynamicReadingsTest::testTotalFailure() {
 
     QVERIFY(res != nullptr);
     QCOMPARE(res->getCoilStatus().statusOK, -1);
-    QCOMPARE(res->getContact1Status().statusOK, -1);
-    QCOMPARE(res->getContact2Status().statusOK, -1);
+    QCOMPARE(res->getContactAStatus().statusOK, -1);
+    QCOMPARE(res->getContactBStatus().statusOK, -1);
 
     QVERIFY(!res->isValid());
 }
@@ -153,14 +153,14 @@ void DynamicReadingsTest::testPartialContactFailure() {
 
     // Simulate an interrupt for COIL1 and CONTACT1, but not CONTACT2
     mock->mockupInterrupt(COIL1_PIN, GPIOHandler::InterruptStatus{1, COIL1_BCM, INT_EDGE_RISING, coilTime});
-    mock->mockupInterrupt(CONTACT1_PIN, GPIOHandler::InterruptStatus{1, CONTACT1_BCM, INT_EDGE_FALLING, contact1Time});
+    mock->mockupInterrupt(CONTACT_A_PIN, GPIOHandler::InterruptStatus{1, CONTACT_A_BCM, INT_EDGE_FALLING, contact1Time});
 
     auto res = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, 100).get(); // Assuming this triggers the interrupt handler
 
     QVERIFY(res != nullptr);
     QCOMPARE(res->getCoilStatus().statusOK, 1);
-    QCOMPARE(res->getContact1Status().statusOK, 1);
-    QCOMPARE(res->getContact2Status().statusOK, -1);
+    QCOMPARE(res->getContactAStatus().statusOK, 1);
+    QCOMPARE(res->getContactBStatus().statusOK, -1);
 
     QVERIFY(res->isValid());
 }
@@ -182,8 +182,8 @@ void DynamicReadingsTest::testTotalContactFailure() {
 
     QVERIFY(res != nullptr);
     QCOMPARE(res->getCoilStatus().statusOK, 1);
-    QCOMPARE(res->getContact1Status().statusOK, -1);
-    QCOMPARE(res->getContact2Status().statusOK, -1);
+    QCOMPARE(res->getContactAStatus().statusOK, -1);
+    QCOMPARE(res->getContactBStatus().statusOK, -1);
 
     QVERIFY(!res->isValid());
 }
