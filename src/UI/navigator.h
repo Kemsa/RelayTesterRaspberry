@@ -11,6 +11,7 @@ public:
     enum NavigationScreen {
         Home_screen,
         Calibration_screen,
+        RelaySelect_screen,
         // Add more screens as needed
     };
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>440</height>
+    <height>420</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -30,7 +30,7 @@
      <x>0</x>
      <y>0</y>
      <width>801</width>
-     <height>461</height>
+     <height>421</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -63,7 +63,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="relayMeasure_PB">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -72,6 +72,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Arial</family>
           <pointsize>15</pointsize>
          </font>
         </property>
@@ -84,6 +85,7 @@
        <widget class="QPushButton" name="calibrationPB">
         <property name="font">
          <font>
+          <family>Arial</family>
           <pointsize>15</pointsize>
          </font>
         </property>
