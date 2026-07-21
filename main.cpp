@@ -2,6 +2,7 @@
 #include "UI/styling.h"
 #include "config.h"
 #include "contactselector.h"
+#include "currentAdjuster.h"
 #include "dynamicreadings.h"
 #include "logbus.h"
 #include "mainWindow.h"
@@ -42,6 +43,7 @@ int main(int argc, char* argv[]) {
                                 H_BRIDGE1, H_BRIDGE2, H_BRIDGE3);
     powerSupply::initialize(powerSupply::SupplyType::DMP86xx, SERIAL_PORT_NAME);
     powerSupply::instance()->connect();
+    CurrentAdjuster::initialize(StaticReadings::getInstance(), VAR_RESISTANCE_ADDRESS);
 
     // Connect securities
     QObject::connect(PowerControl::getInstance(), &PowerControl::safetyStatusChanged,

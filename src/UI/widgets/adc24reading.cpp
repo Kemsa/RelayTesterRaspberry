@@ -1,4 +1,5 @@
 #include "adc24reading.h"
+#include "currentadjuster.h"
 #include "staticreadings.h"
 #include "ui_adc24reading.h"
 #include <QDebug>
@@ -14,6 +15,12 @@ ADC24Reading::ADC24Reading(QWidget* parent)
 
     ui->values_TBL->setRowCount(3);
     ui->values_TBL->setVerticalHeaderLabels({"Brute", "ADC (mV)", "Finale (V)"});
+
+    connect(ui->currentAdjust_PB, &QPushButton::clicked, this, [this]() {
+        int targetCurrent = ui->targetCurrent_SB->value();
+        float tolerance = targetCurrent * 0.1f; // 10% tolerance
+        int result = CurrentAdjuster::instance().adjustCurrentToTarget(static_cast<float>(targetCurrent), tolerance);
+    });
 }
 
 ADC24Reading::~ADC24Reading() {
