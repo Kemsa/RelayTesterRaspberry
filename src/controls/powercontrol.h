@@ -16,6 +16,8 @@ public:
     static PowerControl* initialize(int coil1Pin, int coil2Pin, int contactPowerEnablePin,
                                     int reedPin, int boardPin);
     bool checkSafetyStatus() const { return reedClosed && boardClosed; }
+    bool checkReedStatus() const { return reedClosed; }
+    bool checkBoardStatus() const { return boardClosed; }
     bool forceCheckSafetyStatus();
 
 public slots:

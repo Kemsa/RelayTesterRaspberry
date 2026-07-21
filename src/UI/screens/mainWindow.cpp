@@ -3,6 +3,7 @@
 #include "homescreen.h"
 #include "logbus.h"
 #include "navigator.h"
+#include "powercontrol.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -28,6 +29,25 @@ MainWindow::MainWindow(QWidget* parent)
     connect(ui->homePB, &QPushButton::clicked, this, [this]() {
         Navigator::instance().goHome();
     });
+
+    connect(PowerControl::getInstance(), &PowerControl::reedStatusChanged, this, [this](bool isClosed) {
+        if (isClosed) {
+            ui->reed_LED->setState(LedWidget::StateOk);
+        } else {
+            ui->reed_LED->setState(LedWidget::StateError);
+        }
+    });
+
+    connect(PowerControl::getInstance(), &PowerControl::boardStatusChanged, this, [this](bool isClosed) {
+        if (isClosed) {
+            ui->board_LED->setState(LedWidget::StateOk);
+        } else {
+            ui->board_LED->setState(LedWidget::StateError);
+        }
+    });
+
+    ui->board_LED->setState(PowerControl::getInstance()->checkBoardStatus() ? LedWidget::StateOk : LedWidget::StateError);
+    ui->reed_LED->setState(PowerControl::getInstance()->checkReedStatus() ? LedWidget::StateOk : LedWidget::StateError);
 }
 
 MainWindow::~MainWindow() {
