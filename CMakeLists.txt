@@ -50,6 +50,7 @@ add_executable(relayTester
   src/UI/widgets/dynamicswidget.h src/UI/widgets/dynamicswidget.cpp src/UI/widgets/dynamicswidget.ui
   src/UI/screens/relayselectscreen.h src/UI/screens/relayselectscreen.cpp src/UI/screens/relayselectscreen.ui
   src/UI/models/relaylistmodel.h src/UI/models/relaylistmodel.cpp
+  src/UI/screens/relaymeasurescreen.h src/UI/screens/relaymeasurescreen.cpp src/UI/screens/relaymeasurescreen.ui
 
 )
 target_include_directories(relayTester PRIVATE

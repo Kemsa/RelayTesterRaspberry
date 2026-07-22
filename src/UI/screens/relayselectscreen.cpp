@@ -1,10 +1,8 @@
 #include "relayselectscreen.h"
-
+#include "navigator.h"
 #include "relaylistmodel.h"
-
-#include <QItemSelectionModel>
-
 #include "ui_relayselectscreen.h"
+#include <QItemSelectionModel>
 
 RelaySelectScreen::RelaySelectScreen(QWidget* parent)
     : QWidget(parent),
@@ -18,6 +16,14 @@ RelaySelectScreen::RelaySelectScreen(QWidget* parent)
             this, [this](const QModelIndex& current, const QModelIndex&) {
                 updateSelectionState(current);
             });
+
+    connect(ui->selectRelay_PB, &QPushButton::clicked, this, [this]() {
+        QModelIndex currentIndex = ui->relaySelect_CV->currentIndex();
+        if (m_model->isFile(currentIndex)) {
+            QString selectedRelayPath = m_model->filePath(currentIndex);
+            Navigator::instance().navigateToWithData(Navigator::RelayMeasure_screen, std::make_shared<QString>(selectedRelayPath));
+        }
+    });
 }
 
 RelaySelectScreen::~RelaySelectScreen() {

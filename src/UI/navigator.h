@@ -12,6 +12,7 @@ public:
         Home_screen,
         Calibration_screen,
         RelaySelect_screen,
+        RelayMeasure_screen,
         // Add more screens as needed
     };
 
@@ -24,6 +25,8 @@ public:
     void goBack();
     void goHome();
     void navigateTo(NavigationScreen screen);
+    void navigateToWithData(NavigationScreen screen, std::shared_ptr<void> data);
+    std::shared_ptr<void> getScreenExchangeData(NavigationScreen screen) const;
 
 private:
     explicit Navigator(QMainWindow* mainWindow, QStackedWidget* stackedWidget);
@@ -36,6 +39,8 @@ private:
     QMap<NavigationScreen, int> m_screenIndexMap; // Maps screens to their corresponding index in the QStackedWidget
 
     void addWidgetForScreen(NavigationScreen screen, QWidget* widget);
+
+    QMap<NavigationScreen, std::shared_ptr<void>> m_screenExchanggeData;
 };
 
 #endif // NAVIGATOR_H

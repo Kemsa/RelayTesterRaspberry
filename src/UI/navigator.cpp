@@ -1,6 +1,7 @@
 #include "navigator.h"
 #include "calibrationscreen.h"
 #include "homescreen.h"
+#include "relaymeasurescreen.h"
 #include "relayselectscreen.h"
 #include <QDebug>
 
@@ -19,11 +20,12 @@ Navigator& Navigator::instance() {
 }
 
 Navigator::Navigator(QMainWindow* mainWindow, QStackedWidget* stackedWidget)
-    : m_mainWindow(mainWindow), m_stackedWidget(stackedWidget) {
+    : m_mainWindow(mainWindow), m_stackedWidget(stackedWidget), m_screenExchanggeData() {
 
     addWidgetForScreen(Home_screen, new HomeScreen(m_stackedWidget));
     addWidgetForScreen(Calibration_screen, new CalibrationScreen(m_stackedWidget));
     addWidgetForScreen(RelaySelect_screen, new RelaySelectScreen(m_stackedWidget));
+    addWidgetForScreen(RelayMeasure_screen, new RelayMeasureScreen(m_stackedWidget));
 
     navigateTo(Home_screen); // Show HomeScreen by default
 }
@@ -56,4 +58,13 @@ void Navigator::goHome() {
 void Navigator::addWidgetForScreen(NavigationScreen screen, QWidget* widget) {
     int index = m_stackedWidget->addWidget(widget);
     m_screenIndexMap.insert(screen, index);
+}
+
+void Navigator::navigateToWithData(NavigationScreen screen, std::shared_ptr<void> data) {
+    m_screenExchanggeData.insert(screen, data);
+    navigateTo(screen);
+}
+
+std::shared_ptr<void> Navigator::getScreenExchangeData(NavigationScreen screen) const {
+    return m_screenExchanggeData.value(screen, nullptr);
 }
