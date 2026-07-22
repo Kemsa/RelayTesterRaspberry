@@ -1,0 +1,86 @@
+{
+  "$schema": "../relay_schema.json",
+  "relayBrand": "axicom",
+  "relayModel": "v23062-B00029",
+  "measures": [
+    {
+      "name": "resistance de bobine",
+      "parameters": {
+        "measureType": "coilResistance",
+        "coilToMeasure": 1,
+        "supplyVoltage_cV": 35e2,
+        "successValues": {
+          "minResistance_ohm": 2125,
+          "maxResistance_ohm": 2875
+        }
+      }
+    },
+    {
+      "name": "tension de commutation",
+      "parameters": {
+        "measureType": "switchingVoltage",
+        "coilToMeasure": 1,
+        "nContacts": 4,
+        "startVoltage_cV": 1000,
+        "stopVoltage_cV": 3700,
+        "voltageStep_cV": 100,
+        "successValues": {
+          "maxContactOnVoltage_mV": 100,
+          "minContactOffVoltage_mV": 2500,
+          "maxSwitchingVoltage_cV": 3500
+        }
+      }
+    },
+    {
+      "name": "tension de relachement",
+      "parameters": {
+        "measureType": "cutVoltage",
+        "coilToMeasure": 1,
+        "nContacts": 4,
+        "startVoltage_cV": 3500,
+        "stopVoltage_cV": 300,
+        "voltageStep_cV": 100,
+        "successValues": {
+          "maxContactOnVoltage_mV": 100,
+          "minContactOffVoltage_mV": 2500,
+          "minCutVoltage_cV": 400
+        }
+      }
+    },
+    {
+      "name": "resistance de contact",
+      "parameters": {
+        "measureType": "contactResistance",
+        "coilToPowerOn": 1,
+        "coilToPowerOff": 0,
+        "contactDirection": "both",
+        "nContacts": 4,
+        "supplyVoltage_cV": 35e2,
+        "successValues": {
+          "maxResistanceClosed_mOhm": 5000,
+          "minResistanceOpened_kOhm": 100
+        }
+      }
+    },
+    {
+      "name": "switching time",
+      "parameters": {
+        "measureType": "switchingTime",
+        "coilToPowerOn": 1,
+        "coilToPowerOff": 0,
+        "contactDirection": "both",
+        "nContacts": 4,
+        "contactMaxVoltageSwitch_mV": 100,
+        "contactMinVoltageCut_mV": 2500,
+        "switchCount": 20,
+        "supplyVoltage_cV": 35e2,
+        "successValues": {
+          "maxSwitchTimeOn_ms": 20,
+          "maxSwitchTimeOff_ms": 20,
+          "maxCutTimeOn_ms": 20,
+          "maxCutTimeOff_ms": 20
+        }
+      }
+    }
+  ]
+}

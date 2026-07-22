@@ -1,0 +1,291 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "A relay configuration",
+  "definitions": {
+    "coilVoltage": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6000
+    },
+    "coilCurrent": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5000,
+      "default": 200
+    },
+    "nMeasures": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 64,
+      "default": 16
+    },
+    "time_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 32
+    },
+    "contactVoltage_mV": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5000
+    },
+    "coilResistanceMeasure": {
+      "type": "object",
+      "properties": {
+        "measureType": { "const": "coilResistance" },
+        "coilToMeasure": { "type": "number", "enum": [1, 2] },
+        "supplyVoltage_cV": { "$ref": "#/definitions/coilVoltage" },
+        "maxCurrent_mA": { "$ref": "#/definitions/coilCurrent" },
+        "nMeasures": { "$ref": "#/definitions/nMeasures" },
+        "successValues": {
+          "type": "object",
+          "properties": {
+            "minResistance_ohm": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10e6
+            },
+            "maxResistance_ohm": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10e6
+            }
+          },
+          "required": ["minResistance_ohm", "maxResistance_ohm"]
+        }
+      },
+      "required": [
+        "measureType",
+        "coilToMeasure",
+        "supplyVoltage_cV",
+        "successValues"
+      ]
+    },
+    "switchingVoltageMeasure": {
+      "type": "object",
+      "properties": {
+        "measureType": { "const": "switchingVoltage" },
+        "coilToMeasure": { "type": "number", "enum": [1, 2] },
+        "nContacts": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "startVoltage_cV": { "$ref": "#/definitions/coilVoltage" },
+        "stopVoltage_cV": { "$ref": "#/definitions/coilVoltage" },
+        "voltageStep_cV": { "$ref": "#/definitions/coilVoltage" },
+        "maxCurrent_mA": { "$ref": "#/definitions/coilCurrent" },
+        "nMeasures": { "$ref": "#/definitions/nMeasures" },
+        "successValues": {
+          "type": "object",
+          "properties": {
+            "maxContactOnVoltage_mV": {
+              "$ref": "#/definitions/contactVoltage_mV"
+            },
+            "minContactOffVoltage_mV": {
+              "$ref": "#/definitions/contactVoltage_mV"
+            },
+            "maxSwitchingVoltage_cV": { "$ref": "#/definitions/coilVoltage" }
+          },
+          "required": [
+            "maxContactOnVoltage_mV",
+            "minContactOffVoltage_mV",
+            "maxSwitchingVoltage_cV"
+          ]
+        }
+      },
+      "required": [
+        "measureType",
+        "coilToMeasure",
+        "nContacts",
+        "startVoltage_cV",
+        "stopVoltage_cV",
+        "voltageStep_cV",
+        "successValues"
+      ]
+    },
+    "cutVoltageMeasure": {
+      "type": "object",
+      "properties": {
+        "measureType": { "const": "cutVoltage" },
+        "coilToMeasure": { "type": "number", "enum": [1, 2] },
+        "nContacts": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "startVoltage_cV": { "$ref": "#/definitions/coilVoltage" },
+        "stopVoltage_cV": { "$ref": "#/definitions/coilVoltage" },
+        "voltageStep_cV": { "$ref": "#/definitions/coilVoltage" },
+        "maxCurrent_mA": { "$ref": "#/definitions/coilCurrent" },
+        "nMeasures": { "$ref": "#/definitions/nMeasures" },
+        "successValues": {
+          "type": "object",
+          "properties": {
+            "maxContactOnVoltage_mV": {
+              "$ref": "#/definitions/contactVoltage_mV"
+            },
+            "minContactOffVoltage_mV": {
+              "$ref": "#/definitions/contactVoltage_mV"
+            },
+            "minCutVoltage_cV": { "$ref": "#/definitions/coilVoltage" }
+          },
+          "required": ["maxContactOnVoltage_mV", "minContactOffVoltage_mV"]
+        }
+      },
+      "required": [
+        "measureType",
+        "coilToMeasure",
+        "nContacts",
+        "startVoltage_cV",
+        "stopVoltage_cV",
+        "voltageStep_cV",
+        "successValues"
+      ]
+    },
+    "contactResistanceMeasure": {
+      "type": "object",
+      "properties": {
+        "measureType": { "const": "contactResistance" },
+        "coilToPowerOn": { "type": "number", "enum": [0, 1, 2] },
+        "coilToPowerOff": { "type": "number", "enum": [0, 1, 2] },
+        "contactDirection": {
+          "type": "string",
+          "enume": ["On", "Off", "both"]
+        },
+        "nContacts": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "supplyVoltage_cV": { "$ref": "#/definitions/coilVoltage" },
+        "maxCurrent_mA": { "$ref": "#/definitions/coilCurrent" },
+        "nMeasures": { "$ref": "#/definitions/nMeasures" },
+        "successValues": {
+          "type": "object",
+          "properties": {
+            "maxResistanceClosed_mOhm": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10e6
+            },
+            "minResistanceOpened_kOhm": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10e6
+            }
+          },
+          "required": ["maxResistanceClosed_mOhm", "minResistanceOpened_kOhm"]
+        }
+      },
+      "required": [
+        "measureType",
+        "coilToPowerOn",
+        "coilToPowerOff",
+        "contactDirection",
+        "nContacts",
+        "supplyVoltage_cV",
+        "successValues"
+      ]
+    },
+    "switchingTimeMeasure": {
+      "type": "object",
+      "properties": {
+        "measureType": { "const": "switchingTime" },
+        "coilToPowerOn": { "type": "number", "enum": [0, 1, 2] },
+        "coilToPowerOff": { "type": "number", "enum": [0, 1, 2] },
+        "contactDirection": {
+          "type": "string",
+          "enume": ["On", "Off", "both"]
+        },
+        "nContacts": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "contactMaxVoltageSwitch_mV": {
+          "$ref": "#/definitions/contactVoltage_mV"
+        },
+        "contactMinVoltageCut_mV": {
+          "$ref": "#/definitions/contactVoltage_mV"
+        },
+        "switchCount": { "type": "integer", "minimum": 1, "maximum": 255 },
+        "supplyVoltage_cV": { "$ref": "#/definitions/coilVoltage" },
+        "maxCurrent_mA": { "$ref": "#/definitions/coilCurrent" },
+        "nMeasurePointsBackward": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64,
+          "default": 64
+        },
+        "successValues": {
+          "type": "object",
+          "properties": {
+            "maxSwitchTimeOn_ms": { "$ref": "#/definitions/time_ms" },
+            "maxSwitchTimeOff_ms": { "$ref": "#/definitions/time_ms" },
+            "maxCutTimeOn_ms": { "$ref": "#/definitions/time_ms" },
+            "maxCutTimeOff_ms": { "$ref": "#/definitions/time_ms" }
+          },
+          "required": [
+            "maxSwitchTimeOn_ms",
+            "maxSwitchTimeOff_ms",
+            "maxCutTimeOn_ms",
+            "maxCutTimeOff_ms"
+          ]
+        }
+      },
+      "required": [
+        "measureType",
+        "coilToPowerOn",
+        "coilToPowerOff",
+        "contactDirection",
+        "nContacts",
+        "contactMaxVoltageSwitch_mV",
+        "contactMinVoltageCut_mV",
+        "switchCount",
+        "supplyVoltage_cV",
+        "successValues"
+      ]
+    },
+    "selfTestResistanceMeasure": {
+      "type": "object",
+      "properties": {
+        "measureType": { "const": "selfTestResistance" },
+        "contact": { "type": "number", "enum": [1, 2, 3, 4, 5, 6, 7, 8] },
+        "subContact": { "type": "string", "enum": ["NO", "NC"] },
+        "nMeasures": { "$ref": "#/definitions/nMeasures" },
+        "successValues": {
+          "type": "object",
+          "properties": {
+            "targetResistance_ohm": {
+              "type": "number",
+              "minimum": 0
+            },
+            "targetdeviation_ohm": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 101e6
+            }
+          },
+          "required": ["targetResistance_ohm", "targetdeviation_ohm"]
+        }
+      },
+      "required": ["measureType", "contact", "subContact", "successValues"]
+    }
+  },
+  "properties": {
+    "relayBrand": {
+      "type": "string"
+    },
+    "relayModel": {
+      "type": "string"
+    },
+    "measures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "parameters": {
+            "type": "object",
+            "oneOf": [
+              { "$ref": "#/definitions/coilResistanceMeasure" },
+              { "$ref": "#/definitions/switchingVoltageMeasure" },
+              { "$ref": "#/definitions/cutVoltageMeasure" },
+              { "$ref": "#/definitions/contactResistanceMeasure" },
+              { "$ref": "#/definitions/switchingTimeMeasure" },
+              { "$ref": "#/definitions/selfTestResistanceMeasure" }
+            ]
+          }
+        },
+        "required": ["name", "parameters"]
+      }
+    }
+  },
+  "required": ["relayBrand", "relayModel", "measures"]
+}

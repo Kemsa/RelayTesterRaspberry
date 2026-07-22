@@ -1,0 +1,115 @@
+{
+  "$schema": "../relay_schema.json",
+  "relayBrand": "axicom",
+  "relayModel": "v23062-B00029",
+  "measures": [
+    {
+      "name": "resistance de bobine",
+      "parameters": {
+        "measureType": "coilResistance",
+        "coilToMeasure": 1,
+        "supplyVoltage_cV": 48e2,
+        "successValues": {
+          "minResistance_ohm": 11200,
+          "maxResistance_ohm": 12800
+        }
+      }
+    },
+    {
+      "name": "resistance 1 NC",
+      "parameters": {
+        "measureType": "selfTestResistance",
+        "contact": 1,
+        "subContact": "NC",
+        "successValues": {
+          "targetResistance_ohm": 1e100,
+          "targetdeviation_ohm": 1e6
+        }
+      }
+    },
+    {
+      "name": "resistance 2 NC",
+      "parameters": {
+        "measureType": "selfTestResistance",
+        "contact": 2,
+        "subContact": "NC",
+        "successValues": {
+          "targetResistance_ohm": 17.95e3,
+          "targetdeviation_ohm": 1.7e2
+        }
+      }
+    },
+    {
+      "name": "resistance 3 NC",
+      "parameters": {
+        "measureType": "selfTestResistance",
+        "contact": 3,
+        "subContact": "NC",
+        "successValues": {
+          "targetResistance_ohm": 293e3,
+          "targetdeviation_ohm": 2.9e3
+        }
+      }
+    },
+    {
+      "name": "resistance 4 NC",
+      "parameters": {
+        "measureType": "selfTestResistance",
+        "contact": 4,
+        "subContact": "NC",
+        "successValues": {
+          "targetResistance_ohm": 14.91e3,
+          "targetdeviation_ohm": 1.4e2
+        }
+      }
+    },
+    {
+      "name": "resistance 1 NO",
+      "parameters": {
+        "measureType": "selfTestResistance",
+        "contact": 1,
+        "subContact": "NO",
+        "successValues": {
+          "targetResistance_ohm": 0,
+          "targetdeviation_ohm": 1e-2
+        }
+      }
+    },
+    {
+      "name": "resistance 2 NO",
+      "parameters": {
+        "measureType": "selfTestResistance",
+        "contact": 2,
+        "subContact": "NO",
+        "successValues": {
+          "targetResistance_ohm": 1.8,
+          "targetdeviation_ohm": 2e-2
+        }
+      }
+    },
+    {
+      "name": "resistance 3 NO",
+      "parameters": {
+        "measureType": "selfTestResistance",
+        "contact": 3,
+        "subContact": "NO",
+        "successValues": {
+          "targetResistance_ohm": 12.8,
+          "targetdeviation_ohm": 1.3e-1
+        }
+      }
+    },
+    {
+      "name": "resistance 4 NO",
+      "parameters": {
+        "measureType": "selfTestResistance",
+        "contact": 4,
+        "subContact": "NO",
+        "successValues": {
+          "targetResistance_ohm": 90.7,
+          "targetdeviation_ohm": 1
+        }
+      }
+    }
+  ]
+}

@@ -3,9 +3,14 @@
 
 #include <QWidget>
 
+#include <memory>
+
 namespace Ui {
 class RelaySelect;
 }
+
+class QModelIndex;
+class relayListModel;
 
 class RelaySelectScreen : public QWidget {
     Q_OBJECT
@@ -15,7 +20,10 @@ public:
     ~RelaySelectScreen();
 
 private:
+    void updateSelectionState(const QModelIndex& currentIndex);
+
     Ui::RelaySelect* ui;
+    std::unique_ptr<relayListModel> m_model;
 };
 
 #endif // RELAYSELECT_H

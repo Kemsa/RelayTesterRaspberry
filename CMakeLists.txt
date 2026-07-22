@@ -49,6 +49,7 @@ add_executable(relayTester
   src/controls/currentadjuster.h src/controls/currentadjuster.cpp
   src/UI/widgets/dynamicswidget.h src/UI/widgets/dynamicswidget.cpp src/UI/widgets/dynamicswidget.ui
   src/UI/screens/relayselectscreen.h src/UI/screens/relayselectscreen.cpp src/UI/screens/relayselectscreen.ui
+  src/UI/models/relaylistmodel.h src/UI/models/relaylistmodel.cpp
 
 )
 target_include_directories(relayTester PRIVATE
@@ -59,7 +60,10 @@ target_include_directories(relayTester PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src/UI
   ${CMAKE_CURRENT_SOURCE_DIR}/src/UI/screens
   ${CMAKE_CURRENT_SOURCE_DIR}/src/UI/widgets
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/UI/models
   ${CMAKE_CURRENT_SOURCE_DIR}/src/controls
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/experiment/steps
 )
 
 set(RELAYTESTER_LIBS
@@ -97,6 +101,18 @@ add_custom_command(TARGET relayTester POST_BUILD
     $<TARGET_FILE_DIR:relayTester>/UI
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "Copying relayTester style assets..."
+)
+
+add_custom_command(TARGET relayTester POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:relayTester>/JSON_relays
+  COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:relayTester>/JSON_relays_save
+  COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different 
+    ${CMAKE_CURRENT_SOURCE_DIR}/JSON_relays
+    $<TARGET_FILE_DIR:relayTester>/JSON_relays
+  COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different 
+    ${CMAKE_CURRENT_SOURCE_DIR}/JSON_relays
+    $<TARGET_FILE_DIR:relayTester>/JSON_relays_save
+  COMMENT "Copying relay JSON folders..."
 )
 
 # Deploy library runtime dependencies on Windows
