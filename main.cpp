@@ -2,7 +2,7 @@
 #include "UI/styling.h"
 #include "config.h"
 #include "contactselector.h"
-#include "currentAdjuster.h"
+#include "currentadjuster.h"
 #include "dynamicreadings.h"
 #include "logbus.h"
 #include "mainWindow.h"

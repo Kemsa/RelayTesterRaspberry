@@ -104,29 +104,20 @@ add_custom_command(TARGET relayTester POST_BUILD
   COMMENT "Copying relayTester style assets..."
 )
 
-add_custom_command(TARGET relayTester POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:relayTester>/JSON_relays
-  COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:relayTester>/JSON_relays_save
-  COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different 
-    ${CMAKE_CURRENT_SOURCE_DIR}/JSON_relays
-    $<TARGET_FILE_DIR:relayTester>/JSON_relays
-  COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different 
-    ${CMAKE_CURRENT_SOURCE_DIR}/JSON_relays
-    $<TARGET_FILE_DIR:relayTester>/JSON_relays_save
-  COMMENT "Copying relay JSON folders..."
-)
+# add_custom_command(TARGET relayTester POST_BUILD
+#   COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:relayTester>/JSON_relays
+#   COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:relayTester>/JSON_relays_save
+#   COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different 
+#     ${CMAKE_CURRENT_SOURCE_DIR}/JSON_relays
+#     $<TARGET_FILE_DIR:relayTester>/JSON_relays
+#   COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different 
+#     ${CMAKE_CURRENT_SOURCE_DIR}/JSON_relays
+#     $<TARGET_FILE_DIR:relayTester>/JSON_relays_save
+#   COMMENT "Copying relay JSON folders..."
+# )
 
 # Deploy library runtime dependencies on Windows
 if(WIN32)
-  if(TARGET wiringpi_wrapper)
-    add_custom_command(TARGET relayTester POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:wiringpi_wrapper>
-        $<TARGET_FILE_DIR:relayTester>
-      COMMENT "Deploying wiringpi_wrapper runtime library..."
-    )
-  endif()
-
   add_custom_command(TARGET relayTester POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${Qt5_DIR}/../../../bin/Qt5SerialPort.dll"
@@ -174,8 +165,7 @@ install(TARGETS relayTester
 
 if(TARGET wiringpi_wrapper)
   install(TARGETS wiringpi_wrapper
-      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
 endif()
 

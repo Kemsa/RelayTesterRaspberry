@@ -1,10 +1,10 @@
-#include "mainwindow.h"
+#include "mainWindow.h"
 #include "calibrationscreen.h"
 #include "homescreen.h"
 #include "logbus.h"
 #include "navigator.h"
 #include "powercontrol.h"
-#include "ui_mainwindow.h"
+#include "ui_mainWindow.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {

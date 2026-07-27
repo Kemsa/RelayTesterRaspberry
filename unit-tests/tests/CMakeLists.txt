@@ -30,13 +30,6 @@ if(WIN32)
 
   add_custom_command(TARGET relaytester_unit_tests POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      $<TARGET_FILE:wiringpi_wrapper>
-      $<TARGET_FILE_DIR:relaytester_unit_tests>
-    COMMENT "Deploying wiringpi_wrapper runtime dependency for relaytester_unit_tests..."
-  )
-
-  add_custom_command(TARGET relaytester_unit_tests POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${_mingw_bin_dir}/libstdc++-6.dll"
       "${_mingw_bin_dir}/libgcc_s_seh-1.dll"
       "${_mingw_bin_dir}/libwinpthread-1.dll"
