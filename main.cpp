@@ -11,6 +11,7 @@
 #include "staticreadings.h"
 #include <QApplication>
 #include <QDebug>
+#include <QDir>
 #include <QFont>
 
 QtMessageHandler prevLoggerHandler = nullptr;
@@ -55,7 +56,11 @@ int main(int argc, char* argv[]) {
                          }
                      });
 
-    const QString styleSheet = loadResolvedStyleSheet("UI/styles.css", "UI/colors.csv");
+    const QDir appDir(QCoreApplication::applicationDirPath());
+    const QString styleSheet = loadResolvedStyleSheet(
+        appDir.filePath("UI/styles.css"),
+        appDir.filePath("UI/colors.csv")
+    );
     if (!styleSheet.isEmpty()) {
         a.setStyleSheet(styleSheet);
         qDebug() << "Stylesheet applied successfully.";

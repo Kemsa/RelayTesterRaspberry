@@ -91,30 +91,32 @@ if(UNIX AND NOT APPLE)
 endif()
 
 set(RELAYTESTER_ASSETS
-  src/UI/styles.css
-  src/UI/colors.csv
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/UI/styles.css"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/UI/colors.csv"
 )
 
 add_custom_command(TARGET relayTester POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:relayTester>/UI
+  COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:relayTester>/UI"
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${RELAYTESTER_ASSETS}
-    $<TARGET_FILE_DIR:relayTester>/UI
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/UI/styles.css"
+    "$<TARGET_FILE_DIR:relayTester>/UI/styles.css"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/UI/colors.csv"
+    "$<TARGET_FILE_DIR:relayTester>/UI/colors.csv"
   COMMENT "Copying relayTester style assets..."
 )
 
-# add_custom_command(TARGET relayTester POST_BUILD
-#   COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:relayTester>/JSON_relays
-#   COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:relayTester>/JSON_relays_save
-#   COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different 
-#     ${CMAKE_CURRENT_SOURCE_DIR}/JSON_relays
-#     $<TARGET_FILE_DIR:relayTester>/JSON_relays
-#   COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different 
-#     ${CMAKE_CURRENT_SOURCE_DIR}/JSON_relays
-#     $<TARGET_FILE_DIR:relayTester>/JSON_relays_save
-#   COMMENT "Copying relay JSON folders..."
-# )
+add_custom_command(TARGET relayTester POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:relayTester>/JSON_relays"
+  COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:relayTester>/JSON_relays_save"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/JSON_relays"
+    "$<TARGET_FILE_DIR:relayTester>/JSON_relays"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/JSON_relays"
+    "$<TARGET_FILE_DIR:relayTester>/JSON_relays_save"
+  COMMENT "Copying relay JSON folders..."
+)
 
 # Deploy library runtime dependencies on Windows
 if(WIN32)
