@@ -16,6 +16,9 @@ PowerControl::PowerControl(int coil1Pin, int coil2Pin, int contactPowerEnablePin
     m_GPIOHandler->setPinMode(m_reedPin, GPIOHandler::PinMode::WPI_INPUT);
     m_GPIOHandler->setPinMode(m_boardPin, GPIOHandler::PinMode::WPI_INPUT);
 
+    m_GPIOHandler->setPullUpDown(m_reedPin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
+    m_GPIOHandler->setPullUpDown(m_boardPin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
+
     m_GPIOHandler->pinWrite(m_coil1Pin, GPIOHandler::Level::WPI_LOW);
     m_GPIOHandler->pinWrite(m_coil2Pin, GPIOHandler::Level::WPI_LOW);
     m_GPIOHandler->pinWrite(m_contactPowerEnablePin, GPIOHandler::Level::WPI_LOW);
