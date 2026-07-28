@@ -13,6 +13,7 @@ class DynamicSwitch;
 class DynamicReadings {
 public:
     enum class ContactType {
+        NONE,
         COIL1,
         COIL2,
         CONTACT_A,

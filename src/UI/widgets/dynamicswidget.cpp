@@ -17,7 +17,11 @@ DynamicsWidget::DynamicsWidget(QWidget* parent)
         QPointer<DynamicsWidget> self(this);
         auto future = DynamicReadings::getInstance()->waitAndProcessOneSwitch(contactType, 500);
 
-        PowerControl::getInstance()->enableCoil(contactType == DynamicReadings::ContactType::COIL1 ? PowerControl::Coil::COIL1 : PowerControl::Coil::COIL2);
+        if(contactType == DynamicReadings::ContactType::COIL1 || contactType == DynamicReadings::ContactType::COIL2) {
+            PowerControl::getInstance()->enableCoil(contactType == DynamicReadings::ContactType::COIL1 ? PowerControl::Coil::COIL1 : PowerControl::Coil::COIL2);
+        } else {
+            PowerControl::getInstance()->disableCoils();
+        }
 
         std::thread([self, future = std::move(future)]() mutable {
             std::shared_ptr<DynamicSwitch> switchResult = future.get();
@@ -35,8 +39,7 @@ DynamicsWidget::DynamicsWidget(QWidget* parent)
     };
 
     const auto triggerMeasurementWithDisableCoils = [triggerMeasurementWithCoil]() {
-        PowerControl::getInstance()->disableCoils();
-        triggerMeasurementWithCoil(DynamicReadings::ContactType::COIL2);
+        triggerMeasurementWithCoil(DynamicReadings::ContactType::NONE);
     };
 
     connect(ui->coil1Active_PB, &QPushButton::clicked, this,
