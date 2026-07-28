@@ -11,12 +11,12 @@ class ContactSelector : public QObject {
 public:
     enum HBridge_options {
         HBridge_none = 0x00,
-        HBridge_forward_all = 0x06,
-        HBridge_reverse_all = 0x01,
-        HBridge_forward_p1 = 0x02,
-        HBridge_reverse_p1 = 0x05,
-        HBridge_forward_p2 = 0x04,
-        HBridge_reverse_p2 = 0x03,
+        HBridge_forward_all = 0x01,
+        HBridge_reverse_all = 0x06,
+        HBridge_forward_p1 = 0x05,
+        HBridge_reverse_p1 = 0x04,
+        HBridge_forward_p2 = 0x03,
+        HBridge_reverse_p2 = 0x02,
     };
 
     static ContactSelector& initialize(int s0, int s1, int s2, int en,
