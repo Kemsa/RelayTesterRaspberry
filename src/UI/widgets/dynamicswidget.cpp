@@ -39,7 +39,7 @@ DynamicsWidget::DynamicsWidget(QWidget* parent)
     };
 
     const auto triggerMeasurementWithDisableCoils = [triggerMeasurementWithCoil]() {
-        triggerMeasurementWithCoil(DynamicReadings::ContactType::NONE);
+        triggerMeasurementWithCoil(DynamicReadings::ContactType::COILS_OFF);
     };
 
     connect(ui->coil1Active_PB, &QPushButton::clicked, this,
@@ -67,9 +67,26 @@ void DynamicsWidget::handleSwitchResult(std::shared_ptr<DynamicSwitch> switchRes
         ui->contact2_LBL->setText("contact 2: mesure invalide");
         return;
     }
-    const char* coilText = switchResult->getCoilSwitch() == DynamicReadings::ContactType::COIL1
-                               ? "bobine: bobine 1"
-                               : "bobine: bobine 2";
+    const char* coilText;
+    
+    switch(switchResult->getCoilSwitch()) {
+        case DynamicReadings::ContactType::COIL1:
+            coilText = "bobine: bobine 1";
+            break;
+        case DynamicReadings::ContactType::COIL2:
+            coilText = "bobine: bobine 2";
+            break;
+        case DynamicReadings::ContactType::COILS_OFF:
+            coilText = "bobine: bobines inactives";
+            break;
+        case DynamicReadings::ContactType::BOTH_COILS:
+            coilText = "bobine: toutes bobines";
+            break;
+        default:
+            coilText = "bobine: mesure indisponible";
+            break;
+    }
+
     ui->coill_LBL->setText(coilText);
 
     ui->contact1_LBL->setText(

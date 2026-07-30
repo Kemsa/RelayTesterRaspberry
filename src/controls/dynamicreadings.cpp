@@ -16,6 +16,11 @@ DynamicReadings::DynamicReadings(int coil1Pin, int coil2Pin, int contact1Pin, in
     m_GPIOHandler->setPinMode(m_contact1Pin, GPIOHandler::PinMode::WPI_INPUT);
     m_GPIOHandler->setPinMode(m_contact2Pin, GPIOHandler::PinMode::WPI_INPUT);
 
+    m_GPIOHandler->setPullUpDown(m_coil1Pin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
+    m_GPIOHandler->setPullUpDown(m_coil2Pin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
+    m_GPIOHandler->setPullUpDown(m_contact1Pin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
+    m_GPIOHandler->setPullUpDown(m_contact2Pin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
+
     m_GPIOHandler->setupInterrupt(m_coil1Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::COIL1)));
     m_GPIOHandler->setupInterrupt(m_coil2Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::COIL2)));
     m_GPIOHandler->setupInterrupt(m_contact1Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::CONTACT_A)));
@@ -79,6 +84,7 @@ void DynamicReadings::clearInterrupts() {
 }
 
 std::future<std::shared_ptr<DynamicSwitch>> DynamicReadings::waitAndProcessOneSwitch(ContactType triggerCoil, int timeoutMs) {
+    clearInterrupts();
     auto promise = std::make_shared<std::promise<std::shared_ptr<DynamicSwitch>>>();
     std::future<std::shared_ptr<DynamicSwitch>> result = promise->get_future();
 
@@ -90,6 +96,12 @@ std::future<std::shared_ptr<DynamicSwitch>> DynamicReadings::waitAndProcessOneSw
             return;
         }
 
+        qDebug() << "DynamicReadings: Processing switch for trigger coil" << static_cast<int>(triggerCoil);
+        qDebug() << "interrupt status for coil 1" << m_interruptStatusesCoil1.size();
+        qDebug() << "interrupt status for coil 2" << m_interruptStatusesCoil2.size();
+        qDebug() << "interrupt status for contact 1" << m_interruptStatusesContact1.size();
+        qDebug() << "interrupt status for contact 2" << m_interruptStatusesContact2.size();
+
         GPIOHandler::InterruptStatus statusCoil = {-1, 0, 0, -1};
         switch (triggerCoil) {
         case ContactType::COIL1:
@@ -98,6 +110,7 @@ std::future<std::shared_ptr<DynamicSwitch>> DynamicReadings::waitAndProcessOneSw
         case ContactType::COIL2:
             statusCoil = getEarlierstInterruptStatus(ContactType::COIL2);
             break;
+        case ContactType::COILS_OFF:
         case ContactType::BOTH_COILS: {
             GPIOHandler::InterruptStatus statusCoil1 = getEarlierstInterruptStatus(ContactType::COIL1);
             GPIOHandler::InterruptStatus statusCoil2 = getEarlierstInterruptStatus(ContactType::COIL2);

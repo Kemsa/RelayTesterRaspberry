@@ -10,10 +10,10 @@
 #define CONTACT_SELECT_S2 22
 #define CONTACT_SELECT_EN 26
 
-#define COIL1_ENABLE 5
-#define COIL2_ENABLE 6
-#define COIL1_DETECT 18
-#define COIL2_DETECT 19
+#define COIL1_ENABLE 6
+#define COIL2_ENABLE 5
+#define COIL1_DETECT 19
+#define COIL2_DETECT 18
 
 #define RX 14
 #define TX 15
