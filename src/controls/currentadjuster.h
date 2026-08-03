@@ -41,6 +41,8 @@ public:
     CurrentAdjuster& operator=(CurrentAdjuster&&) = delete;
 
     int adjustCurrentToTarget(float targetCurrent, float tolerance);
+    void closeConnection();
+    static bool isInitialized();
 
 private:
     CurrentAdjuster(StaticReadings* readings, int resistanceAddress = VAR_RESISTANCE_ADDRESS);

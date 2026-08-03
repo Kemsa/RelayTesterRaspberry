@@ -66,6 +66,6 @@
 
 // #############  I2C defines ####################
 
-#define VAR_RESISTANCE_ADDRESS 0x2e
+#define VAR_RESISTANCE_ADDRESS 0x3c
 
 #endif // CONFIG_H

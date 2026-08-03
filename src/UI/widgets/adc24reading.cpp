@@ -18,7 +18,7 @@ ADC24Reading::ADC24Reading(QWidget* parent)
 
     connect(ui->currentAdjust_PB, &QPushButton::clicked, this, [this]() {
         int targetCurrent = ui->targetCurrent_SB->value();
-        float tolerance = targetCurrent * 0.1f; // 10% tolerance
+        float tolerance = targetCurrent * 0.05f; // 5% tolerance
         int result = CurrentAdjuster::instance().adjustCurrentToTarget(static_cast<float>(targetCurrent), tolerance);
     });
 }

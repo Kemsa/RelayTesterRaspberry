@@ -1,6 +1,7 @@
 #pragma once
 
 #include "navigator.h"
+#include <QCloseEvent>
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -20,4 +21,5 @@ private:
     Ui::MainWindow* ui;
 
     void displayMessage(QtMsgType type, const QString& msg);
+    void closeEvent(QCloseEvent* event) override;
 };

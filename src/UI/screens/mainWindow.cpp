@@ -1,5 +1,6 @@
 #include "mainWindow.h"
 #include "calibrationscreen.h"
+#include "currentadjuster.h"
 #include "homescreen.h"
 #include "logbus.h"
 #include "navigator.h"
@@ -52,6 +53,14 @@ MainWindow::MainWindow(QWidget* parent)
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent* event) {
+    if (CurrentAdjuster::isInitialized()) {
+        CurrentAdjuster::instance().closeConnection();
+    }
+
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::displayMessage(QtMsgType type, const QString& msg) {
