@@ -15,6 +15,11 @@ public:
                               const QJsonObject& rootSchema,
                               const QString& path,
                               QString* error);
+
+    static bool applyDefaults(QJsonObject* instance,
+                              const QJsonObject& schema,
+                              const QJsonObject& rootSchema,
+                              QString* error = nullptr);
 };
 
 } // namespace experiment

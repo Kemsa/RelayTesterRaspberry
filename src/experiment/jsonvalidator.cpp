@@ -99,6 +99,147 @@ bool validateRef(const QJsonValue& instance,
                  const QString& path,
                  QString* error);
 
+bool resolveSchema(const QJsonObject& schema,
+                   const QJsonObject& rootSchema,
+                   QJsonObject* resolvedSchema,
+                   QString* error) {
+    if (!schema.contains(QStringLiteral("$ref"))) {
+        *resolvedSchema = schema;
+        return true;
+    }
+
+    const QString ref = schema.value(QStringLiteral("$ref")).toString();
+    if (!ref.startsWith(QStringLiteral("#/"))) {
+        if (error) {
+            *error = QStringLiteral("unsupported schema reference %1").arg(ref);
+        }
+        return false;
+    }
+
+    QJsonValue resolved(rootSchema);
+    const QStringList segments = ref.mid(2).split(QLatin1Char('/'), Qt::SkipEmptyParts);
+    for (const QString& segment : segments) {
+        if (!resolved.isObject()) {
+            if (error) {
+                *error = QStringLiteral("invalid schema reference %1").arg(ref);
+            }
+            return false;
+        }
+
+        resolved = resolved.toObject().value(segment);
+        if (resolved.isUndefined()) {
+            if (error) {
+                *error = QStringLiteral("unknown schema reference %1").arg(ref);
+            }
+            return false;
+        }
+    }
+
+    if (!resolved.isObject()) {
+        if (error) {
+            *error = QStringLiteral("schema reference %1 does not resolve to an object").arg(ref);
+        }
+        return false;
+    }
+
+    *resolvedSchema = resolved.toObject();
+    return true;
+}
+
+bool applyDefaultsToValue(QJsonValue* instance,
+                          const QJsonObject& schema,
+                          const QJsonObject& rootSchema,
+                          QString* error) {
+    QJsonObject resolvedSchema;
+    if (!resolveSchema(schema, rootSchema, &resolvedSchema, error)) {
+        return false;
+    }
+
+    if (resolvedSchema.contains(QStringLiteral("oneOf"))) {
+        const QJsonArray variants = resolvedSchema.value(QStringLiteral("oneOf")).toArray();
+        for (const QJsonValue& variantValue : variants) {
+            if (!variantValue.isObject()) {
+                continue;
+            }
+
+            const QJsonObject variant = variantValue.toObject();
+            const QJsonObject properties = variant.value(QStringLiteral("properties")).toObject();
+            const QJsonObject measureTypeSchema = properties.value(QStringLiteral("measureType")).toObject();
+            const QJsonValue constValue = measureTypeSchema.value(QStringLiteral("const"));
+            if (!constValue.isUndefined() && instance->isObject() && instance->toObject().value(QStringLiteral("measureType")) == constValue) {
+                return applyDefaultsToValue(instance, variant, rootSchema, error);
+            }
+        }
+
+        return true;
+    }
+
+    if (instance->isUndefined() && resolvedSchema.contains(QStringLiteral("default"))) {
+        *instance = resolvedSchema.value(QStringLiteral("default"));
+        return true;
+    }
+
+    const QString type = resolvedSchema.value(QStringLiteral("type")).toString();
+    if (type == QStringLiteral("object") || resolvedSchema.contains(QStringLiteral("properties"))) {
+        QJsonObject object = instance->isObject() ? instance->toObject() : QJsonObject();
+        const QJsonObject properties = resolvedSchema.value(QStringLiteral("properties")).toObject();
+
+        for (auto it = properties.begin(); it != properties.end(); ++it) {
+            QJsonObject propertySchema;
+            if (!resolveSchema(it.value().toObject(), rootSchema, &propertySchema, error)) {
+                return false;
+            }
+
+            if (!object.contains(it.key())) {
+                if (propertySchema.contains(QStringLiteral("default"))) {
+                    object.insert(it.key(), propertySchema.value(QStringLiteral("default")));
+                }
+            }
+
+            if (object.contains(it.key())) {
+                QJsonValue childValue = object.value(it.key());
+                if (!applyDefaultsToValue(&childValue, propertySchema, rootSchema, error)) {
+                    return false;
+                }
+                object.insert(it.key(), childValue);
+            }
+        }
+
+        *instance = object;
+        return true;
+    }
+
+    if (type == QStringLiteral("array")) {
+        if (instance->isUndefined() && resolvedSchema.contains(QStringLiteral("default"))) {
+            *instance = resolvedSchema.value(QStringLiteral("default"));
+            return true;
+        }
+
+        if (!instance->isArray()) {
+            return true;
+        }
+
+        QJsonArray array = instance->toArray();
+        QJsonObject itemSchema;
+        if (!resolveSchema(resolvedSchema.value(QStringLiteral("items")).toObject(), rootSchema, &itemSchema, error)) {
+            return false;
+        }
+
+        for (int index = 0; index < array.size(); ++index) {
+            QJsonValue item = array.at(index);
+            if (!applyDefaultsToValue(&item, itemSchema, rootSchema, error)) {
+                return false;
+            }
+            array[index] = item;
+        }
+
+        *instance = array;
+        return true;
+    }
+
+    return true;
+}
+
 bool validateValue(const QJsonValue& instance,
                    const QJsonObject& schema,
                    const QJsonObject& rootSchema,
@@ -325,5 +466,15 @@ bool JsonValidator::validateValue(const QJsonValue& instance,
                                   QString* error) {
     return ::validateValue(instance, schema, rootSchema, path, error);
 }
-
+bool JsonValidator::applyDefaults(QJsonObject* instance,
+                                  const QJsonObject& schema,
+                                  const QJsonObject& rootSchema,
+                                  QString* error) {
+    QJsonValue value = QJsonValue(*instance);
+    const bool result = applyDefaultsToValue(&value, schema, rootSchema, error);
+    if (result && value.isObject()) {
+        *instance = value.toObject();
+    }
+    return result;
+}
 } // namespace experiment

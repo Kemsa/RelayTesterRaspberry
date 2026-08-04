@@ -1,4 +1,5 @@
 #include "relaymeasure.h"
+#include "experiment/jsonvalidator.h"
 
 #include "steps/stepcoilresistance.h"
 #include "steps/stepcontactresistance.h"
@@ -13,7 +14,32 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-RelayMeasure::RelayMeasure() {}
+RelayMeasure::RelayMeasure() = default;
+
+RelayMeasure::RelayMeasure(QJsonObject schema)
+    : m_schema(std::move(schema)), m_hasSchema(true) {}
+
+static QString definitionForMeasureType(const QString& measureType) {
+    if (measureType == QStringLiteral("coilResistance")) {
+        return QStringLiteral("coilResistanceMeasure");
+    }
+    if (measureType == QStringLiteral("switchingVoltage")) {
+        return QStringLiteral("switchingVoltageMeasure");
+    }
+    if (measureType == QStringLiteral("cutVoltage")) {
+        return QStringLiteral("cutVoltageMeasure");
+    }
+    if (measureType == QStringLiteral("contactResistance")) {
+        return QStringLiteral("contactResistanceMeasure");
+    }
+    if (measureType == QStringLiteral("switchingTime")) {
+        return QStringLiteral("switchingTimeMeasure");
+    }
+    if (measureType == QStringLiteral("selfTestResistance")) {
+        return QStringLiteral("selfTestResistanceMeasure");
+    }
+    return QString();
+}
 
 static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue) {
     const QJsonValue value = object.value(key);
@@ -49,11 +75,19 @@ void RelayMeasure::fromJSON(const QString& jsonString) {
 
         const QJsonObject measureObject = measureValue.toObject();
         const QString name = stringValueOrDefault(measureObject, QStringLiteral("name"), QString());
-        qDebug() << "RelayMeasure: measure name =" << name;
 
-        const QJsonObject parameterObject = measureObject.value(QStringLiteral("parameters")).toObject();
+        QJsonObject parameterObject = measureObject.value(QStringLiteral("parameters")).toObject();
         const QString measureType = stringValueOrDefault(parameterObject, QStringLiteral("measureType"), QString());
-        qDebug() << "RelayMeasure: measureType =" << measureType;
+
+        if (m_hasSchema) {
+            const QString definitionName = definitionForMeasureType(measureType);
+            if (!definitionName.isEmpty()) {
+                const QJsonObject definitions = m_schema.value(QStringLiteral("definitions")).toObject();
+                const QJsonObject measureSchema = definitions.value(definitionName).toObject();
+                QString defaultsError;
+                experiment::JsonValidator::applyDefaults(&parameterObject, measureSchema, m_schema, &defaultsError);
+            }
+        }
 
         if (measureType == QStringLiteral("coilResistance")) {
             auto step = std::make_unique<StepCoilResistance>(name);

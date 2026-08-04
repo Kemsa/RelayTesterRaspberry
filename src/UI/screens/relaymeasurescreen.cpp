@@ -61,8 +61,6 @@ void RelayMeasureScreen::showEvent(QShowEvent* event) {
 void RelayMeasureScreen::onNavigatedTo(const QString& path) {
     qDebug() << "RelayMeasureScreen navigated to path:" << path;
 
-    m_relayMeasure = std::make_unique<RelayMeasure>();
-
     if (path.isEmpty()) {
         qDebug() << "RelayMeasureScreen: no path provided";
         return;
@@ -103,5 +101,6 @@ void RelayMeasureScreen::onNavigatedTo(const QString& path) {
         return;
     }
 
+    m_relayMeasure = std::make_unique<RelayMeasure>(schemaObject);
     m_relayMeasure->fromJSON(jsonContent);
 }

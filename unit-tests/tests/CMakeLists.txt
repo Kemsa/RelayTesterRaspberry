@@ -15,6 +15,7 @@ target_include_directories(relaytester_unit_tests
   PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../src/controls
     ${CMAKE_CURRENT_LIST_DIR}/../../src/UI/models
+    ${CMAKE_CURRENT_LIST_DIR}/../../src/experiment
     ${CMAKE_CURRENT_LIST_DIR}/../../libs/Wiringpi_Wrapper/lib/include
 )
 
