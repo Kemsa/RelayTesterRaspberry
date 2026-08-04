@@ -1,8 +1,10 @@
 #ifndef RELAYMEASURESCREEN_H
 #define RELAYMEASURESCREEN_H
 
+#include "relaymeasure.h"
 #include <QString>
 #include <QWidget>
+#include <memory>
 
 class QShowEvent;
 
@@ -28,6 +30,8 @@ protected:
 
 private:
     Ui::RelayMeasureScreen* ui;
+
+    std::unique_ptr<RelayMeasure> m_relayMeasure;
 };
 
 #endif // RELAYMEASURESCREEN_H

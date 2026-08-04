@@ -51,7 +51,15 @@ add_executable(relayTester
   src/UI/screens/relayselectscreen.h src/UI/screens/relayselectscreen.cpp src/UI/screens/relayselectscreen.ui
   src/UI/models/relaylistmodel.h src/UI/models/relaylistmodel.cpp
   src/UI/screens/relaymeasurescreen.h src/UI/screens/relaymeasurescreen.cpp src/UI/screens/relaymeasurescreen.ui
-
+  src/experiment/relaymeasure.h src/experiment/relaymeasure.cpp
+  src/experiment/jsonvalidator.h src/experiment/jsonvalidator.cpp
+  src/experiment/steps/stepswitchingvoltage.h src/experiment/steps/stepswitchingvoltage.cpp
+  src/experiment/steps/stepcutvoltage.h src/experiment/steps/stepcutvoltage.cpp
+  src/experiment/steps/stepcoilresistance.h src/experiment/steps/stepcoilresistance.cpp
+  src/experiment/steps/stepcontactresistance.h src/experiment/steps/stepcontactresistance.cpp
+  src/experiment/steps/stepselftestresistance.h src/experiment/steps/stepselftestresistance.cpp
+  src/experiment/steps/stepswitchingtime.h src/experiment/steps/stepswitchingtime.cpp
+  src/experiment/steps/genericstep.h src/experiment/steps/genericstep.cpp
 )
 target_include_directories(relayTester PRIVATE
   ${CMAKE_CURRENT_BINARY_DIR}
