@@ -9,6 +9,7 @@ add_executable(relaytester_unit_tests
   ${CMAKE_CURRENT_LIST_DIR}/../../src/controls/dynamicswitch.cpp
   ${CMAKE_CURRENT_LIST_DIR}/../../src/controls/powercontrol.cpp
   ${CMAKE_CURRENT_LIST_DIR}/../../src/UI/models/relaylistmodel.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/../../src/experiment/jsonvalidator.cpp
 )
 
 target_include_directories(relaytester_unit_tests

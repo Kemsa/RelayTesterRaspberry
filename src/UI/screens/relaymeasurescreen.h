@@ -5,6 +5,7 @@
 #include <QString>
 #include <QWidget>
 #include <memory>
+#include <QIcon>
 
 class QShowEvent;
 
@@ -32,6 +33,7 @@ private:
     Ui::RelayMeasureScreen* ui;
 
     std::unique_ptr<RelayMeasure> m_relayMeasure;
+    QIcon iconForResultStatus(GenericStep::ResultStatus status) const;
 };
 
 #endif // RELAYMEASURESCREEN_H

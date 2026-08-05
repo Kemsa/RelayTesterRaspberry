@@ -28,3 +28,19 @@ void StepSelfTestResistance::fromJSON(const QJsonObject& object) {
     successValues.targetResistance_ohm = doubleValueOrDefault(successObject, QStringLiteral("targetResistance_ohm"), successValues.targetResistance_ohm);
     successValues.targetdeviation_ohm = doubleValueOrDefault(successObject, QStringLiteral("targetdeviation_ohm"), successValues.targetdeviation_ohm);
 }
+
+void StepSelfTestResistance::startMeasure() {}
+
+void StepSelfTestResistance::stopMeasure() {}
+
+QString StepSelfTestResistance::getName() const {
+    return name;
+}
+
+QString StepSelfTestResistance::getDescription() const {
+    return QString();
+}
+
+QString StepSelfTestResistance::getResultSummary() const {
+    return QString();
+}

@@ -27,3 +27,19 @@ void StepContactResistance::fromJSON(const QJsonObject& object) {
     successValues.maxResistanceClosed_mOhm = intValueOrDefault(successObject, QStringLiteral("maxResistanceClosed_mOhm"), successValues.maxResistanceClosed_mOhm);
     successValues.minResistanceOpened_kOhm = intValueOrDefault(successObject, QStringLiteral("minResistanceOpened_kOhm"), successValues.minResistanceOpened_kOhm);
 }
+
+void StepContactResistance::startMeasure() {}
+
+void StepContactResistance::stopMeasure() {}
+
+QString StepContactResistance::getName() const {
+    return name;
+}
+
+QString StepContactResistance::getDescription() const {
+    return QString();
+}
+
+QString StepContactResistance::getResultSummary() const {
+    return QString();
+}

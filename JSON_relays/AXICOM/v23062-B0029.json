@@ -8,7 +8,7 @@
       "parameters": {
         "measureType": "coilResistance",
         "coilToMeasure": 1,
-        "supplyVoltage_cV": 35e2,
+        "supplyVoltage_cV": 5e2,
         "successValues": {
           "minResistance_ohm": 2125,
           "maxResistance_ohm": 2875

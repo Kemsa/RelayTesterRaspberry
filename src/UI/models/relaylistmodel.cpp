@@ -1,5 +1,5 @@
 #include "relaylistmodel.h"
-#include "experiment/jsonvalidator.h"
+#include "jsonvalidator.h"
 
 #include <QCoreApplication>
 #include <QDir>

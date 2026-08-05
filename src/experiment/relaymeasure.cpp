@@ -14,10 +14,10 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-RelayMeasure::RelayMeasure() = default;
+RelayMeasure::RelayMeasure(QObject* parent) : QObject(parent) {}
 
-RelayMeasure::RelayMeasure(QJsonObject schema)
-    : m_schema(std::move(schema)), m_hasSchema(true) {}
+RelayMeasure::RelayMeasure(QJsonObject schema, QObject* parent)
+    : QObject(parent), m_schema(std::move(schema)), m_hasSchema(true) {}
 
 static QString definitionForMeasureType(const QString& measureType) {
     if (measureType == QStringLiteral("coilResistance")) {
@@ -67,6 +67,9 @@ void RelayMeasure::fromJSON(const QString& jsonString) {
 
     const QJsonObject rootObject = document.object();
     const QJsonArray measures = rootObject.value(QStringLiteral("measures")).toArray();
+
+    model = stringValueOrDefault(rootObject, QStringLiteral("relayModel"), QString());
+    brand = stringValueOrDefault(rootObject, QStringLiteral("relayBrand"), QString());
 
     for (const QJsonValue& measureValue : measures) {
         if (!measureValue.isObject()) {
@@ -131,4 +134,44 @@ void RelayMeasure::fromJSON(const QString& jsonString) {
             continue;
         }
     }
+
+    for (size_t i = 0; i < m_steps.size(); ++i) {
+        connect(m_steps[i].get(), &GenericStep::measureUpdated, this, [this, i](int percentComplete) {
+            Q_UNUSED(percentComplete);
+            emit stepUpdated(static_cast<int>(i));
+        });
+        connect(m_steps[i].get(), &GenericStep::measureStatusChanged, this, [this, i](GenericStep::ResultStatus status) {
+            emit stepStatusChanged(static_cast<int>(i), status);
+        });
+    }
+}
+
+QString RelayMeasure::getModel() const {
+    return model;
+}
+
+QString RelayMeasure::getBrand() const {
+    return brand;
+}
+
+QMap<int, QString> RelayMeasure::getSteps() {
+    QMap<int, QString> steps;
+    for (size_t i = 0; i < m_steps.size(); ++i) {
+        steps[i] = m_steps[i]->getName();
+    }
+    return steps;
+}
+
+QString RelayMeasure::getStepDescription(int index) {
+    if (index >= 0 && index < static_cast<int>(m_steps.size())) {
+        return m_steps[index]->getDescription();
+    }
+    return QString();
+}
+
+GenericStep::ResultStatus RelayMeasure::getStepResultStatus(int index) {
+    if (index >= 0 && index < static_cast<int>(m_steps.size())) {
+        return m_steps[index]->getResultStatus();
+    }
+    return GenericStep::ResultUnknown;
 }

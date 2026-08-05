@@ -23,3 +23,19 @@ void StepSwitchingVoltage::fromJSON(const QJsonObject& object) {
     successValues.minContactOffVoltage_mV = intValueOrDefault(successObject, QStringLiteral("minContactOffVoltage_mV"), successValues.minContactOffVoltage_mV);
     successValues.maxSwitchingVoltage_cV = intValueOrDefault(successObject, QStringLiteral("maxSwitchingVoltage_cV"), successValues.maxSwitchingVoltage_cV);
 }
+
+void StepSwitchingVoltage::startMeasure() {}
+
+void StepSwitchingVoltage::stopMeasure() {}
+
+QString StepSwitchingVoltage::getName() const {
+    return name;
+}
+
+QString StepSwitchingVoltage::getDescription() const {
+    return QString();
+}
+
+QString StepSwitchingVoltage::getResultSummary() const {
+    return QString();
+}

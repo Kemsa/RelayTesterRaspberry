@@ -10,6 +10,11 @@ class StepSelfTestResistance : public GenericStep {
 public:
     StepSelfTestResistance(QString name);
     void fromJSON(const QJsonObject& object) override;
+    void startMeasure() override;
+    void stopMeasure() override;
+    QString getName() const override;
+    QString getDescription() const override;
+    QString getResultSummary() const override;
 
 private:
     QString name;

@@ -32,3 +32,19 @@ void StepSwitchingTime::fromJSON(const QJsonObject& object) {
     successValues.maxCutTimeOn_ms = intValueOrDefault(successObject, QStringLiteral("maxCutTimeOn_ms"), successValues.maxCutTimeOn_ms);
     successValues.maxCutTimeOff_ms = intValueOrDefault(successObject, QStringLiteral("maxCutTimeOff_ms"), successValues.maxCutTimeOff_ms);
 }
+
+void StepSwitchingTime::startMeasure() {}
+
+void StepSwitchingTime::stopMeasure() {}
+
+QString StepSwitchingTime::getName() const {
+    return name;
+}
+
+QString StepSwitchingTime::getDescription() const {
+    return QString();
+}
+
+QString StepSwitchingTime::getResultSummary() const {
+    return QString();
+}

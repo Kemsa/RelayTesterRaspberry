@@ -23,3 +23,19 @@ void StepCutVoltage::fromJSON(const QJsonObject& object) {
     successValues.minContactOffVoltage_mV = intValueOrDefault(successObject, QStringLiteral("minContactOffVoltage_mV"), successValues.minContactOffVoltage_mV);
     successValues.minCutVoltage_cV = intValueOrDefault(successObject, QStringLiteral("minCutVoltage_cV"), successValues.minCutVoltage_cV);
 }
+
+void StepCutVoltage::startMeasure() {}
+
+void StepCutVoltage::stopMeasure() {}
+
+QString StepCutVoltage::getName() const {
+    return name;
+}
+
+QString StepCutVoltage::getDescription() const {
+    return QString();
+}
+
+QString StepCutVoltage::getResultSummary() const {
+    return QString();
+}
