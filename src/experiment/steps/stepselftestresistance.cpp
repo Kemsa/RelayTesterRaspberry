@@ -2,7 +2,7 @@
 
 #include <QJsonObject>
 
-StepSelfTestResistance::StepSelfTestResistance(QString name) : name(name) {}
+StepSelfTestResistance::StepSelfTestResistance(QString name) : GenericStep(name) {}
 
 static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue) {
     const QJsonValue value = object.value(key);
@@ -39,4 +39,10 @@ QString StepSelfTestResistance::getDescription() const {
 
 QString StepSelfTestResistance::getResultSummary() const {
     return QString();
+}
+
+GenericStep::ResultStatus StepSelfTestResistance::runMeasureAsync(const std::atomic<bool>& stopToken) {
+    // Implementation for running the measurement asynchronously
+
+    return ResultFailure; // Placeholder return value, replace with actual result
 }

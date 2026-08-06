@@ -35,3 +35,9 @@ QString StepSwitchingVoltage::getDescription() const {
 QString StepSwitchingVoltage::getResultSummary() const {
     return QString();
 }
+
+GenericStep::ResultStatus StepSwitchingVoltage::runMeasureAsync(const std::atomic<bool>& stopToken) {
+    // Implementation for running the measurement asynchronously
+
+    return ResultFailure; // Placeholder return value, replace with actual result
+}

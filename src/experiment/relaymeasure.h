@@ -3,8 +3,9 @@
 
 #include "genericstep.h"
 #include <QJsonObject>
-#include <QString>
 #include <QObject>
+#include <QString>
+#include <atomic>
 #include <cassert>
 #include <memory>
 #include <vector>
@@ -14,7 +15,6 @@ class GenericStep;
 class RelayMeasure : public QObject {
     Q_OBJECT
 public:
-    explicit RelayMeasure(QObject* parent = nullptr);
     explicit RelayMeasure(QJsonObject schema, QObject* parent = nullptr);
 
     void fromJSON(const QString& jsonString);
@@ -24,11 +24,14 @@ public:
     QMap<int, QString> getSteps();
     QString getStepDescription(int index);
 
+    void measureAllAsync();
+    void stopMeasure();
     GenericStep::ResultStatus getStepResultStatus(int index);
 
 signals:
     void stepUpdated(int index);
     void stepStatusChanged(int index, GenericStep::ResultStatus status);
+    void measureAllFinished();
 
 private:
     QJsonObject m_schema;
@@ -37,6 +40,8 @@ private:
 
     QString model;
     QString brand;
+    std::atomic<bool> m_stopRequested{false};
+    std::atomic<int> m_currentStep{-1};
 };
 
 #endif // RELAYMEASURE_H

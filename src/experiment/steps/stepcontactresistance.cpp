@@ -2,7 +2,7 @@
 
 #include <QJsonObject>
 
-StepContactResistance::StepContactResistance(QString name) : name(name) {}
+StepContactResistance::StepContactResistance(QString name) : GenericStep(name) {}
 
 static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue) {
     const QJsonValue value = object.value(key);
@@ -38,4 +38,10 @@ QString StepContactResistance::getDescription() const {
 
 QString StepContactResistance::getResultSummary() const {
     return QString();
+}
+
+GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atomic<bool>& stopToken) {
+    // Implementation for running the measurement asynchronously
+
+    return ResultFailure; // Placeholder return value, replace with actual result
 }

@@ -26,6 +26,14 @@ private:
         int minResistance_ohm = 0;
         int maxResistance_ohm = 0;
     } successValues;
+
+    struct MeasurementValues {
+        double averageCurrent_mA;
+        double averageVoltage_V;
+        double averageResistance_ohm;
+    } measurementValues;
+
+    ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 };
 
 #endif // STEPCOILRESISTANCE_H

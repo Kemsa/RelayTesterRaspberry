@@ -2,7 +2,7 @@
 
 #include <QJsonObject>
 
-StepCutVoltage::StepCutVoltage(QString name) : name(name) {}
+StepCutVoltage::StepCutVoltage(QString name) : GenericStep(name) {}
 
 static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue) {
     const QJsonValue value = object.value(key);
@@ -34,4 +34,10 @@ QString StepCutVoltage::getDescription() const {
 
 QString StepCutVoltage::getResultSummary() const {
     return QString();
+}
+
+GenericStep::ResultStatus StepCutVoltage::runMeasureAsync(const std::atomic<bool>& stopToken) {
+    // Implementation for running the measurement asynchronously
+
+    return ResultFailure; // Placeholder return value, replace with actual result
 }

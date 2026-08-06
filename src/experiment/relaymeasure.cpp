@@ -13,11 +13,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-
-RelayMeasure::RelayMeasure(QObject* parent) : QObject(parent) {}
+#include <QMetaType>
 
 RelayMeasure::RelayMeasure(QJsonObject schema, QObject* parent)
-    : QObject(parent), m_schema(std::move(schema)), m_hasSchema(true) {}
+    : QObject(parent), m_schema(std::move(schema)), m_hasSchema(true) {
+    qRegisterMetaType<GenericStep::ResultStatus>("ResultStatus");
+}
 
 static QString definitionForMeasureType(const QString& measureType) {
     if (measureType == QStringLiteral("coilResistance")) {
@@ -174,4 +175,35 @@ GenericStep::ResultStatus RelayMeasure::getStepResultStatus(int index) {
         return m_steps[index]->getResultStatus();
     }
     return GenericStep::ResultUnknown;
+}
+
+void RelayMeasure::measureAllAsync() {
+    // run the sequence in a background thread so UI thread is not blocked
+    m_stopRequested.store(false, std::memory_order_relaxed);
+    std::thread([this]() {
+        m_currentStep.store(-1, std::memory_order_relaxed);
+        for (size_t i = 0; i < m_steps.size(); ++i) {
+            if (m_stopRequested.load(std::memory_order_relaxed)) {
+                break;
+            }
+            m_currentStep.store(static_cast<int>(i), std::memory_order_relaxed);
+            if (m_steps[i]) {
+                m_steps[i]->measureAsync().get(); // Wait for the measure to complete
+            }
+            // after step finished, clear current and continue
+            m_currentStep.store(-1, std::memory_order_relaxed);
+        }
+        m_currentStep.store(-1, std::memory_order_relaxed);
+        emit measureAllFinished();
+    }).detach();
+}
+
+void RelayMeasure::stopMeasure() {
+    m_stopRequested.store(true, std::memory_order_relaxed);
+    int current = m_currentStep.load(std::memory_order_relaxed);
+    if (current >= 0 && current < static_cast<int>(m_steps.size())) {
+        if (m_steps[static_cast<size_t>(current)]) {
+            m_steps[static_cast<size_t>(current)]->stopMeasure();
+        }
+    }
 }

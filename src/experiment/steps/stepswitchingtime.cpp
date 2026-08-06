@@ -2,7 +2,7 @@
 
 #include <QJsonObject>
 
-StepSwitchingTime::StepSwitchingTime(QString name) : name(name) {}
+StepSwitchingTime::StepSwitchingTime(QString name) : GenericStep(name) {}
 
 static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue) {
     const QJsonValue value = object.value(key);
@@ -43,4 +43,10 @@ QString StepSwitchingTime::getDescription() const {
 
 QString StepSwitchingTime::getResultSummary() const {
     return QString();
+}
+
+GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<bool>& stopToken) {
+    // Implementation for running the measurement asynchronously
+
+    return ResultFailure; // Placeholder return value, replace with actual result
 }

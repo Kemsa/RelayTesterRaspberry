@@ -30,6 +30,8 @@ private:
         int minContactOffVoltage_mV = 0;
         int minCutVoltage_cV = 0;
     } successValues;
+
+    ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 };
 
 #endif // STEPCUTVOLTAGE_H

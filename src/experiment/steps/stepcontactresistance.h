@@ -29,6 +29,8 @@ private:
         int maxResistanceClosed_mOhm = 0;
         int minResistanceOpened_kOhm = 0;
     } successValues;
+
+    ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 };
 
 #endif // STEPCONTACTRESISTANCE_H

@@ -34,6 +34,8 @@ private:
         int maxCutTimeOn_ms = 0;
         int maxCutTimeOff_ms = 0;
     } successValues;
+
+    ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 };
 
 #endif // STEPSWITCHINGTIME_H

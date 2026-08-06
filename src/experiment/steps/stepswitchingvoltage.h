@@ -30,6 +30,8 @@ private:
         int minContactOffVoltage_mV = 0;
         int maxSwitchingVoltage_cV = 0;
     } successValues;
+
+    ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 };
 
 #endif // STEPSWITCHINGVOLTAGE_H

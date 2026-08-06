@@ -25,6 +25,8 @@ private:
         double targetResistance_ohm = 0.0;
         double targetdeviation_ohm = 0.0;
     } successValues;
+
+    ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 };
 
 #endif // STEPSELFTESTRESISTANCE_H

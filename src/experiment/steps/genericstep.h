@@ -3,8 +3,14 @@
 
 #include <QJsonObject>
 #include <QObject>
+#include <atomic>
 #include <future>
 #include <thread>
+
+#define STEP_CHECK_STOP_TOKEN() \
+    if (stopToken.load()) {     \
+        return ResultStopped;   \
+    }
 
 class GenericStep : public QObject {
     Q_OBJECT
@@ -14,14 +20,18 @@ public:
         ResultSuccess,
         ResultFailure,
         ResultMeasuring,
-        ResultNotStarted
+        ResultNotStarted,
+        ResultStopPending,
+        ResultStopped,
     };
+    Q_ENUM(ResultStatus)
 
+    GenericStep(QString name, QObject* parent = nullptr);
     virtual ~GenericStep() = default;
 
     virtual void fromJSON(const QJsonObject& object) = 0;
 
-    void startMeasure();
+    std::future<GenericStep::ResultStatus> measureAsync();
     void stopMeasure();
     virtual QString getName() const;
     virtual QString getDescription() const = 0;
@@ -40,9 +50,13 @@ protected:
     const QString measureType = QStringLiteral("generic measure");
 
     ResultStatus resultStatus = ResultNotStarted;
+    std::atomic<bool> stopRequested{false};
+    std::future<ResultStatus> measureFuture;
     void setResultStatus(ResultStatus status);
 
-    virtual std::future<ResultStatus> runMeasureAsync();
+    virtual ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) = 0;
 };
+
+Q_DECLARE_METATYPE(GenericStep::ResultStatus)
 
 #endif // GENERICSTEP_H

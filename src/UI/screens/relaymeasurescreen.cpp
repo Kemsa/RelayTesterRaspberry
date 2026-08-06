@@ -72,6 +72,20 @@ RelayMeasureScreen::RelayMeasureScreen(QWidget* parent)
             ui->stepDescription_TB->clear();
         }
     });
+
+    connect(ui->StartMeasure_PB, &QPushButton::clicked, this, [this]() {
+        if (ui->StartMeasure_PB->text() == "Commencer la Mesure") {
+            if (m_relayMeasure) {
+                m_relayMeasure->measureAllAsync();
+                ui->StartMeasure_PB->setText("Arrêter la Mesure");
+            }
+        } else {
+            if (m_relayMeasure) {
+                m_relayMeasure->stopMeasure();
+                ui->StartMeasure_PB->setText("Commencer la Mesure");
+            }
+        }
+    });
 }
 
 RelayMeasureScreen::~RelayMeasureScreen() {
@@ -180,4 +194,14 @@ void RelayMeasureScreen::onNavigatedTo(const QString& path) {
     } else {
         ui->stepDescription_TB->clear();
     }
+
+    connect(m_relayMeasure.get(), &RelayMeasure::stepStatusChanged, this, [this](int index, GenericStep::ResultStatus status) {
+        if (index >= 0 && index < ui->measureSteps_LW->count()) {
+            auto* stepItem = ui->measureSteps_LW->item(index);
+            stepItem->setIcon(iconForResultStatus(status));
+        }
+    });
+    connect(m_relayMeasure.get(), &RelayMeasure::measureAllFinished, this, [this]() {
+        ui->StartMeasure_PB->setText("Commencer la Mesure");
+    });
 }

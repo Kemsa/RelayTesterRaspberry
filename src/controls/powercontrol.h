@@ -8,8 +8,9 @@ class PowerControl : public QObject {
     Q_OBJECT
 public:
     enum Coil {
-        COIL1,
-        COIL2
+        COIIL_NONE = 0,
+        COIL1 = 1,
+        COIL2 = 2
     };
 
     static PowerControl* getInstance();

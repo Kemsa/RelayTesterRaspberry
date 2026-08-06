@@ -1,4 +1,5 @@
 #include "logbus.h"
+#include <QMetaType>
 
 namespace {
 LogBus* g_logBus = nullptr;
@@ -17,6 +18,7 @@ LogBus& LogBus::instance() {
 
 LogBus::LogBus() {
     g_logBus = this;
+    qRegisterMetaType<QtMsgType>("QtMsgType");
 }
 
 LogBus::~LogBus() {
