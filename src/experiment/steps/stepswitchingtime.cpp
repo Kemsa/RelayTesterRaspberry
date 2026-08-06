@@ -33,10 +33,6 @@ void StepSwitchingTime::fromJSON(const QJsonObject& object) {
     successValues.maxCutTimeOff_ms = intValueOrDefault(successObject, QStringLiteral("maxCutTimeOff_ms"), successValues.maxCutTimeOff_ms);
 }
 
-void StepSwitchingTime::startMeasure() {}
-
-void StepSwitchingTime::stopMeasure() {}
-
 QString StepSwitchingTime::getName() const {
     return name;
 }

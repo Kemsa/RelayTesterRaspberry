@@ -2,7 +2,7 @@
 
 #include <QJsonObject>
 
-StepSwitchingVoltage::StepSwitchingVoltage(QString name) : name(name) {}
+StepSwitchingVoltage::StepSwitchingVoltage(QString name) : GenericStep(name) {}
 
 static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue) {
     const QJsonValue value = object.value(key);
@@ -23,10 +23,6 @@ void StepSwitchingVoltage::fromJSON(const QJsonObject& object) {
     successValues.minContactOffVoltage_mV = intValueOrDefault(successObject, QStringLiteral("minContactOffVoltage_mV"), successValues.minContactOffVoltage_mV);
     successValues.maxSwitchingVoltage_cV = intValueOrDefault(successObject, QStringLiteral("maxSwitchingVoltage_cV"), successValues.maxSwitchingVoltage_cV);
 }
-
-void StepSwitchingVoltage::startMeasure() {}
-
-void StepSwitchingVoltage::stopMeasure() {}
 
 QString StepSwitchingVoltage::getName() const {
     return name;

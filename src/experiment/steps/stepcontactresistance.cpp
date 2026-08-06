@@ -28,10 +28,6 @@ void StepContactResistance::fromJSON(const QJsonObject& object) {
     successValues.minResistanceOpened_kOhm = intValueOrDefault(successObject, QStringLiteral("minResistanceOpened_kOhm"), successValues.minResistanceOpened_kOhm);
 }
 
-void StepContactResistance::startMeasure() {}
-
-void StepContactResistance::stopMeasure() {}
-
 QString StepContactResistance::getName() const {
     return name;
 }

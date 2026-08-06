@@ -10,15 +10,13 @@ class StepCutVoltage : public GenericStep {
 public:
     StepCutVoltage(QString name);
     void fromJSON(const QJsonObject& object) override;
-    void startMeasure() override;
-    void stopMeasure() override;
     QString getName() const override;
     QString getDescription() const override;
     QString getResultSummary() const override;
 
 private:
-    QString name;
-    QString measureType = "cutVoltage";
+    const QString measureType = QStringLiteral("cutVoltage");
+
     int coilToMeasure = 1;
     int nContacts = 1;
     int startVoltage_cV = 0;

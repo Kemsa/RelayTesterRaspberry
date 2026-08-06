@@ -3,7 +3,7 @@
 #include <QJsonObject>
 #include <QString>
 
-StepCoilResistance::StepCoilResistance(QString name) : name(name) {}
+StepCoilResistance::StepCoilResistance(QString name) : GenericStep(name) {}
 
 static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue) {
     const QJsonValue value = object.value(key);
@@ -19,16 +19,6 @@ void StepCoilResistance::fromJSON(const QJsonObject& object) {
     const QJsonObject successObject = object.value(QStringLiteral("successValues")).toObject();
     successValues.minResistance_ohm = intValueOrDefault(successObject, QStringLiteral("minResistance_ohm"), successValues.minResistance_ohm);
     successValues.maxResistance_ohm = intValueOrDefault(successObject, QStringLiteral("maxResistance_ohm"), successValues.maxResistance_ohm);
-}
-
-void StepCoilResistance::startMeasure() {
-    setResultStatus(GenericStep::ResultNotStarted);
-    emit measureStarted();
-}
-
-void StepCoilResistance::stopMeasure() {
-
-    emit measureStopped();
 }
 
 QString StepCoilResistance::getName() const {

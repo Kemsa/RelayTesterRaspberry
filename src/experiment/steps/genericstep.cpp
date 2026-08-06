@@ -10,3 +10,13 @@ void GenericStep::setResultStatus(ResultStatus status) {
 GenericStep::ResultStatus GenericStep::getResultStatus() const {
     return resultStatus;
 }
+
+void GenericStep::startMeasure() {
+    setResultStatus(GenericStep::ResultNotStarted);
+    emit measureStarted();
+}
+
+void GenericStep::stopMeasure() {
+
+    emit measureStopped();
+}
