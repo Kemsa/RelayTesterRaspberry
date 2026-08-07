@@ -18,7 +18,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -145,6 +145,13 @@
        <widget class="QPushButton" name="StartMeasure_PB">
         <property name="text">
          <string>Commencer la Mesure</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="redoStep_PB">
+        <property name="text">
+         <string>Refaire une Mesure</string>
         </property>
        </widget>
       </item>

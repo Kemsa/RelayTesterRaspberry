@@ -76,13 +76,23 @@ RelayMeasureScreen::RelayMeasureScreen(QWidget* parent)
     connect(ui->StartMeasure_PB, &QPushButton::clicked, this, [this]() {
         if (ui->StartMeasure_PB->text() == "Commencer la Mesure") {
             if (m_relayMeasure) {
+                UI_start_measure();
                 m_relayMeasure->measureAllAsync();
-                ui->StartMeasure_PB->setText("Arrêter la Mesure");
             }
         } else {
             if (m_relayMeasure) {
+                UI_stop_measure();
                 m_relayMeasure->stopMeasure();
-                ui->StartMeasure_PB->setText("Commencer la Mesure");
+            }
+        }
+    });
+
+    connect(ui->redoStep_PB, &QPushButton::clicked, this, [this]() {
+        if (m_relayMeasure) {
+            const int currentRow = ui->measureSteps_LW->currentRow();
+            if (currentRow >= 0) {
+                UI_start_measure();
+                m_relayMeasure->measureOneAsync(currentRow);
             }
         }
     });
@@ -202,6 +212,18 @@ void RelayMeasureScreen::onNavigatedTo(const QString& path) {
         }
     });
     connect(m_relayMeasure.get(), &RelayMeasure::measureAllFinished, this, [this]() {
-        ui->StartMeasure_PB->setText("Commencer la Mesure");
+        UI_stop_measure();
     });
+}
+
+void RelayMeasureScreen::UI_start_measure() {
+    ui->StartMeasure_PB->setText("Arrêter la Mesure");
+    ui->redoStep_PB->setEnabled(false);
+    ui->export_PB->setEnabled(false);
+}
+
+void RelayMeasureScreen::UI_stop_measure() {
+    ui->StartMeasure_PB->setText("Commencer la Mesure");
+    ui->redoStep_PB->setEnabled(true);
+    ui->export_PB->setEnabled(true);
 }

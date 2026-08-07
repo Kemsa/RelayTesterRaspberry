@@ -25,6 +25,7 @@ public:
     QString getStepDescription(int index);
 
     void measureAllAsync();
+    void measureOneAsync(int index);
     void stopMeasure();
     GenericStep::ResultStatus getStepResultStatus(int index);
 

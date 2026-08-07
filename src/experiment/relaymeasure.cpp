@@ -198,6 +198,21 @@ void RelayMeasure::measureAllAsync() {
     }).detach();
 }
 
+void RelayMeasure::measureOneAsync(int index) {
+
+    m_stopRequested.store(false, std::memory_order_relaxed);
+    std::thread([this, index]() {
+        if (index >= 0 && index < static_cast<int>(m_steps.size())) {
+            m_currentStep.store(index, std::memory_order_relaxed);
+            if (m_steps[static_cast<size_t>(index)]) {
+                m_steps[static_cast<size_t>(index)]->measureAsync().get(); // Wait for the measure to complete
+            }
+            m_currentStep.store(-1, std::memory_order_relaxed);
+        }
+        emit measureAllFinished();
+    }).detach();
+}
+
 void RelayMeasure::stopMeasure() {
     m_stopRequested.store(true, std::memory_order_relaxed);
     int current = m_currentStep.load(std::memory_order_relaxed);
