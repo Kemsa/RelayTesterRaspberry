@@ -23,17 +23,17 @@ QString ContactSelector::hBridgeOptionToString(HBridge_options option) {
     return "Unknown";
 }
 
-ContactSelector& ContactSelector::initialize(int s0, int s1, int s2, int en,
+ContactSelector* ContactSelector::initialize(int s0, int s1, int s2, int en,
                                              int hbridge1, int hbridge2, int hbridge3) {
     if (!s_instance) {
         s_instance = new ContactSelector(s0, s1, s2, en, hbridge1, hbridge2, hbridge3);
     }
-    return *s_instance;
+    return s_instance;
 }
 
-ContactSelector& ContactSelector::instance() {
+ContactSelector* ContactSelector::instance() {
     Q_ASSERT_X(s_instance, "ContactSelector::instance", "ContactSelector is not initialized");
-    return *s_instance;
+    return s_instance;
 }
 
 ContactSelector::ContactSelector(int s0, int s1, int s2, int en,

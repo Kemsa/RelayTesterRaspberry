@@ -22,34 +22,34 @@ ContactSelectWidget::ContactSelectWidget(QWidget* parent)
     }
 
     connect(ui->contact1PB, &QPushButton::clicked, this, [this]() {
-        ContactSelector::instance().selectContact(1);
+        ContactSelector::instance()->selectContact(1);
     });
     connect(ui->contact2PB, &QPushButton::clicked, this, [this]() {
-        ContactSelector::instance().selectContact(2);
+        ContactSelector::instance()->selectContact(2);
     });
     connect(ui->contact3PB, &QPushButton::clicked, this, [this]() {
-        ContactSelector::instance().selectContact(3);
+        ContactSelector::instance()->selectContact(3);
     });
     connect(ui->contact4PB, &QPushButton::clicked, this, [this]() {
-        ContactSelector::instance().selectContact(4);
+        ContactSelector::instance()->selectContact(4);
     });
     connect(ui->contact5PB, &QPushButton::clicked, this, [this]() {
-        ContactSelector::instance().selectContact(5);
+        ContactSelector::instance()->selectContact(5);
     });
     connect(ui->contact6PB, &QPushButton::clicked, this, [this]() {
-        ContactSelector::instance().selectContact(6);
+        ContactSelector::instance()->selectContact(6);
     });
     connect(ui->contact7PB, &QPushButton::clicked, this, [this]() {
-        ContactSelector::instance().selectContact(7);
+        ContactSelector::instance()->selectContact(7);
     });
     connect(ui->contact8PB, &QPushButton::clicked, this, [this]() {
-        ContactSelector::instance().selectContact(8);
+        ContactSelector::instance()->selectContact(8);
     });
     connect(ui->contactNonePB, &QPushButton::clicked, this, [this]() {
-        ContactSelector::instance().selectContact(0);
+        ContactSelector::instance()->selectContact(0);
     });
 
-    connect(&ContactSelector::instance(), &ContactSelector::contactSelected, this, [this](int contactIndex) {
+    connect(ContactSelector::instance(), &ContactSelector::contactSelected, this, [this](int contactIndex) {
         // Update the UI based on the selected contact
         if (contactIndex == 0) {
             ui->selectedContactLabel->setText("Aucun");
@@ -62,7 +62,7 @@ ContactSelectWidget::ContactSelectWidget(QWidget* parent)
         QVariant data = ui->Hbridge_CB->itemData(index);
         if (data.isValid()) {
             ContactSelector::HBridge_options option = data.value<ContactSelector::HBridge_options>();
-            ContactSelector::instance().selectHBridge(option);
+            ContactSelector::instance()->selectHBridge(option);
         }
     });
 

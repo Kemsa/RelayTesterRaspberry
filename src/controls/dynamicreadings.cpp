@@ -208,3 +208,7 @@ GPIOHandler::InterruptStatus DynamicReadings::getLatestInterruptStatus(ContactTy
 
     return {-1, 0, 0, 0}; // Default status if no interrupt
 }
+
+bool DynamicReadings::isContactClosed(ContactType contact) const {
+    return m_GPIOHandler->pinRead(contact == ContactType::CONTACT_A ? m_contact1Pin : m_contact2Pin) == GPIOHandler::Level::WPI_LOW;
+}

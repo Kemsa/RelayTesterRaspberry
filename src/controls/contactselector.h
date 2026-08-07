@@ -19,9 +19,9 @@ public:
         HBridge_reverse_p2 = 0x02,
     };
 
-    static ContactSelector& initialize(int s0, int s1, int s2, int en,
+    static ContactSelector* initialize(int s0, int s1, int s2, int en,
                                        int hbridge1, int hbridge2, int hbridge3);
-    static ContactSelector& instance();
+    static ContactSelector* instance();
     static QString hBridgeOptionToString(HBridge_options option);
 
     ContactSelector(const ContactSelector&) = delete;

@@ -51,16 +51,15 @@ int main(int argc, char* argv[]) {
                      nullptr, [](bool isSafe) {
                          if (!isSafe) {
                              qDebug() << "Safety status changed: Unsafe condition detected. Disabling all contacts.";
-                             ContactSelector::instance().selectContact(0); // Deselect contact
-                             powerSupply::instance()->disableOutput();     // Disable power supply output
+                             ContactSelector::instance()->selectContact(0); // Deselect contact
+                             powerSupply::instance()->disableOutput();      // Disable power supply output
                          }
                      });
 
     const QDir appDir(QCoreApplication::applicationDirPath());
     const QString styleSheet = loadResolvedStyleSheet(
         appDir.filePath("UI/styles.css"),
-        appDir.filePath("UI/colors.csv")
-    );
+        appDir.filePath("UI/colors.csv"));
     if (!styleSheet.isEmpty()) {
         a.setStyleSheet(styleSheet);
         qDebug() << "Stylesheet applied successfully.";

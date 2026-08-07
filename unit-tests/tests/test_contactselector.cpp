@@ -38,12 +38,12 @@ void ContactSelectorTest::cleanupTestCase() {
 }
 
 void ContactSelectorTest::selectContact_updatesGpioStateAndEmitsSignal() {
-    ContactSelector& selector = ContactSelector::instance();
-    QSignalSpy spy(&selector, &ContactSelector::contactSelected);
+    ContactSelector* selector = ContactSelector::instance();
+    QSignalSpy spy(selector, &ContactSelector::contactSelected);
 
-    selector.selectContact(3);
+    selector->selectContact(3);
 
-    QCOMPARE(selector.currentContact(), 3);
+    QCOMPARE(selector->currentContact(), 3);
     QCOMPARE(spy.count(), 1);
     QCOMPARE(spy.takeFirst().at(0).toInt(), 3);
 
@@ -57,20 +57,20 @@ void ContactSelectorTest::selectContact_updatesGpioStateAndEmitsSignal() {
 }
 
 void ContactSelectorTest::selectContact_sameValueDoesNotEmitSignal() {
-    ContactSelector& selector = ContactSelector::instance();
-    selector.selectContact(4);
-    QSignalSpy spy(&selector, &ContactSelector::contactSelected);
+    ContactSelector* selector = ContactSelector::instance();
+    selector->selectContact(4);
+    QSignalSpy spy(selector, &ContactSelector::contactSelected);
 
-    selector.selectContact(4);
+    selector->selectContact(4);
 
     QCOMPARE(spy.count(), 0);
 }
 
 void ContactSelectorTest::selectHBridge_updatesGpioStateAndEmitsSignal() {
-    ContactSelector& selector = ContactSelector::instance();
-    QSignalSpy spy(&selector, &ContactSelector::hBridgeOptionSelected);
+    ContactSelector* selector = ContactSelector::instance();
+    QSignalSpy spy(selector, &ContactSelector::hBridgeOptionSelected);
 
-    selector.selectHBridge(ContactSelector::HBridge_reverse_p1);
+    selector->selectHBridge(ContactSelector::HBridge_reverse_p1);
 
     QCOMPARE(spy.count(), 1);
     QCOMPARE(spy.takeFirst().at(0).toInt(), static_cast<int>(ContactSelector::HBridge_reverse_p1));
@@ -84,11 +84,11 @@ void ContactSelectorTest::selectHBridge_updatesGpioStateAndEmitsSignal() {
 }
 
 void ContactSelectorTest::selectHBridge_sameValueDoesNotEmitSignal() {
-    ContactSelector& selector = ContactSelector::instance();
-    selector.selectHBridge(ContactSelector::HBridge_reverse_p1);
-    QSignalSpy spy(&selector, &ContactSelector::hBridgeOptionSelected);
+    ContactSelector* selector = ContactSelector::instance();
+    selector->selectHBridge(ContactSelector::HBridge_reverse_p1);
+    QSignalSpy spy(selector, &ContactSelector::hBridgeOptionSelected);
 
-    selector.selectHBridge(ContactSelector::HBridge_reverse_p1);
+    selector->selectHBridge(ContactSelector::HBridge_reverse_p1);
 
     QCOMPARE(spy.count(), 0);
 }

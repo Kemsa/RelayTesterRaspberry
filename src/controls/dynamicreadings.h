@@ -26,6 +26,7 @@ public:
 
     void clearInterrupts();
     std::future<std::shared_ptr<DynamicSwitch>> waitAndProcessOneSwitch(ContactType triggerCoil, int timeoutMs = 500);
+    bool isContactClosed(ContactType contact) const;
 
 private:
     static DynamicReadings* s_instance;
