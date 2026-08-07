@@ -70,13 +70,13 @@ GenericStep::ResultStatus StepCoilResistance::runMeasureAsync(const std::atomic<
 
     // Set the supply voltage and max current for the coil measurement
 
-    powerSupply->setVoltage(supplyVoltage_cV);
-    powerSupply->setCurrent(maxCurrent_mA);
+    powerSupply->setMaxValues(supplyVoltage_cV/100.0f,maxCurrent_mA/1000.0f); // Convert mA to A
+    powerSupply->setVoltage(supplyVoltage_cV/100.0f); // Convert cV to V
     powerSupply->enableOutput();
+    QThread::msleep(100); // Wait for the coil to stabilize
 
     STEP_CHECK_STOP_TOKEN();
     powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToMeasure));
-    QThread::msleep(100); // Wait for the coil to stabilize
 
     QMap<StaticReadings::ReadingFlags, std::vector<ADCValue>> readings;
     if (coilToMeasure == 1) {
@@ -111,6 +111,10 @@ GenericStep::ResultStatus StepCoilResistance::runMeasureAsync(const std::atomic<
     measurementValues.averageCurrent_mA = currentAverage;
     measurementValues.averageVoltage_V = voltageAverage;
     measurementValues.averageResistance_ohm = resistance;
+
+    qDebug() << "Average current for coil" << coilToMeasure << ":" << currentAverage << "mA";
+    qDebug() << "Average voltage for coil" << coilToMeasure << ":" << voltageAverage << "V";
+    qDebug() << "Measured resistance for coil" << coilToMeasure << ":" << resistance << "ohm";
 
     if (resistance < successValues.minResistance_ohm || resistance > successValues.maxResistance_ohm) {
         return ResultFailure;
