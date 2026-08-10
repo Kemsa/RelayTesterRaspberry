@@ -26,8 +26,6 @@ private:
     int nMeasures = 16;
 
     struct SuccessValues {
-        int maxContactOnVoltage_mV = 0;
-        int minContactOffVoltage_mV = 0;
         int maxSwitchingVoltage_cV = 0;
     } successValues;
 

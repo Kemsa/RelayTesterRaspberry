@@ -25,8 +25,6 @@ void StepSwitchingVoltage::fromJSON(const QJsonObject& object) {
     nMeasures = intValueOrDefault(object, QStringLiteral("nMeasures"), nMeasures);
 
     const QJsonObject successObject = object.value(QStringLiteral("successValues")).toObject();
-    successValues.maxContactOnVoltage_mV = intValueOrDefault(successObject, QStringLiteral("maxContactOnVoltage_mV"), successValues.maxContactOnVoltage_mV);
-    successValues.minContactOffVoltage_mV = intValueOrDefault(successObject, QStringLiteral("minContactOffVoltage_mV"), successValues.minContactOffVoltage_mV);
     successValues.maxSwitchingVoltage_cV = intValueOrDefault(successObject, QStringLiteral("maxSwitchingVoltage_cV"), successValues.maxSwitchingVoltage_cV);
 }
 
@@ -87,11 +85,10 @@ GenericStep::ResultStatus StepSwitchingVoltage::runMeasureAsync(const std::atomi
 
         powerSupply->setVoltage(voltage_cV / 100.0);
         QThread::msleep(100); // Wait for the coil to stabilize
-        
+
         std::shared_ptr<ADCValue> reading = std::make_shared<ADCValue>();
         staticReadings->getReading(coilToMeasureFlag, reading);
         double measuredVoltage = StaticReadings::toCoilVoltage_V(*reading.get());
-
 
         qDebug() << "Measured voltage at" << voltage_cV / 100.0 << "V:" << measuredVoltage << "V";
 
