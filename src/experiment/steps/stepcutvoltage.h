@@ -26,10 +26,13 @@ private:
     int nMeasures = 16;
 
     struct SuccessValues {
-        int maxContactOnVoltage_mV = 0;
-        int minContactOffVoltage_mV = 0;
         int minCutVoltage_cV = 0;
     } successValues;
+
+    struct MeasurementValues {
+        bool allSwitched = false;
+        double switchingVoltage_V = 0.0;
+    } measurementValues;
 
     ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 };

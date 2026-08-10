@@ -35,12 +35,12 @@ QString StepCoilResistance::getName() const {
 
 QString StepCoilResistance::getDescription() const {
     QString str = QString::fromUtf8(R"(Mesure de la résistance de la bobine #%1 avec:
-	tension d'alimentation: %2 cV
+	tension d'alimentation: %2 V
 	courant maximum: %3 mA
 	nombre de mesures: %4
 )")
                       .arg(coilToMeasure)
-                      .arg(supplyVoltage_cV)
+                      .arg(supplyVoltage_cV / 100.0f, 0, 'f', 2)
                       .arg(maxCurrent_mA)
                       .arg(nMeasures);
     return str;
@@ -70,8 +70,8 @@ GenericStep::ResultStatus StepCoilResistance::runMeasureAsync(const std::atomic<
 
     // Set the supply voltage and max current for the coil measurement
 
-    powerSupply->setMaxValues(supplyVoltage_cV/100.0f,maxCurrent_mA/1000.0f); // Convert mA to A
-    powerSupply->setVoltage(supplyVoltage_cV/100.0f); // Convert cV to V
+    powerSupply->setMaxValues(supplyVoltage_cV / 100.0f, maxCurrent_mA / 1000.0f); // Convert mA to A
+    powerSupply->setVoltage(supplyVoltage_cV / 100.0f);                            // Convert cV to V
     powerSupply->enableOutput();
     QThread::msleep(100); // Wait for the coil to stabilize
 

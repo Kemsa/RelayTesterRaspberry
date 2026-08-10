@@ -36,7 +36,7 @@
         "coilToMeasure": 1,
         "nContacts": 4,
         "startVoltage_cV": 15e2,
-        "stopVoltage_cV": 10,
+        "stopVoltage_cV": 300,
         "voltageStep_cV": 100,
         "successValues": {
           "minCutVoltage_cV": 400

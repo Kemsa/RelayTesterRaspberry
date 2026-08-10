@@ -91,11 +91,7 @@
           "properties": {
             "maxSwitchingVoltage_cV": { "$ref": "#/definitions/coilVoltage" }
           },
-          "required": [
-            "maxContactOnVoltage_mV",
-            "minContactOffVoltage_mV",
-            "maxSwitchingVoltage_cV"
-          ]
+          "required": ["maxSwitchingVoltage_cV"]
         }
       },
       "required": [
@@ -124,7 +120,7 @@
           "properties": {
             "minCutVoltage_cV": { "$ref": "#/definitions/coilVoltage" }
           },
-          "required": ["maxContactOnVoltage_mV", "minContactOffVoltage_mV"]
+          "required": ["minCutVoltage_cV"]
         }
       },
       "required": [
