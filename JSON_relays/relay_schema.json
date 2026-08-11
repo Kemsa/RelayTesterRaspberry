@@ -33,6 +33,12 @@
       "maximum": 64,
       "default": 16
     },
+    "nCycles": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 64,
+      "default": 3
+    },
     "time_ms": {
       "type": "integer",
       "minimum": 0,
@@ -147,6 +153,7 @@
         "supplyVoltage_cV": { "$ref": "#/definitions/coilVoltage" },
         "maxCurrent_mA": { "$ref": "#/definitions/coilCurrent" },
         "nMeasures": { "$ref": "#/definitions/nMeasures" },
+        "nCycles": { "$ref": "#/definitions/nCycles" },
         "successValues": {
           "type": "object",
           "properties": {

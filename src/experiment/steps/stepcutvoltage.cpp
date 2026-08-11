@@ -73,6 +73,7 @@ GenericStep::ResultStatus StepCutVoltage::runMeasureAsync(const std::atomic<bool
     measurementValues.allSwitched = false;
     measurementValues.switchingVoltage_V = 0.0;
 
+    powerControl->disableCoils();
     powerSupply->setMaxValues(stopVoltage_cV / 100.0, maxCurrent_mA / 1000.0);
     powerSupply->setVoltage(startVoltage_cV / 100.0);
     powerSupply->enableOutput();

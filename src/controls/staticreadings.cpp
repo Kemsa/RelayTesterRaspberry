@@ -183,18 +183,18 @@ void StaticReadings::configureValueForChannel(ReadingFlags type, std::shared_ptr
     }
 }
 
-    float StaticReadings::toCoilCurrent_mA(ADCValue& reading) {
-        return reading.getMillivolts(); //1ohm current sense resistor, so 1mV = 1mA
-    }
+float StaticReadings::toCoilCurrent_mA(ADCValue& reading) {
+    return reading.getMillivolts(); // 1ohm current sense resistor, so 1mV = 1mA
+}
 
-    float StaticReadings::toCoilVoltage_V(ADCValue& reading) {
-        return reading.getMillivolts() * 0.0598235294122 ; //Voltage divider 300k and 5.1k, so multiply by (300+5.1)/5.1. Convert to V
-    }
+float StaticReadings::toCoilVoltage_V(ADCValue& reading) {
+    return reading.getMillivolts() * 0.0598235294122; // Voltage divider 300k and 5.1k, so multiply by (300+5.1)/5.1. Convert to V
+}
 
-    float StaticReadings::toContactCurrent(ADCValue& reading) {
-        return reading.getMillivolts() / 49.9; //49.9 ohm current sense resistor, so 1mV = 0.02004mA
-    }
+float StaticReadings::toContactCurrent_mA(ADCValue& reading) {
+    return reading.getMillivolts() / 49.9; // 49.9 ohm current sense resistor, so 1mV = 0.02004mA
+}
 
-    float StaticReadings::toContactVoltage(ADCValue& reading) {
-        return reading.getMillivolts(); // direct reading in mV
-    }
+float StaticReadings::toContactVoltage_mV(ADCValue& reading) {
+    return reading.getMillivolts(); // direct reading in mV
+}

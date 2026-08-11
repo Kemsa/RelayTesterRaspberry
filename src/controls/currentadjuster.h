@@ -32,15 +32,15 @@
 
 class CurrentAdjuster {
 public:
-    static CurrentAdjuster& initialize(StaticReadings* readings, int resistanceAddress = VAR_RESISTANCE_ADDRESS);
-    static CurrentAdjuster& instance();
+    static CurrentAdjuster* initialize(StaticReadings* readings, int resistanceAddress = VAR_RESISTANCE_ADDRESS);
+    static CurrentAdjuster* instance();
 
     CurrentAdjuster(const CurrentAdjuster&) = delete;
     CurrentAdjuster& operator=(const CurrentAdjuster&) = delete;
     CurrentAdjuster(CurrentAdjuster&&) = delete;
     CurrentAdjuster& operator=(CurrentAdjuster&&) = delete;
 
-    int adjustCurrentToTarget(float targetCurrent, float tolerance);
+    int adjustCurrentToTarget(float targetCurrent_mA, float tolerance, bool resetWiper = true);
     void closeConnection();
     static bool isInitialized();
 
@@ -66,6 +66,8 @@ private:
     int m_varResistorAddress = VAR_RESISTANCE_ADDRESS;
 
     int m_varResistorWiper = 0;
+
+    int currentWiper = MCP4551_WIPER_MID; // Current wiper value, initialized to mid-point
 };
 
 #endif // CURRENTADJUSTER_H

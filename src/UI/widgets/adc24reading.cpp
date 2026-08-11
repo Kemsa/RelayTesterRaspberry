@@ -19,7 +19,7 @@ ADC24Reading::ADC24Reading(QWidget* parent)
     connect(ui->currentAdjust_PB, &QPushButton::clicked, this, [this]() {
         int targetCurrent = ui->targetCurrent_SB->value();
         float tolerance = targetCurrent * 0.05f; // 5% tolerance
-        int result = CurrentAdjuster::instance().adjustCurrentToTarget(static_cast<float>(targetCurrent), tolerance);
+        int result = CurrentAdjuster::instance()->adjustCurrentToTarget(static_cast<float>(targetCurrent), tolerance);
     });
 }
 
@@ -43,25 +43,25 @@ void ADC24Reading::makeMeasureAndDisplay(int nMeasures) {
         QString headerText;
         switch (flag) {
         case StaticReadings::ReadingFlags::coil1Voltage:
-            headerText = "B1 V";
+            headerText = "B1 V (V)";
             break;
         case StaticReadings::ReadingFlags::coil1Current:
-            headerText = "B1 I";
+            headerText = "B1 I (mA)";
             break;
         case StaticReadings::ReadingFlags::coil2Voltage:
-            headerText = "B2 V";
+            headerText = "B2 V (V)";
             break;
         case StaticReadings::ReadingFlags::coil2Current:
-            headerText = "B2 I";
+            headerText = "B2 I (mA)";
             break;
         case StaticReadings::ReadingFlags::contactAVoltage:
-            headerText = "C1 V";
+            headerText = "C1 V (mV)";
             break;
         case StaticReadings::ReadingFlags::contactBVoltage:
-            headerText = "C2 V";
+            headerText = "C2 V (mV)";
             break;
         case StaticReadings::ReadingFlags::contactCurrent:
-            headerText = "C I";
+            headerText = "C I (mA)";
             break;
         default:
             headerText = "Unknown";
@@ -80,5 +80,25 @@ void ADC24Reading::makeMeasureAndDisplay(int nMeasures) {
         ui->values_TBL->setHorizontalHeaderItem(col, new QTableWidgetItem(headerText));
         ui->values_TBL->setItem(0, col, new QTableWidgetItem(QString::number(averageValue)));
         ui->values_TBL->setItem(1, col, new QTableWidgetItem(QString::number(ADCValue::getMillivoltsFromValue(averageValue, value[0].range))));
+
+        switch(flag){
+            case StaticReadings::ReadingFlags::coil1Voltage:
+            case StaticReadings::ReadingFlags::coil2Voltage:
+                ui->values_TBL->setItem(2, col, new QTableWidgetItem(QString::number(StaticReadings::toCoilVoltage_V(value[0]))));
+                break;
+            case StaticReadings::ReadingFlags::coil1Current:
+            case StaticReadings::ReadingFlags::coil2Current:
+                ui->values_TBL->setItem(2, col, new QTableWidgetItem(QString::number(StaticReadings::toCoilCurrent_mA(value[0]))));
+                break;
+            case StaticReadings::ReadingFlags::contactAVoltage:
+            case StaticReadings::ReadingFlags::contactBVoltage:
+                ui->values_TBL->setItem(2, col, new QTableWidgetItem(QString::number(StaticReadings::toContactVoltage_mV(value[0]))));
+                break;
+            case StaticReadings::ReadingFlags::contactCurrent:
+                ui->values_TBL->setItem(2, col, new QTableWidgetItem(QString::number(StaticReadings::toContactCurrent_mA(value[0]))));
+                break;
+            default:
+                ui->values_TBL->setItem(2, col, new QTableWidgetItem("N/A"));
+        }
     }
 }

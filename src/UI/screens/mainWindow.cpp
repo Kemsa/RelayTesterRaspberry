@@ -57,7 +57,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::closeEvent(QCloseEvent* event) {
     if (CurrentAdjuster::isInitialized()) {
-        CurrentAdjuster::instance().closeConnection();
+        CurrentAdjuster::instance()->closeConnection();
     }
 
     QMainWindow::closeEvent(event);

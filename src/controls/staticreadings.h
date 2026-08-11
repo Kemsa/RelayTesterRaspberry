@@ -36,8 +36,8 @@ public:
 
     static float toCoilCurrent_mA(ADCValue& reading);
     static float toCoilVoltage_V(ADCValue& reading);
-    static float toContactCurrent(ADCValue& reading);
-    static float toContactVoltage(ADCValue& reading);
+    static float toContactCurrent_mA(ADCValue& reading);
+    static float toContactVoltage_mV(ADCValue& reading);
 
 private:
     static StaticReadings* s_instance;

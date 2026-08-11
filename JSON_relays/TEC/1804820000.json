@@ -51,6 +51,7 @@
         "coilToPowerOff": 0,
         "contactDirection": "both",
         "nContacts": 4,
+        "nMeasures": 4,
         "supplyVoltage_cV": 12e2,
         "successValues": {
           "maxResistanceClosed_mOhm": 5000,

@@ -1,22 +1,22 @@
 #include "currentadjuster.h"
 #include <QDebug>
-#include <cmath>
 #include <QThread>
+#include <cmath>
 
 #define DELAY_AFTER_COMMAND_MS 1
 
 CurrentAdjuster* CurrentAdjuster::s_instance = nullptr;
 
-CurrentAdjuster& CurrentAdjuster::initialize(StaticReadings* readings, int resistanceAddress) {
+CurrentAdjuster* CurrentAdjuster::initialize(StaticReadings* readings, int resistanceAddress) {
     if (!s_instance) {
         s_instance = new CurrentAdjuster(readings, resistanceAddress);
     }
-    return *s_instance;
+    return s_instance;
 }
 
-CurrentAdjuster& CurrentAdjuster::instance() {
+CurrentAdjuster* CurrentAdjuster::instance() {
     Q_ASSERT_X(s_instance, "CurrentAdjuster::instance", "CurrentAdjuster is not initialized");
-    return *s_instance;
+    return s_instance;
 }
 
 bool CurrentAdjuster::isInitialized() {
@@ -40,7 +40,7 @@ void CurrentAdjuster::closeConnection() {
 }
 
 bool CurrentAdjuster::setWiper(uint16_t value) {
-    //Never go beyond these values, it blocks the wiper and the device will not respond to any commands until reset
+    // Never go beyond these values, it blocks the wiper and the device will not respond to any commands until reset
     if (value >= MCP4551_WIPER_A || value <= MCP4551_WIPER_B) {
         return false;
     }
@@ -78,18 +78,11 @@ int16_t CurrentAdjuster::getWiper(void) {
     return value & 0x01FF; // Return only the 9-bit wiper value
 }
 
-int CurrentAdjuster::adjustCurrentToTarget(float targetCurrent, float tolerance) {
+int CurrentAdjuster::adjustCurrentToTarget(float targetCurrent_mA, float tolerance, bool resetWiper) {
     if (!m_readings) {
         qCritical() << "CurrentAdjuster: StaticReadings instance is not set.";
         return -1; // Error
     }
-
-    int currentWiper;
-    // int currentWiper = getWiper();
-    // if (currentWiper < 0) {
-    //     qCritical() << "CurrentAdjuster: Failed to read wiper value: " << currentWiper;
-    //     return -1; // Error
-    // }
 
     std::shared_ptr<ADCValue> reading = std::make_shared<ADCValue>();
     if (!m_readings->getReading(StaticReadings::ReadingFlags::contactCurrent, reading)) {
@@ -97,20 +90,22 @@ int CurrentAdjuster::adjustCurrentToTarget(float targetCurrent, float tolerance)
         return -1; // Error
     }
 
-    setWiper(MCP4551_WIPER_MID); // Set to mid-point for initial reading
-    currentWiper = MCP4551_WIPER_MID;
+    if (resetWiper) {
+        qDebug() << "CurrentAdjuster: Resetting wiper to mid-point.";
+        setWiper(MCP4551_WIPER_MID);
+        currentWiper = MCP4551_WIPER_MID;
+    }
     m_readings->getReading(StaticReadings::ReadingFlags::contactCurrent, reading);
-    qDebug() << "CurrentAdjuster: Initial wiper set to mid-point. Current reading:" << reading->value
-     << "|" << StaticReadings::toContactCurrent(*reading) << "mA";
+    qDebug() << "CurrentAdjuster: Initial wiper set to" << currentWiper << ". Current reading:" << reading->value
+             << "|" << StaticReadings::toContactCurrent_mA(*reading) << "mA";
 
-
-    float current = StaticReadings::toContactCurrent(*reading);
+    float current = StaticReadings::toContactCurrent_mA(*reading);
     const int stepSizes[] = {100, 10, 1};
 
     for (int stepSize : stepSizes) {
-        while (std::abs(current - targetCurrent) > tolerance) {
+        while (std::abs(current - targetCurrent_mA) > tolerance) {
 
-            const bool increaseWiper = current < targetCurrent;
+            const bool increaseWiper = current < targetCurrent_mA;
             const int nextWiper = currentWiper + (increaseWiper ? stepSize : -stepSize);
 
             if (nextWiper <= MCP4551_WIPER_B || nextWiper >= MCP4551_WIPER_A) {
@@ -131,22 +126,22 @@ int CurrentAdjuster::adjustCurrentToTarget(float targetCurrent, float tolerance)
                 qWarning() << "CurrentAdjuster: Failed to read current after adjustment.";
                 return -1; // Error
             }
-            qDebug() << "CurrentAdjuster: Current reading after adjustment:" << reading->value << "|" << StaticReadings::toContactCurrent(*reading) << "mA";
+            qDebug() << "CurrentAdjuster: Current reading after adjustment:" << reading->value << "|" << StaticReadings::toContactCurrent_mA(*reading) << "mA";
 
             // set mA converted value when ready
-            current = StaticReadings::toContactCurrent(*reading);
+            current = StaticReadings::toContactCurrent_mA(*reading);
 
-            if ((increaseWiper && current >= targetCurrent) || (!increaseWiper && current <= targetCurrent)) {
-                qDebug() << "CurrentAdjuster: Target current reached or exceeded. Current:" << current << "Target:" << targetCurrent;
+            if ((increaseWiper && current >= targetCurrent_mA) || (!increaseWiper && current <= targetCurrent_mA)) {
+                qDebug() << "CurrentAdjuster: Target current reached or exceeded. Current:" << current << "Target:" << targetCurrent_mA;
                 break;
             }
         }
 
-        if (std::abs(current - targetCurrent) <= tolerance) {
+        if (std::abs(current - targetCurrent_mA) <= tolerance) {
             break;
         }
     }
-    qDebug() << "CurrentAdjuster: Final wiper value:" << currentWiper << "Final current reading:" << reading->value << "|" << StaticReadings::toContactCurrent(*reading) << "mA";
+    qDebug() << "CurrentAdjuster: Final wiper value:" << currentWiper << "Final current reading:" << reading->value << "|" << StaticReadings::toContactCurrent_mA(*reading) << "mA";
 
     m_varResistorWiper = currentWiper;
     return currentWiper; // Return the final wiper value
