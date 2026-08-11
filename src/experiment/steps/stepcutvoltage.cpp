@@ -109,7 +109,7 @@ GenericStep::ResultStatus StepCutVoltage::runMeasureAsync(const std::atomic<bool
 
             bool isContactAClosed = dynamicReadings->isContactClosed(DynamicReadings::ContactType::CONTACT_A);
 
-            if (isContactAClosed || !isContactBClosed) {
+            if (!isContactAClosed || isContactBClosed) {
                 nowSwitched = false;
             }
 
