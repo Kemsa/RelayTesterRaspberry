@@ -41,8 +41,7 @@
     },
     "time_ms": {
       "type": "integer",
-      "minimum": 0,
-      "maximum": 32
+      "minimum": 0
     },
     "contactVoltage_mV": {
       "type": "integer",
@@ -161,14 +160,9 @@
               "type": "integer",
               "minimum": 0,
               "maximum": 10e6
-            },
-            "minResistanceOpened_kOhm": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 10e6
             }
           },
-          "required": ["maxResistanceClosed_mOhm", "minResistanceOpened_kOhm"]
+          "required": ["maxResistanceClosed_mOhm"]
         }
       },
       "required": [
@@ -187,39 +181,23 @@
         "measureType": { "const": "switchingTime" },
         "coilToPowerOn": { "$ref": "#/definitions/coilToPower" },
         "coilToPowerOff": { "$ref": "#/definitions/coilToPower" },
-        "contactDirection": {
-          "type": "string",
-          "enume": ["On", "Off", "both"]
-        },
         "nContacts": { "$ref": "#/definitions/nContacts" },
-        "contactMaxVoltageSwitch_mV": {
-          "$ref": "#/definitions/contactVoltage_mV"
-        },
-        "contactMinVoltageCut_mV": {
-          "$ref": "#/definitions/contactVoltage_mV"
-        },
         "switchCount": { "type": "integer", "minimum": 1, "maximum": 255 },
         "supplyVoltage_cV": { "$ref": "#/definitions/coilVoltage" },
         "maxCurrent_mA": { "$ref": "#/definitions/coilCurrent" },
-        "nMeasurePointsBackward": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 64,
-          "default": 64
-        },
         "successValues": {
           "type": "object",
           "properties": {
-            "maxSwitchTimeOn_ms": { "$ref": "#/definitions/time_ms" },
-            "maxSwitchTimeOff_ms": { "$ref": "#/definitions/time_ms" },
-            "maxCutTimeOn_ms": { "$ref": "#/definitions/time_ms" },
-            "maxCutTimeOff_ms": { "$ref": "#/definitions/time_ms" }
+            "maxWorkTime_ms": { "$ref": "#/definitions/time_ms" },
+            "maxWorkTimeRebound_ms": { "$ref": "#/definitions/time_ms" },
+            "maxCutTime_ms": { "$ref": "#/definitions/time_ms" },
+            "maxCutTimeRebound_ms": { "$ref": "#/definitions/time_ms" }
           },
           "required": [
-            "maxSwitchTimeOn_ms",
-            "maxSwitchTimeOff_ms",
-            "maxCutTimeOn_ms",
-            "maxCutTimeOff_ms"
+            "maxWorkTime_ms",
+            "maxWorkTimeRebound_ms",
+            "maxCutTime_ms",
+            "maxCutTimeRebound_ms"
           ]
         }
       },
@@ -227,10 +205,7 @@
         "measureType",
         "coilToPowerOn",
         "coilToPowerOff",
-        "contactDirection",
         "nContacts",
-        "contactMaxVoltageSwitch_mV",
-        "contactMinVoltageCut_mV",
         "switchCount",
         "supplyVoltage_cV",
         "successValues"

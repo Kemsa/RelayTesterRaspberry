@@ -8,6 +8,15 @@ class QJsonObject;
 
 class StepSwitchingTime : public GenericStep {
 public:
+    enum switchTimeType {
+        WorkTime,
+        WorkTimeStable,
+        WorkReboundTime,
+        ReleaseTime,
+        ReleaseTimeStable,
+        ReleaseReboundTime,
+    };
+
     StepSwitchingTime(QString name);
     void fromJSON(const QJsonObject& object) override;
     QString getName() const override;
@@ -19,21 +28,22 @@ private:
 
     int coilToPowerOn = 0;
     int coilToPowerOff = 0;
-    QString contactDirection;
     int nContacts = 1;
-    int contactMaxVoltageSwitch_mV = 0;
-    int contactMinVoltageCut_mV = 0;
     int switchCount = 1;
     int supplyVoltage_cV = 0;
     int maxCurrent_mA = 200;
-    int nMeasurePointsBackward = 64;
 
     struct SuccessValues {
-        int maxSwitchTimeOn_ms = 0;
-        int maxSwitchTimeOff_ms = 0;
-        int maxCutTimeOn_ms = 0;
-        int maxCutTimeOff_ms = 0;
+        int maxWorkTime_ms = 0;
+        int maxWorkTimeRebound_ms = 0;
+        int maxCutTime_ms = 0;
+        int maxCutTimeRebound_ms = 0;
     } successValues;
+
+    struct MeasurementValues {
+        std::vector<QMap<switchTimeType, std::vector<int>>> contactASwitchTimes_us;
+        std::vector<QMap<switchTimeType, std::vector<int>>> contactBSwitchTimes_us;
+    } measurementValues;
 
     ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 };

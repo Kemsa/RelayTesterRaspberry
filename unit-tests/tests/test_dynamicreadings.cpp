@@ -51,25 +51,36 @@ void DynamicReadingsTest::testCleanInterrupt() {
     int contact2Time = 11000;
 
     // Simulate an interrupt for COIL1
+
+    auto future = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, 100); // Assuming this triggers the interrupt handler
+
     mock->mockupInterrupt(COIL1_PIN, GPIOHandler::InterruptStatus{1, COIL1_BCM, INT_EDGE_RISING, coilTime});
     mock->mockupInterrupt(CONTACT_A_PIN, GPIOHandler::InterruptStatus{1, CONTACT_A_BCM, INT_EDGE_FALLING, contact1Time});
     mock->mockupInterrupt(CONTACT_B_PIN, GPIOHandler::InterruptStatus{1, CONTACT_B_BCM, INT_EDGE_RISING, contact2Time});
 
-    auto res = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, 100).get(); // Assuming this triggers the interrupt handler
+    auto res = future.get();
 
     QVERIFY(res != nullptr);
     QCOMPARE(res->getCoilStatus().pinBCM, COIL1_BCM);
-    QCOMPARE(res->getContactAStatus().pinBCM, CONTACT_A_BCM);
-    QCOMPARE(res->getContactBStatus().pinBCM, CONTACT_B_BCM);
+    QCOMPARE(res->getContactAEarliestStatus().pinBCM, CONTACT_A_BCM);
+    QCOMPARE(res->getContactALatestStatus().pinBCM, CONTACT_A_BCM);
+    QCOMPARE(res->getContactBEarliestStatus().pinBCM, CONTACT_B_BCM);
+    QCOMPARE(res->getContactBLatestStatus().pinBCM, CONTACT_B_BCM);
 
     QCOMPARE(res->getCoilStatus().statusOK, 1);
-    QCOMPARE(res->getContactAStatus().statusOK, 1);
-    QCOMPARE(res->getContactBStatus().statusOK, 1);
+    QCOMPARE(res->getContactAEarliestStatus().statusOK, 1);
+    QCOMPARE(res->getContactBLatestStatus().statusOK, 1);
+    QCOMPARE(res->getContactALatestStatus().statusOK, 1);
+    QCOMPARE(res->getContactBEarliestStatus().statusOK, 1);
 
     QVERIFY(res->isValid());
 
-    QCOMPARE(res->getContactASwitchTime(), contact1Time - coilTime);
-    QCOMPARE(res->getContactBSwitchTime(), contact2Time - coilTime);
+    QCOMPARE(res->getContactAStableSwitchTime_us(), contact1Time - coilTime);
+    QCOMPARE(res->getContactBStableSwitchTime_us(), contact2Time - coilTime);
+    QCOMPARE(res->getContactAWorkSwitchTime_us(), contact1Time - coilTime);
+    QCOMPARE(res->getContactBWorkSwitchTime_us(), contact2Time - coilTime);
+    QCOMPARE(res->getContactAReboundTime_us(), 0); // No rebound in this simple case
+    QCOMPARE(res->getContactBReboundTime_us(), 0); // No rebound in this simple case
 
     QCOMPARE(res->getContactATransistionType(), INT_EDGE_FALLING);
     QCOMPARE(res->getContactBTransistionType(), INT_EDGE_RISING);
@@ -87,6 +98,8 @@ void DynamicReadingsTest::testComplexInterruptSequence() {
     int contact1Time = 10000;
     int contact2Time = 11000;
 
+    auto future = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, 100); // Assuming this triggers the interrupt handler
+
     // Simulate a complex interrupt sequence
     mock->mockupInterrupt(COIL1_PIN, GPIOHandler::InterruptStatus{1, COIL1_BCM, INT_EDGE_RISING, coilTime});
     mock->mockupInterrupt(COIL1_PIN, GPIOHandler::InterruptStatus{1, COIL1_BCM, INT_EDGE_FALLING, coilTime + 50});
@@ -100,21 +113,31 @@ void DynamicReadingsTest::testComplexInterruptSequence() {
     mock->mockupInterrupt(CONTACT_B_PIN, GPIOHandler::InterruptStatus{1, CONTACT_B_BCM, INT_EDGE_FALLING, contact2Time - 50});
     mock->mockupInterrupt(CONTACT_B_PIN, GPIOHandler::InterruptStatus{1, CONTACT_B_BCM, INT_EDGE_RISING, contact2Time});
 
-    auto res = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, 100).get(); // Assuming this triggers the interrupt handler
+    auto res = future.get();
 
     QVERIFY(res != nullptr);
     QCOMPARE(res->getCoilStatus().pinBCM, COIL1_BCM);
-    QCOMPARE(res->getContactAStatus().pinBCM, CONTACT_A_BCM);
-    QCOMPARE(res->getContactBStatus().pinBCM, CONTACT_B_BCM);
+    QCOMPARE(res->getContactAEarliestStatus().pinBCM, CONTACT_A_BCM);
+    QCOMPARE(res->getContactALatestStatus().pinBCM, CONTACT_A_BCM);
+    QCOMPARE(res->getContactBEarliestStatus().pinBCM, CONTACT_B_BCM);
+    QCOMPARE(res->getContactBLatestStatus().pinBCM, CONTACT_B_BCM);
 
     QCOMPARE(res->getCoilStatus().statusOK, 1);
-    QCOMPARE(res->getContactAStatus().statusOK, 1);
-    QCOMPARE(res->getContactBStatus().statusOK, 1);
+    QCOMPARE(res->getContactAEarliestStatus().statusOK, 1);
+    QCOMPARE(res->getContactBLatestStatus().statusOK, 1);
+    QCOMPARE(res->getContactALatestStatus().statusOK, 1);
+    QCOMPARE(res->getContactBEarliestStatus().statusOK, 1);
 
     QVERIFY(res->isValid());
 
-    QCOMPARE(res->getContactASwitchTime(), contact1Time - coilTime);
-    QCOMPARE(res->getContactBSwitchTime(), contact2Time - coilTime);
+    QCOMPARE(res->getContactAStableSwitchTime_us(), contact1Time - coilTime);
+    QCOMPARE(res->getContactBStableSwitchTime_us(), contact2Time - coilTime);
+
+    QCOMPARE(res->getContactAWorkSwitchTime_us(), contact1Time - 100 - coilTime);
+    QCOMPARE(res->getContactBWorkSwitchTime_us(), contact2Time - 100 - coilTime);
+
+    QCOMPARE(res->getContactAReboundTime_us(), 100); // Rebound time for contact A
+    QCOMPARE(res->getContactBReboundTime_us(), 100); // Rebound time for contact B
 
     QCOMPARE(res->getContactATransistionType(), INT_EDGE_FALLING);
     QCOMPARE(res->getContactBTransistionType(), INT_EDGE_RISING);
@@ -134,8 +157,10 @@ void DynamicReadingsTest::testTotalFailure() {
 
     QVERIFY(res != nullptr);
     QCOMPARE(res->getCoilStatus().statusOK, -1);
-    QCOMPARE(res->getContactAStatus().statusOK, -1);
-    QCOMPARE(res->getContactBStatus().statusOK, -1);
+    QCOMPARE(res->getContactAEarliestStatus().statusOK, -1);
+    QCOMPARE(res->getContactALatestStatus().statusOK, -1);
+    QCOMPARE(res->getContactBEarliestStatus().statusOK, -1);
+    QCOMPARE(res->getContactBLatestStatus().statusOK, -1);
 
     QVERIFY(!res->isValid());
 }
@@ -151,16 +176,20 @@ void DynamicReadingsTest::testPartialContactFailure() {
     int coilTime = 2000;
     int contact1Time = 10000;
 
+    auto future = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, 100); // Assuming this triggers the interrupt handler
+
     // Simulate an interrupt for COIL1 and CONTACT1, but not CONTACT2
     mock->mockupInterrupt(COIL1_PIN, GPIOHandler::InterruptStatus{1, COIL1_BCM, INT_EDGE_RISING, coilTime});
     mock->mockupInterrupt(CONTACT_A_PIN, GPIOHandler::InterruptStatus{1, CONTACT_A_BCM, INT_EDGE_FALLING, contact1Time});
 
-    auto res = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, 100).get(); // Assuming this triggers the interrupt handler
+    auto res = future.get(); // Assuming this triggers the interrupt handler
 
     QVERIFY(res != nullptr);
     QCOMPARE(res->getCoilStatus().statusOK, 1);
-    QCOMPARE(res->getContactAStatus().statusOK, 1);
-    QCOMPARE(res->getContactBStatus().statusOK, -1);
+    QCOMPARE(res->getContactAEarliestStatus().statusOK, 1);
+    QCOMPARE(res->getContactALatestStatus().statusOK, 1);
+    QCOMPARE(res->getContactBEarliestStatus().statusOK, -1);
+    QCOMPARE(res->getContactBLatestStatus().statusOK, -1);
 
     QVERIFY(res->isValid());
 }
@@ -175,15 +204,19 @@ void DynamicReadingsTest::testTotalContactFailure() {
 
     int coilTime = 2000;
 
+    auto future = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, 100); // Assuming this triggers the interrupt handler
+
     // Simulate an interrupt for COIL1, but not for CONTACT1 or CONTACT2
     mock->mockupInterrupt(COIL1_PIN, GPIOHandler::InterruptStatus{1, COIL1_BCM, INT_EDGE_RISING, coilTime});
 
-    auto res = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, 100).get(); // Assuming this triggers the interrupt handler
+    auto res = future.get(); // Assuming this triggers the interrupt handler
 
     QVERIFY(res != nullptr);
     QCOMPARE(res->getCoilStatus().statusOK, 1);
-    QCOMPARE(res->getContactAStatus().statusOK, -1);
-    QCOMPARE(res->getContactBStatus().statusOK, -1);
+    QCOMPARE(res->getContactAEarliestStatus().statusOK, -1);
+    QCOMPARE(res->getContactALatestStatus().statusOK, -1);
+    QCOMPARE(res->getContactBEarliestStatus().statusOK, -1);
+    QCOMPARE(res->getContactBLatestStatus().statusOK, -1);
 
     QVERIFY(!res->isValid());
 }

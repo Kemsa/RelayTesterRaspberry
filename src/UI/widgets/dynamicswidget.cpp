@@ -17,7 +17,7 @@ DynamicsWidget::DynamicsWidget(QWidget* parent)
         QPointer<DynamicsWidget> self(this);
         auto future = DynamicReadings::getInstance()->waitAndProcessOneSwitch(contactType, 500);
 
-        if(contactType == DynamicReadings::ContactType::COIL1 || contactType == DynamicReadings::ContactType::COIL2) {
+        if (contactType == DynamicReadings::ContactType::COIL1 || contactType == DynamicReadings::ContactType::COIL2) {
             PowerControl::getInstance()->enableCoil(contactType == DynamicReadings::ContactType::COIL1 ? PowerControl::Coil::COIL1 : PowerControl::Coil::COIL2);
         } else {
             PowerControl::getInstance()->disableCoils();
@@ -68,33 +68,33 @@ void DynamicsWidget::handleSwitchResult(std::shared_ptr<DynamicSwitch> switchRes
         return;
     }
     const char* coilText;
-    
-    switch(switchResult->getCoilSwitch()) {
-        case DynamicReadings::ContactType::COIL1:
-            coilText = "bobine: bobine 1";
-            break;
-        case DynamicReadings::ContactType::COIL2:
-            coilText = "bobine: bobine 2";
-            break;
-        case DynamicReadings::ContactType::COILS_OFF:
-            coilText = "bobine: bobines inactives";
-            break;
-        case DynamicReadings::ContactType::BOTH_COILS:
-            coilText = "bobine: toutes bobines";
-            break;
-        default:
-            coilText = "bobine: mesure indisponible";
-            break;
+
+    switch (switchResult->getCoilSwitch()) {
+    case DynamicReadings::ContactType::COIL1:
+        coilText = "bobine: bobine 1";
+        break;
+    case DynamicReadings::ContactType::COIL2:
+        coilText = "bobine: bobine 2";
+        break;
+    case DynamicReadings::ContactType::COILS_OFF:
+        coilText = "bobine: bobines inactives";
+        break;
+    case DynamicReadings::ContactType::BOTH_COILS:
+        coilText = "bobine: toutes bobines";
+        break;
+    default:
+        coilText = "bobine: mesure indisponible";
+        break;
     }
 
     ui->coill_LBL->setText(coilText);
 
     ui->contact1_LBL->setText(
         QString("contact 1: %1 us, edge=%2")
-            .arg(switchResult->getContactASwitchTime())
+            .arg(switchResult->getContactAStableSwitchTime_us())
             .arg(switchResult->getContactATransistionType()));
     ui->contact2_LBL->setText(
         QString("contact 2: %1 us, edge=%2")
-            .arg(switchResult->getContactBSwitchTime())
+            .arg(switchResult->getContactBStableSwitchTime_us())
             .arg(switchResult->getContactBTransistionType()));
 }

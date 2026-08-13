@@ -180,7 +180,8 @@ void relayListModel::loadChildren(Node* parentNode) {
         }
 
         if (!m_schemaAvailable) {
-            qWarning().noquote() << QStringLiteral("Skipping relay JSON \"%1\": schema is unavailable").arg(entry.absoluteFilePath());
+            qWarning().noquote() << QStringLiteral("Skipping relay JSON \"%1\": schema is unavailable")
+                                        .arg(QDir::toNativeSeparators(entry.absoluteFilePath()));
             continue;
         }
 
@@ -189,7 +190,7 @@ void relayListModel::loadChildren(Node* parentNode) {
         const bool relayLoaded = experiment::JsonValidator::loadJsonObject(entry.absoluteFilePath(), &relayJson, &validationError);
         if (!relayLoaded || !experiment::JsonValidator::validateValue(relayJson, m_schema, m_schema, QStringLiteral("$"), &validationError)) {
             qWarning().noquote() << QStringLiteral("Skipping invalid relay JSON \"%1\": %2")
-                                        .arg(entry.absoluteFilePath(), validationError);
+                                        .arg(QDir::toNativeSeparators(entry.absoluteFilePath()), validationError);
             continue;
         }
 

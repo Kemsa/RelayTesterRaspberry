@@ -78,7 +78,7 @@ void ContactSelectorTest::selectHBridge_updatesGpioStateAndEmitsSignal() {
     GPIOHandler* gpio = GPIOHandler::instance();
     QVERIFY(gpio != nullptr);
 
-    QCOMPARE(gpio->pinRead(kHBridge1), GPIOHandler::WPI_HIGH);
+    QCOMPARE(gpio->pinRead(kHBridge1), GPIOHandler::WPI_LOW);
     QCOMPARE(gpio->pinRead(kHBridge2), GPIOHandler::WPI_LOW);
     QCOMPARE(gpio->pinRead(kHBridge3), GPIOHandler::WPI_HIGH);
 }

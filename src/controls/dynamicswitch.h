@@ -4,29 +4,40 @@
 #include "dynamicreadings.h"
 class DynamicSwitch {
 public:
-    DynamicSwitch(DynamicReadings::ContactType coilSwitch, GPIOHandler::InterruptStatus coilStatus, GPIOHandler::InterruptStatus contact1Status, GPIOHandler::InterruptStatus contact2Status)
-        : m_coilSwitch(coilSwitch), coilStatus(coilStatus), contact1Status(contact1Status), contact2Status(contact2Status) {};
+    DynamicSwitch(DynamicReadings::ContactType coilSwitch, GPIOHandler::InterruptStatus coilStatus,
+                  GPIOHandler::InterruptStatus contactAEarliestStatus, GPIOHandler::InterruptStatus contactALatestStatus,
+                  GPIOHandler::InterruptStatus contactBEarliestStatus, GPIOHandler::InterruptStatus contactBLatestStatus)
+        : m_coilSwitch(coilSwitch), coilStatus(coilStatus), contactALatestStatus(contactALatestStatus), contactBLatestStatus(contactBLatestStatus),
+          contactAEarliestStatus(contactAEarliestStatus), contactBEarliestStatus(contactBEarliestStatus) {};
 
     const GPIOHandler::InterruptStatus getCoilStatus() const { return coilStatus; }
-    const GPIOHandler::InterruptStatus getContactAStatus() const { return contact1Status; }
-    const GPIOHandler::InterruptStatus getContactBStatus() const { return contact2Status; }
+    const GPIOHandler::InterruptStatus getContactALatestStatus() const { return contactALatestStatus; }
+    const GPIOHandler::InterruptStatus getContactAEarliestStatus() const { return contactAEarliestStatus; }
+    const GPIOHandler::InterruptStatus getContactBLatestStatus() const { return contactBLatestStatus; }
+    const GPIOHandler::InterruptStatus getContactBEarliestStatus() const { return contactBEarliestStatus; }
     const DynamicReadings::ContactType getCoilSwitch() const { return m_coilSwitch; }
 
     bool isValid() const {
-        return coilStatus.statusOK != -1 && (contact1Status.statusOK != -1 || contact2Status.statusOK != -1);
+        return coilStatus.statusOK != -1 && (contactALatestStatus.statusOK != -1 || contactBLatestStatus.statusOK != -1);
     }
 
-    int getContactASwitchTime();
+    int getContactAStableSwitchTime_us();
+    int getContactAWorkSwitchTime_us();
+    int getContactAReboundTime_us();
     int getContactATransistionType();
 
-    int getContactBSwitchTime();
+    int getContactBStableSwitchTime_us();
+    int getContactBWorkSwitchTime_us();
+    int getContactBReboundTime_us();
     int getContactBTransistionType();
 
 private:
     const DynamicReadings::ContactType m_coilSwitch;
     const GPIOHandler::InterruptStatus coilStatus;
-    const GPIOHandler::InterruptStatus contact1Status;
-    const GPIOHandler::InterruptStatus contact2Status;
+    const GPIOHandler::InterruptStatus contactALatestStatus;
+    const GPIOHandler::InterruptStatus contactBLatestStatus;
+    const GPIOHandler::InterruptStatus contactAEarliestStatus;
+    const GPIOHandler::InterruptStatus contactBEarliestStatus;
 };
 
 #endif // DYNAMICSWITCH_H

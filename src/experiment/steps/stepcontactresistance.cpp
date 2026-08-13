@@ -46,8 +46,8 @@ QString StepContactResistance::getDescription() const {
     avec:
 	bobine "ON": %2
 	bobine "OFF": %3
-	tension de bobine: %4
-	courant de bobine maximum: %6 mA
+	tension de bobine (V): %4
+	courant de bobine maximum (mA): %6 mA
 	nombre de mesures: %7
 )")
                       .arg(nContacts)
@@ -170,11 +170,10 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
 
     powerControl->disableCoils();
 
-
     bool success = true;
-    //check results against success criteria
-    for(int cycle = 0; cycle < nCycles; cycle++) {
-        for(int c = 1; c <= nContacts; c++) {
+    // check results against success criteria
+    for (int cycle = 0; cycle < nCycles; cycle++) {
+        for (int c = 1; c <= nContacts; c++) {
             double resistanceContactA_Ohm = measurementValues.averageResistanceContactA_Ohm[cycle][c - 1];
             double resistanceContactB_Ohm = measurementValues.averageResistanceContactB_Ohm[cycle][c - 1];
 

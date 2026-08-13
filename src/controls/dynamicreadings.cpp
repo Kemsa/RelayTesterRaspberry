@@ -102,6 +102,19 @@ std::future<std::shared_ptr<DynamicSwitch>> DynamicReadings::waitAndProcessOneSw
         qDebug() << "interrupt status for contact 1" << m_interruptStatusesContact1.size();
         qDebug() << "interrupt status for contact 2" << m_interruptStatusesContact2.size();
 
+        if(!m_interruptStatusesCoil1.isEmpty() ) {
+            qDebug() << "transition edge for coil 1:" << m_interruptStatusesCoil1.last().edge;
+        }
+        if(!m_interruptStatusesCoil2.isEmpty() ) {
+            qDebug() << "transition edge for coil 2:" << m_interruptStatusesCoil2.last().edge;
+        }
+        if(!m_interruptStatusesContact1.isEmpty() ) {
+            qDebug() << "transition edge for contact 1:" << m_interruptStatusesContact1.last().edge;
+        }
+        if(!m_interruptStatusesContact2.isEmpty() ) {
+            qDebug() << "transition edge for contact 2:" << m_interruptStatusesContact2.last().edge;
+        }
+
         GPIOHandler::InterruptStatus statusCoil = {-1, 0, 0, -1};
         switch (triggerCoil) {
         case ContactType::COIL1:
@@ -129,10 +142,14 @@ std::future<std::shared_ptr<DynamicSwitch>> DynamicReadings::waitAndProcessOneSw
             break;
         }
 
-        GPIOHandler::InterruptStatus statusContact1 = getLatestInterruptStatus(ContactType::CONTACT_A);
-        GPIOHandler::InterruptStatus statusContact2 = getLatestInterruptStatus(ContactType::CONTACT_B);
+        GPIOHandler::InterruptStatus statusContactAEarliest = getEarlierstInterruptStatus(ContactType::CONTACT_A);
+        GPIOHandler::InterruptStatus statusContactALatest = getLatestInterruptStatus(ContactType::CONTACT_A);
+        GPIOHandler::InterruptStatus statusContactBEarliest = getEarlierstInterruptStatus(ContactType::CONTACT_B);
+        GPIOHandler::InterruptStatus statusContactBLatest = getLatestInterruptStatus(ContactType::CONTACT_B);
 
-        auto switchResult = std::make_shared<DynamicSwitch>(triggerCoil, statusCoil, statusContact1, statusContact2);
+        auto switchResult = std::make_shared<DynamicSwitch>(triggerCoil, statusCoil,
+                                                            statusContactAEarliest, statusContactALatest,
+                                                            statusContactBEarliest, statusContactBLatest);
 
         m_mutexRead.unlock();
         promise->set_value(switchResult);
