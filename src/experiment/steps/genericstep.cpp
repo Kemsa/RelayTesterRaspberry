@@ -34,19 +34,13 @@ std::future<GenericStep::ResultStatus> GenericStep::measureAsync() {
         setResultStatus(GenericStep::ResultMeasuring);
         GenericStep::ResultStatus result = runMeasureAsync(stopRequested);
         promise->set_value(result);
-        if (result != GenericStep::ResultStopped) {
-            setResultStatus(result);
-        }
+        setResultStatus(result);
     }).detach();
 
     return promise->get_future();
 }
 
 void GenericStep::stopMeasure() {
-    if (measureFuture.valid()) {
-        setResultStatus(GenericStep::ResultStopPending);
-        stopRequested.store(true, std::memory_order_relaxed);
-        measureFuture.wait();
-    }
-    setResultStatus(GenericStep::ResultStopped);
+    setResultStatus(GenericStep::ResultStopPending);
+    stopRequested.store(true, std::memory_order_relaxed);
 }

@@ -113,6 +113,10 @@ QIcon RelayMeasureScreen::iconForResultStatus(GenericStep::ResultStatus status) 
             return QApplication::style()->standardIcon(QStyle::SP_BrowserReload);
         case GenericStep::ResultNotStarted:
             return QApplication::style()->standardIcon(QStyle::SP_TitleBarContextHelpButton);
+        case GenericStep::ResultStopPending:
+            return QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning);
+        case GenericStep::ResultStopped:
+            return QApplication::style()->standardIcon(QStyle::SP_DialogCloseButton);
         case GenericStep::ResultUnknown:
         default:
             return QApplication::style()->standardIcon(QStyle::SP_MessageBoxQuestion);

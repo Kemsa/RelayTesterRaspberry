@@ -7,9 +7,10 @@
 #include <future>
 #include <thread>
 
-#define STEP_CHECK_STOP_TOKEN() \
-    if (stopToken.load()) {     \
-        return ResultStopped;   \
+#define STEP_CHECK_STOP_TOKEN()                         \
+    if (stopToken.load()) {                             \
+        qDebug() << "Stop requested for step:" << name; \
+        return ResultStopped;                           \
     }
 
 class GenericStep : public QObject {
@@ -51,7 +52,6 @@ protected:
 
     ResultStatus resultStatus = ResultNotStarted;
     std::atomic<bool> stopRequested{false};
-    std::future<ResultStatus> measureFuture;
     void setResultStatus(ResultStatus status);
 
     virtual ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) = 0;
