@@ -68,8 +68,10 @@ RelayMeasureScreen::RelayMeasureScreen(QWidget* parent)
     connect(ui->measureSteps_LW, &QListWidget::currentRowChanged, this, [this](int row) {
         if (m_relayMeasure) {
             ui->stepDescription_TB->setText(m_relayMeasure->getStepDescription(row));
+            ui->stepResult_TB->setText(m_relayMeasure->getStepResultSummary(row));
         } else {
             ui->stepDescription_TB->clear();
+            ui->stepResult_TB->clear();
         }
     });
 
@@ -116,6 +118,7 @@ QIcon RelayMeasureScreen::iconForResultStatus(GenericStep::ResultStatus status) 
         case GenericStep::ResultStopPending:
             return QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning);
         case GenericStep::ResultStopped:
+        case GenericStep::ResultCantMeasure:
             return QApplication::style()->standardIcon(QStyle::SP_DialogCloseButton);
         case GenericStep::ResultUnknown:
         default:
@@ -213,6 +216,8 @@ void RelayMeasureScreen::onNavigatedTo(const QString& path) {
         if (index >= 0 && index < ui->measureSteps_LW->count()) {
             auto* stepItem = ui->measureSteps_LW->item(index);
             stepItem->setIcon(iconForResultStatus(status));
+
+            ui->stepResult_TB->setText(m_relayMeasure->getStepResultSummary(index));
         }
     });
     connect(m_relayMeasure.get(), &RelayMeasure::measureAllFinished, this, [this]() {

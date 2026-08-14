@@ -46,6 +46,8 @@ private:
     } measurementValues;
 
     ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
+
+    QString getFormattedResults() const;
 };
 
 #endif // STEPSWITCHINGTIME_H

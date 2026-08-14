@@ -10,6 +10,8 @@
 #include "powerSupply.h"
 #include "powercontrol.h"
 
+#include <math.h>
+
 #define SWITCH_WAIT_TIME_MS 50 // ms
 
 StepSwitchingTime::StepSwitchingTime(QString name) : GenericStep(name) {}
@@ -51,26 +53,126 @@ QString StepSwitchingTime::getDescription() const {
         Nombre de commutations: %4
         Tension de bobine (V): %5
         Courant max (mA): %6
-        Temps de travail max (ms): %7
-        Temps de travail rebond max (ms): %8
-        Temps de coupure max (ms): %9
-        Temps de coupure rebond max (ms): %10
+
     )")
                       .arg(coilToPowerOn)
                       .arg(coilToPowerOff)
                       .arg(nContacts)
                       .arg(switchCount)
                       .arg(supplyVoltage_cV / 100.0, 0, 'f', 2)
-                      .arg(maxCurrent_mA)
-                      .arg(successValues.maxWorkTime_ms)
-                      .arg(successValues.maxWorkTimeRebound_ms)
-                      .arg(successValues.maxCutTime_ms)
-                      .arg(successValues.maxCutTimeRebound_ms);
+                      .arg(maxCurrent_mA);
+    return str;
+}
+
+QString StepSwitchingTime::getFormattedResults() const {
+
+    QString str;
+    str.append(QString("Temps de travail max (ms): %1\n")
+                   .arg(successValues.maxWorkTime_ms));
+    str.append(QString("Temps de travail rebond max (ms): %1\n")
+                   .arg(successValues.maxWorkTimeRebound_ms));
+    str.append(QString("Temps de coupure max (ms): %1\n")
+                   .arg(successValues.maxCutTime_ms));
+    str.append(QString("Temps de coupure rebond max (ms): %1\n")
+                   .arg(successValues.maxCutTimeRebound_ms));
+
+    str.append("résultats formattés:\n");
+    str.append("temps x/y: temps de travail (ms)/temps de rebond travail(ms)/temps de coupure (ms)/temps de rebond de coupure (ms)\n");
+    str.append("deviation x/y: temps de travail (ms)/temps de rebond travail(ms)/temps de coupure (ms)/temps de rebond de coupure (ms)\n");
+
+    for (int c = 0; c < nContacts; ++c) {
+        str += QString("Contact %1/A:\n").arg(c + 1);
+
+        double avrgWorkTimeA_ms = 0, avrgWorkTimeReboundA_ms = 0, avrgCutTimeA_ms = 0, avrgCutTimeReboundA_ms = 0;
+        double avrgWorkTimeB_ms = 0, avrgWorkTimeReboundB_ms = 0, avrgCutTimeB_ms = 0, avrgCutTimeReboundB_ms = 0;
+        for (int i = 0; i < switchCount; ++i) {
+            avrgWorkTimeA_ms += measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] / 1000.0;
+            avrgWorkTimeReboundA_ms += measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkReboundTime][i] / 1000.0;
+            avrgCutTimeA_ms += measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] / 1000.0;
+            avrgCutTimeReboundA_ms += measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] / 1000.0;
+
+            avrgWorkTimeB_ms += measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTime][i] / 1000.0;
+            avrgWorkTimeReboundB_ms += measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkReboundTime][i] / 1000.0;
+            avrgCutTimeB_ms += measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] / 1000.0;
+            avrgCutTimeReboundB_ms += measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] / 1000.0;
+        }
+
+        avrgWorkTimeA_ms /= switchCount;
+        avrgWorkTimeReboundA_ms /= switchCount;
+        avrgCutTimeA_ms /= switchCount;
+        avrgCutTimeReboundA_ms /= switchCount;
+
+        avrgWorkTimeB_ms /= switchCount;
+        avrgWorkTimeReboundB_ms /= switchCount;
+        avrgCutTimeB_ms /= switchCount;
+        avrgCutTimeReboundB_ms /= switchCount;
+
+        double signmaWorkTimeA_ms = 0, signmaWorkTimeReboundA_ms = 0, signmaCutTimeA_ms = 0, signmaCutTimeReboundA_ms = 0;
+        double signmaWorkTimeB_ms = 0, signmaWorkTimeReboundB_ms = 0, signmaCutTimeB_ms = 0, signmaCutTimeReboundB_ms = 0;
+        for (int i = 0; i < switchCount; ++i) {
+            signmaWorkTimeA_ms += std::pow(measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] / 1000.0 - avrgWorkTimeA_ms, 2);
+            signmaWorkTimeReboundA_ms += std::pow(measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkReboundTime][i] / 1000.0 - avrgWorkTimeReboundA_ms, 2);
+            signmaCutTimeA_ms += std::pow(measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] / 1000.0 - avrgCutTimeA_ms, 2);
+            signmaCutTimeReboundA_ms += std::pow(measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] / 1000.0 - avrgCutTimeReboundA_ms, 2);
+
+            signmaWorkTimeB_ms += std::pow(measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTime][i] / 1000.0 - avrgWorkTimeB_ms, 2);
+            signmaWorkTimeReboundB_ms += std::pow(measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkReboundTime][i] / 1000.0 - avrgWorkTimeReboundB_ms, 2);
+            signmaCutTimeB_ms += std::pow(measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] / 1000.0 - avrgCutTimeB_ms, 2);
+            signmaCutTimeReboundB_ms += std::pow(measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] / 1000.0 - avrgCutTimeReboundB_ms, 2);
+        }
+
+        signmaWorkTimeA_ms = std::sqrt(signmaWorkTimeA_ms / switchCount);
+        signmaWorkTimeReboundA_ms = std::sqrt(signmaWorkTimeReboundA_ms / switchCount);
+        signmaCutTimeA_ms = std::sqrt(signmaCutTimeA_ms / switchCount);
+        signmaCutTimeReboundA_ms = std::sqrt(signmaCutTimeReboundA_ms / switchCount);
+
+        signmaWorkTimeB_ms = std::sqrt(signmaWorkTimeB_ms / switchCount);
+        signmaWorkTimeReboundB_ms = std::sqrt(signmaWorkTimeReboundB_ms / switchCount);
+        signmaCutTimeB_ms = std::sqrt(signmaCutTimeB_ms / switchCount);
+        signmaCutTimeReboundB_ms = std::sqrt(signmaCutTimeReboundB_ms / switchCount);
+
+        str.append(QString("temps %1/A: %2/A: %3, %4, %5\n")
+                       .arg(c + 1)
+                       .arg(avrgWorkTimeA_ms, 0, 'f', 2)
+                       .arg(avrgWorkTimeReboundA_ms, 0, 'f', 2)
+                       .arg(avrgCutTimeA_ms, 0, 'f', 2)
+                       .arg(avrgCutTimeReboundA_ms, 0, 'f', 2));
+        str.append(QString("deviation %1/A: %2/A: %3, %4, %5\n")
+                       .arg(c + 1)
+                       .arg(signmaWorkTimeA_ms, 0, 'f', 2)
+                       .arg(signmaWorkTimeReboundA_ms, 0, 'f', 2)
+                       .arg(signmaCutTimeA_ms, 0, 'f', 2)
+                       .arg(signmaCutTimeReboundA_ms, 0, 'f', 2));
+        str.append(QString("temps %1/B: %2/B: %3, %4, %5\n")
+                       .arg(c + 1)
+                       .arg(avrgWorkTimeB_ms, 0, 'f', 2)
+                       .arg(avrgWorkTimeReboundB_ms, 0, 'f', 2)
+                       .arg(avrgCutTimeB_ms, 0, 'f', 2)
+                       .arg(avrgCutTimeReboundB_ms, 0, 'f', 2));
+        str.append(QString("deviation %1/B: %2/B: %3, %4, %5\n")
+                       .arg(c + 1)
+                       .arg(signmaWorkTimeB_ms, 0, 'f', 2)
+                       .arg(signmaWorkTimeReboundB_ms, 0, 'f', 2)
+                       .arg(signmaCutTimeB_ms, 0, 'f', 2)
+                       .arg(signmaCutTimeReboundB_ms, 0, 'f', 2));
+        str.append("\n");
+    }
     return str;
 }
 
 QString StepSwitchingTime::getResultSummary() const {
-    return QString();
+    switch (resultStatus) {
+    case ResultSuccess:
+        return QString::fromUtf8(R"(SUCCES
+            %1)")
+            .arg(getFormattedResults());
+    case ResultFailure:
+        return QString::fromUtf8(R"(ECHEC
+            %1)")
+            .arg(getFormattedResults());
+    default:
+        return GenericStep::getResultSummary();
+    }
 }
 
 GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<bool>& stopToken) {
@@ -86,11 +188,11 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
 
     if (!powerControl || !powerSupply || !dynamicReadings || !contactSelector) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
-        return ResultFailure;
+        return ResultCantMeasure;
     }
     if (!powerControl->checkSafetyStatus()) {
         qCritical() << "Safety status check failed. Aborting measurement.";
-        return ResultFailure;
+        return ResultCantMeasure;
     }
 
     contactSelector->selectContact(0); // disable contact to start with a known state
@@ -158,8 +260,7 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
             // Store results in measurementValues.contactASwitchTimes_ms
             switchResult = switchFuture.get(); // Wait for the switch to complete
 
-            if (switchResult && switchResult->isValid() 
-            && switchResult->getContactATransistionType() == INT_EDGE_RISING) { // contact open measures high
+            if (switchResult && switchResult->isValid() && switchResult->getContactATransistionType() == INT_EDGE_RISING) { // contact open measures high
                 measurementValues.contactASwitchTimes_us[c - 1][switchTimeType::WorkTime][i] = switchResult->getContactAWorkSwitchTime_us();
                 measurementValues.contactASwitchTimes_us[c - 1][switchTimeType::WorkTimeStable][i] = switchResult->getContactAStableSwitchTime_us();
                 measurementValues.contactASwitchTimes_us[c - 1][switchTimeType::WorkReboundTime][i] = switchResult->getContactAReboundTime_us();
@@ -187,8 +288,7 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
             // Store results in measurementValues.contactASwitchTimes_ms
             switchResult = switchFuture.get(); // Wait for the switch to complete
 
-            if (switchResult && switchResult->isValid() 
-            && switchResult->getContactATransistionType() == INT_EDGE_FALLING) { //contact closed measures low
+            if (switchResult && switchResult->isValid() && switchResult->getContactATransistionType() == INT_EDGE_FALLING) { // contact closed measures low
                 measurementValues.contactASwitchTimes_us[c - 1][switchTimeType::ReleaseTime][i] = switchResult->getContactAWorkSwitchTime_us();
                 measurementValues.contactASwitchTimes_us[c - 1][switchTimeType::ReleaseTimeStable][i] = switchResult->getContactAStableSwitchTime_us();
                 measurementValues.contactASwitchTimes_us[c - 1][switchTimeType::ReleaseReboundTime][i] = switchResult->getContactAReboundTime_us();
@@ -233,8 +333,7 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
             // Store results in measurementValues.contactASwitchTimes_ms
             switchResult = switchFuture.get(); // Wait for the switch to complete
 
-            if (switchResult && switchResult->isValid() 
-            && switchResult->getContactBTransistionType() == INT_EDGE_FALLING) { // contact open measures high
+            if (switchResult && switchResult->isValid() && switchResult->getContactBTransistionType() == INT_EDGE_FALLING) { // contact open measures high
                 measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::WorkTime][i] = switchResult->getContactAWorkSwitchTime_us();
                 measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::WorkTimeStable][i] = switchResult->getContactAStableSwitchTime_us();
                 measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::WorkReboundTime][i] = switchResult->getContactAReboundTime_us();
@@ -262,15 +361,14 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
             // Store results in measurementValues.contactASwitchTimes_ms
             switchResult = switchFuture.get(); // Wait for the switch to complete
 
-            if (switchResult && switchResult->isValid() 
-            && switchResult->getContactBTransistionType() == INT_EDGE_RISING) { //contact closed measures low
+            if (switchResult && switchResult->isValid() && switchResult->getContactBTransistionType() == INT_EDGE_RISING) { // contact closed measures low
                 measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseTime][i] = switchResult->getContactAWorkSwitchTime_us();
                 measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseTimeStable][i] = switchResult->getContactAStableSwitchTime_us();
                 measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseReboundTime][i] = switchResult->getContactAReboundTime_us();
             } else {
                 qWarning() << "Switch result is invalid for contact" << c << "on iteration" << i;
 
-                                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseTime][i] = -1;
+                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseTime][i] = -1;
                 measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseTimeStable][i] = -1;
                 measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseReboundTime][i] = -1;
             }
@@ -298,10 +396,10 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
                 qDebug() << "WorkTime:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] << "us, Max allowed:" << successValues.maxWorkTime_ms * 1000 << "us";
                 qDebug() << "WorkTimeStable:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTimeStable][i] << "us, Max allowed:" << successValues.maxWorkTime_ms * 1000 << "us";
                 qDebug() << "WorkTimeRebound:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkReboundTime][i] << "us, Max allowed:" << successValues.maxWorkTimeRebound_ms * 1000 << "us";
-                qDebug() << "ReleaseTime:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] << "us, Max allowed:" << successValues.maxCutTime_ms * 1000 << "us";     
+                qDebug() << "ReleaseTime:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] << "us, Max allowed:" << successValues.maxCutTime_ms * 1000 << "us";
                 qDebug() << "ReleaseTimeStable:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] << "us, Max allowed:" << successValues.maxCutTime_ms * 1000 << "us";
                 qDebug() << "ReleaseTimeRebound:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] << "us, Max allowed:" << successValues.maxCutTimeRebound_ms * 1000 << "us";
-                //break;
+                // break;
             }
         }
         // if (!success) {
@@ -309,7 +407,7 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
         // }
     }
 
-        for (int c = 0; c < nContacts; ++c) {
+    for (int c = 0; c < nContacts; ++c) {
         for (int i = 0; i < switchCount; ++i) {
             if (measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTime][i] > successValues.maxWorkTime_ms * 1000 ||
                 measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTimeStable][i] > successValues.maxWorkTime_ms * 1000 ||
@@ -323,10 +421,10 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
                 qDebug() << "Contact" << c + 1 << ".B switching time exceeded success criteria on iteration" << i + 1;
                 qDebug() << "WorkTimeStable:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTimeStable][i] << "us, Max allowed:" << successValues.maxWorkTime_ms * 1000 << "us";
                 qDebug() << "WorkTimeRebound:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkReboundTime][i] << "us, Max allowed:" << successValues.maxWorkTimeRebound_ms * 1000 << "us";
-                qDebug() << "ReleaseTime:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] << "us, Max allowed:" << successValues.maxCutTime_ms * 1000 << "us";     
+                qDebug() << "ReleaseTime:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] << "us, Max allowed:" << successValues.maxCutTime_ms * 1000 << "us";
                 qDebug() << "ReleaseTimeStable:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] << "us, Max allowed:" << successValues.maxCutTime_ms * 1000 << "us";
                 qDebug() << "ReleaseTimeRebound:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] << "us, Max allowed:" << successValues.maxCutTimeRebound_ms * 1000 << "us";
-                //break;
+                // break;
             }
         }
         // if (!success) {

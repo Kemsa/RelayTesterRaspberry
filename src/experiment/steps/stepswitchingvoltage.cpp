@@ -46,7 +46,39 @@ QString StepSwitchingVoltage::getDescription() const {
 }
 
 QString StepSwitchingVoltage::getResultSummary() const {
-    return QString();
+    switch (resultStatus) {
+    case ResultSuccess:
+        return QString::fromUtf8(R"(SUCCES
+            Tension de commutation: %1 V (max autorisée: %2 V))")
+            .arg(measurementValues.switchingVoltage_V, 0, 'f', 2)
+            .arg(successValues.maxSwitchingVoltage_cV / 100.0f, 0, 'f', 2);
+
+    case ResultFailure:
+        return QString::fromUtf8(R"(ECHEC
+        Contacts commutés: %1
+        Contacts non commutés: %2)")
+            .arg([this]() {
+                QStringList switchedContacts;
+                for (int i = 0; i < nContacts; ++i) {
+                    if (measurementValues.switchedContacts[i]) {
+                        switchedContacts.append(QString::number(i + 1));
+                    }
+                }
+                return switchedContacts.join(", ");
+            }())
+            .arg([this]() {
+                QStringList notSwitchedContacts;
+                for (int i = 0; i < nContacts; ++i) {
+                    if (!measurementValues.switchedContacts[i]) {
+                        notSwitchedContacts.append(QString::number(i + 1));
+                    }
+                }
+                return notSwitchedContacts.join(", ");
+            }())
+            .arg(measurementValues.switchingVoltage_V, 0, 'f', 2);
+    default:
+        return GenericStep::getResultSummary();
+    }
 }
 
 GenericStep::ResultStatus StepSwitchingVoltage::runMeasureAsync(const std::atomic<bool>& stopToken) {
@@ -62,15 +94,17 @@ GenericStep::ResultStatus StepSwitchingVoltage::runMeasureAsync(const std::atomi
 
     if (!powerControl || !staticReadings || !powerSupply || !dynamicReadings || !contactSelector) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
-        return ResultFailure;
+        return ResultCantMeasure;
     }
     if (!powerControl->checkSafetyStatus()) {
         qCritical() << "Safety status check failed. Aborting measurement.";
-        return ResultFailure;
+        return ResultCantMeasure;
     }
 
-    measurementValues.allSwitched = false;
-    measurementValues.switchingVoltage_V = 0.0;
+    measurementValues.switchingVoltage_V = -1.0; // Initialize to an invalid value
+    for (int i = 0; i < 8; ++i) {
+        measurementValues.switchedContacts[i] = false; // Initialize all contacts as not switched
+    }
 
     powerControl->disableCoils();
     powerSupply->setMaxValues(stopVoltage_cV / 100.0, maxCurrent_mA / 1000.0);
@@ -93,7 +127,6 @@ GenericStep::ResultStatus StepSwitchingVoltage::runMeasureAsync(const std::atomi
 
         qDebug() << "Measured voltage at" << voltage_cV / 100.0 << "V:" << measuredVoltage << "V";
 
-        bool nowSwitched = true;
         for (int contactIndex = 1; contactIndex <= nContacts; ++contactIndex) {
             STEP_CHECK_STOP_TOKEN();
 
@@ -108,32 +141,38 @@ GenericStep::ResultStatus StepSwitchingVoltage::runMeasureAsync(const std::atomi
 
             bool isContactBClosed = dynamicReadings->isContactClosed(DynamicReadings::ContactType::CONTACT_B);
 
-            if (isContactAClosed || !isContactBClosed) {
-                nowSwitched = false;
+            if (!isContactAClosed && isContactBClosed) {
+                measurementValues.switchedContacts[contactIndex - 1] = true;
+            } else {
+                measurementValues.switchedContacts[contactIndex - 1] = false;
             }
 
             qDebug() << "Contact" << contactIndex << "status: A closed:" << isContactAClosed << ", B closed:" << isContactBClosed;
         }
-        qDebug() << "nowSwitched:" << nowSwitched;
-        if (measurementValues.allSwitched == false && nowSwitched == true) {
-            measurementValues.allSwitched = nowSwitched;
+        if (isAllSwitched() && measurementValues.switchingVoltage_V < 0.0) {
             measurementValues.switchingVoltage_V = measuredVoltage;
-            qDebug() << "All contacts switched at voltage:" << measurementValues.switchingVoltage_V << "V";
-        } else if (measurementValues.allSwitched == true && nowSwitched == false) {
-            measurementValues.allSwitched = nowSwitched;
-            measurementValues.switchingVoltage_V = 0.0;
-            qDebug() << "Contacts no longer switched at voltage:" << measuredVoltage << "V";
+        } else if(!isAllSwitched()) {
+            measurementValues.switchingVoltage_V = -1.0;
         }
     }
 
     powerControl->disableCoils();
     powerSupply->disableOutput();
 
-    if (measurementValues.allSwitched && measurementValues.switchingVoltage_V <= successValues.maxSwitchingVoltage_cV / 100.0) {
+    if (isAllSwitched() && measurementValues.switchingVoltage_V <= successValues.maxSwitchingVoltage_cV / 100.0) {
         qDebug() << "Switching voltage measurement successful. Switching voltage:" << measurementValues.switchingVoltage_V << "V";
         return ResultSuccess;
     } else {
         qDebug() << "Switching voltage measurement failed. ";
         return ResultFailure;
     }
+}
+
+bool StepSwitchingVoltage::isAllSwitched() const {
+    for (int i = 0; i < nContacts; ++i) {
+        if (!measurementValues.switchedContacts[i]) {
+            return false;
+        }
+    }
+    return true;
 }

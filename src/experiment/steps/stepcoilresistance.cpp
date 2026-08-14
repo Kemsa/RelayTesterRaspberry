@@ -46,8 +46,34 @@ QString StepCoilResistance::getDescription() const {
     return str;
 }
 
+QString StepCoilResistance::getFormattedResults() const {
+    QString str = QString::fromUtf8(R"(Mesure de la bobine #%1 :
+    courant moyen: %2 mA
+    tension moyenne: %3 V
+    résistance mesurée: %4 ohm (min: %5 ohm, max: %6 ohm)
+)")
+                      .arg(coilToMeasure)
+                      .arg(measurementValues.averageCurrent_mA, 0, 'f', 2)
+                      .arg(measurementValues.averageVoltage_V, 0, 'f', 2)
+                      .arg(measurementValues.averageResistance_ohm, 0, 'f', 2)
+                      .arg(successValues.minResistance_ohm)
+                      .arg(successValues.maxResistance_ohm);
+    return str;
+}
+
 QString StepCoilResistance::getResultSummary() const {
-    return QString();
+    switch (resultStatus) {
+    case ResultSuccess:
+        return QString::fromUtf8(R"(SUCCES
+            %1)")
+            .arg(getFormattedResults());
+    case ResultFailure:
+        return QString::fromUtf8(R"(ECHEC
+            %1)")
+            .arg(getFormattedResults());
+    default:
+        return GenericStep::getResultSummary();
+    }
 }
 
 GenericStep::ResultStatus StepCoilResistance::runMeasureAsync(const std::atomic<bool>& stopToken) {
@@ -61,11 +87,11 @@ GenericStep::ResultStatus StepCoilResistance::runMeasureAsync(const std::atomic<
 
     if (!powerControl || !staticReadings || !powerSupply) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
-        return ResultFailure;
+        return ResultCantMeasure;
     }
     if (!powerControl->checkSafetyStatus()) {
         qCritical() << "Safety status check failed. Aborting measurement.";
-        return ResultFailure;
+        return ResultCantMeasure;
     }
 
     // Set the supply voltage and max current for the coil measurement

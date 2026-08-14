@@ -23,6 +23,7 @@ public:
 
     QMap<int, QString> getSteps();
     QString getStepDescription(int index);
+    QString getStepResultSummary(int index);
 
     void measureAllAsync();
     void measureOneAsync(int index);

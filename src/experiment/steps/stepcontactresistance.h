@@ -40,6 +40,7 @@ private:
     ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 
     double getResistanceForContact(StaticReadings::ReadingFlags contactFlag, int nMeasures, const std::atomic<bool>& stopToken);
+    QString getFormattedResults() const;
 };
 
 #endif // STEPCONTACTRESISTANCE_H

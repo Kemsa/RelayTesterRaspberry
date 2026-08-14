@@ -24,6 +24,7 @@ public:
         ResultNotStarted,
         ResultStopPending,
         ResultStopped,
+        ResultCantMeasure,
     };
     Q_ENUM(ResultStatus)
 
@@ -36,7 +37,7 @@ public:
     void stopMeasure();
     virtual QString getName() const;
     virtual QString getDescription() const = 0;
-    virtual QString getResultSummary() const = 0;
+    virtual QString getResultSummary() const;
     GenericStep::ResultStatus getResultStatus() const;
 
 signals:

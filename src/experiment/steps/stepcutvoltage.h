@@ -30,11 +30,12 @@ private:
     } successValues;
 
     struct MeasurementValues {
-        bool allSwitched = false;
+        bool switchedContacts[8] = {false};
         double switchingVoltage_V = 0.0;
     } measurementValues;
 
     ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
+    bool isAllSwitched() const;
 };
 
 #endif // STEPCUTVOLTAGE_H

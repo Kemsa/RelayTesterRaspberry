@@ -44,3 +44,29 @@ void GenericStep::stopMeasure() {
     setResultStatus(GenericStep::ResultStopPending);
     stopRequested.store(true, std::memory_order_relaxed);
 }
+
+QString GenericStep::getResultSummary() const {
+    switch (resultStatus) {
+    case ResultSuccess:
+        return QString::fromUtf8(R"(Résultat: Succès
+ )");
+    case ResultFailure:
+        return QString::fromUtf8(R"(Résultat: Échec
+ )");
+    case ResultStopped:
+        return QString::fromUtf8(R"(Résultat: Mesure arrêtée
+ )");
+    case ResultStopPending:
+        return QString::fromUtf8(R"(Résultat: Arrêt de la mesure en cours...
+ )");
+    case ResultMeasuring:
+        return QString::fromUtf8(R"(Résultat: Mesure en cours... )");
+    case ResultNotStarted:
+        return QString::fromUtf8(R"(Résultat: Mesure non démarrée )");
+    case ResultCantMeasure:
+        return QString::fromUtf8(R"(Résultat: Impossible de mesurer, veuillez vérifier les connexions et l'état de sécurité avant de relancer la mesure.)");
+    default:
+        return QString::fromUtf8(R"(Résultat: Inconnu, veuillez faire une mesure pour obtenir un résultat.
+ )");
+    }
+}

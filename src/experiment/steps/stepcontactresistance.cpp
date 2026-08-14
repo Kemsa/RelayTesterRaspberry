@@ -59,8 +59,32 @@ QString StepContactResistance::getDescription() const {
     return str;
 }
 
+QString StepContactResistance::getFormattedResults() const {
+    QString str;
+    str.append(QString("Résistance maximale pour contacts fermés: %1 mOhm\n").arg(successValues.maxResistanceClosed_mOhm));
+    for (int c = 0; c < nContacts; ++c) {
+        str.append(QString("\n Résistance de contact %1: normalement fermé: %2 Ohm, normalement ouvert: %3 Ohm\n")
+                       .arg(c + 1)
+                       .arg(measurementValues.averageResistanceContactA_Ohm[0][c], 0, 'f', 3)
+                       .arg(measurementValues.averageResistanceContactB_Ohm[0][c], 0, 'f', 3));
+    }
+
+    return str;
+}
+
 QString StepContactResistance::getResultSummary() const {
-    return QString();
+    switch (resultStatus) {
+    case ResultSuccess:
+        return QString::fromUtf8(R"(SUCCES
+            %1)")
+            .arg(getFormattedResults());
+    case ResultFailure:
+        return QString::fromUtf8(R"(ECHEC
+            %1)")
+            .arg(getFormattedResults());
+    default:
+        return GenericStep::getResultSummary();
+    }
 }
 
 GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atomic<bool>& stopToken) {
@@ -77,11 +101,11 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
 
     if (!powerControl || !staticReadings || !powerSupply || !dynamicReadings || !contactSelector) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
-        return ResultFailure;
+        return ResultCantMeasure;
     }
     if (!powerControl->checkSafetyStatus()) {
         qCritical() << "Safety status check failed. Aborting measurement.";
-        return ResultFailure;
+        return ResultCantMeasure;
     }
 
     contactSelector->selectContact(0); // disable contact to start with a known state

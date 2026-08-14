@@ -170,6 +170,13 @@ QString RelayMeasure::getStepDescription(int index) {
     return QString();
 }
 
+QString RelayMeasure::getStepResultSummary(int index) {
+    if (index >= 0 && index < static_cast<int>(m_steps.size())) {
+        return m_steps[index]->getResultSummary();
+    }
+    return QString();
+}
+
 GenericStep::ResultStatus RelayMeasure::getStepResultStatus(int index) {
     if (index >= 0 && index < static_cast<int>(m_steps.size())) {
         return m_steps[index]->getResultStatus();

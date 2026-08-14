@@ -34,6 +34,8 @@ private:
     } measurementValues;
 
     ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
+
+    QString getFormattedResults() const;
 };
 
 #endif // STEPCOILRESISTANCE_H
