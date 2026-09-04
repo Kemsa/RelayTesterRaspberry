@@ -37,8 +37,7 @@ QString StepCoilResistance::getDescription() const {
     QString str = QString::fromUtf8(R"(Mesure de la résistance de la bobine #%1 avec:
 	tension d'alimentation: %2 V
 	courant maximum: %3 mA
-	nombre de mesures: %4
-)")
+	nombre de mesures: %4)")
                       .arg(coilToMeasure)
                       .arg(supplyVoltage_cV / 100.0f, 0, 'f', 2)
                       .arg(maxCurrent_mA)
@@ -85,8 +84,7 @@ GenericStep::ResultStatus StepCoilResistance::runMeasureAsync(const std::atomic<
     auto staticReadings = StaticReadings::getInstance();
     auto powerSupply = powerSupply::instance();
 
-    if (!powerControl || !staticReadings || !powerSupply
-    || !staticReadings->checkOpen() || !powerSupply->isConnected()) {
+    if (!powerControl || !staticReadings || !powerSupply || !staticReadings->checkOpen() || !powerSupply->isConnected()) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
         return ResultCantMeasure;
     }

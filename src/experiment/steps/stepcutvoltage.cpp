@@ -37,8 +37,7 @@ QString StepCutVoltage::getDescription() const {
     QString str = QString::fromUtf8(R"(Mesure de la tension de relachement du relais #%1 avec:
     tension de départ: %2 V
     tension de fin: %3 V
-    pas de tension: %4 V
-)")
+    pas de tension: %4 V)")
                       .arg(coilToMeasure)
                       .arg(startVoltage_cV / 100.0f, 0, 'f', 2)
                       .arg(stopVoltage_cV / 100.0f, 0, 'f', 2)
@@ -93,8 +92,7 @@ GenericStep::ResultStatus StepCutVoltage::runMeasureAsync(const std::atomic<bool
     auto contactSelector = ContactSelector::instance();
     auto staticReadings = StaticReadings::getInstance();
 
-    if (!powerControl || !staticReadings || !powerSupply || !dynamicReadings || !contactSelector
-    || !staticReadings->checkOpen() || !powerSupply->isConnected()) {
+    if (!powerControl || !staticReadings || !powerSupply || !dynamicReadings || !contactSelector || !staticReadings->checkOpen() || !powerSupply->isConnected()) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
         return ResultCantMeasure;
     }
@@ -155,7 +153,7 @@ GenericStep::ResultStatus StepCutVoltage::runMeasureAsync(const std::atomic<bool
         qDebug() << "nowSwitched:" << nowSwitched;
         if (isAllSwitched() && measurementValues.switchingVoltage_V < 0.0) {
             measurementValues.switchingVoltage_V = measuredVoltage;
-        } else if(!isAllSwitched()) {
+        } else if (!isAllSwitched()) {
             measurementValues.switchingVoltage_V = -1.0;
         }
     }

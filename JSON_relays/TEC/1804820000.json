@@ -1,7 +1,7 @@
 {
   "$schema": "../relay_schema.json",
-  "relayBrand": "axicom",
-  "relayModel": "v23062-B00029",
+  "relayBrand": "TEC",
+  "relayModel": "TEC1804820000",
   "measures": [
     {
       "name": "resistance de bobine",
@@ -59,7 +59,7 @@
       }
     },
     {
-      "name": "switching time",
+      "name": "temps de commutation",
       "parameters": {
         "measureType": "switchingTime",
         "coilToPowerOn": 1,

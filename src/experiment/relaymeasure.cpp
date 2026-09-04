@@ -229,3 +229,21 @@ void RelayMeasure::stopMeasure() {
         }
     }
 }
+
+QString RelayMeasure::getFullSummary() const {
+    QString summary;
+    summary += "Mesure de relais: récapitulatif\n";
+    summary += "========================\n";
+    summary += "Marque: " + brand + "\n";
+    summary += "Modèle: " + model + "\n\n";
+    for (const auto& step : m_steps) {
+        if (step) {
+            summary += "##########\n";
+            summary += step->getName() + "\n";
+            summary += step->getDescription() + "\n";
+            summary += "----------\n";
+            summary += step->getResultSummary() + "\n\n";
+        }
+    }
+    return summary;
+}

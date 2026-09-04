@@ -59,7 +59,7 @@
       }
     },
     {
-      "name": "switching time",
+      "name": "temps de commutation",
       "parameters": {
         "measureType": "switchingTime",
         "coilToPowerOn": 1,

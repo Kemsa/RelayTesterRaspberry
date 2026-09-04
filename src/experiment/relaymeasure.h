@@ -25,6 +25,8 @@ public:
     QString getStepDescription(int index);
     QString getStepResultSummary(int index);
 
+    QString getFullSummary() const;
+
     void measureAllAsync();
     void measureOneAsync(int index);
     void stopMeasure();

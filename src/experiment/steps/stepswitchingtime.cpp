@@ -52,9 +52,7 @@ QString StepSwitchingTime::getDescription() const {
         Nombre de contacts: %3
         Nombre de commutations: %4
         Tension de bobine (V): %5
-        Courant max (mA): %6
-
-    )")
+        Courant max (mA): %6)")
                       .arg(coilToPowerOn)
                       .arg(coilToPowerOff)
                       .arg(nContacts)
@@ -186,8 +184,7 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
     auto contactSelector = ContactSelector::instance();
     auto currentAdjuster = CurrentAdjuster::instance();
 
-    if (!powerControl || !powerSupply || !dynamicReadings || !contactSelector
-    || !currentAdjuster || !dynamicReadings->isReady() || !powerSupply->isConnected()) {
+    if (!powerControl || !powerSupply || !dynamicReadings || !contactSelector || !currentAdjuster || !dynamicReadings->isReady() || !powerSupply->isConnected()) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
         return ResultCantMeasure;
     }

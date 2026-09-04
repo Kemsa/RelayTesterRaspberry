@@ -3,16 +3,20 @@
 #include "navigator.h"
 #include "ui_relaymeasurescreen.h"
 #include <QApplication>
+#include <QDateTime>
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QJsonObject>
 #include <QListWidgetItem>
+#include <QMessageBox>
 #include <QPainter>
 #include <QPixmap>
 #include <QShowEvent>
 #include <QSize>
+#include <QStorageInfo>
 #include <QStyle>
 #include <memory>
 
@@ -33,6 +37,26 @@ QString findSchemaPath(const QString& relayFilePath) {
     }
 
     return QString();
+}
+
+QString preferredExportDirectory() {
+    const QStringList removableMountPrefixes = {
+        QStringLiteral("/media/"), QStringLiteral("/run/media/"), QStringLiteral("/mnt/")};
+
+    for (const QStorageInfo& storage : QStorageInfo::mountedVolumes()) {
+        if (!storage.isReady() || storage.isReadOnly()) {
+            continue;
+        }
+
+        const QString rootPath = storage.rootPath();
+        for (const QString& prefix : removableMountPrefixes) {
+            if (rootPath.startsWith(prefix)) {
+                return rootPath;
+            }
+        }
+    }
+
+    return QDir::homePath();
 }
 
 } // namespace
@@ -97,6 +121,39 @@ RelayMeasureScreen::RelayMeasureScreen(QWidget* parent)
                 m_relayMeasure->measureOneAsync(currentRow);
             }
         }
+    });
+
+    connect(ui->export_PB, &QPushButton::clicked, this, [this]() {
+        if (!m_relayMeasure) {
+            return;
+        }
+
+        const QString directory = QFileDialog::getExistingDirectory(
+            this, QStringLiteral("Choisir le dossier d'export"), preferredExportDirectory(),
+            QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        if (directory.isEmpty()) {
+            return;
+        }
+
+        const QString filePath = QDir(directory).filePath(
+            QStringLiteral("%1-%2_%3.txt")
+                .arg(m_relayMeasure->getBrand())
+                .arg(m_relayMeasure->getModel())
+                .arg(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMdd_HHmmss"))));
+        QFile file(filePath);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QMessageBox::critical(this, QStringLiteral("Export impossible"),
+                                  QStringLiteral("Impossible de créer le fichier d'export : %1")
+                                      .arg(file.errorString()));
+            return;
+        }
+
+        file.write(m_relayMeasure->getFullSummary().toUtf8());
+        file.close();
+
+        QMessageBox::information(this, QStringLiteral("Export terminé"),
+                                 QStringLiteral("Les résultats ont été exportés dans :\n%1")
+                                     .arg(filePath));
     });
 }
 

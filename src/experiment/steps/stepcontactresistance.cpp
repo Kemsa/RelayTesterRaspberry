@@ -48,8 +48,7 @@ QString StepContactResistance::getDescription() const {
 	bobine "OFF": %3
 	tension de bobine (V): %4
 	courant de bobine maximum (mA): %6 mA
-	nombre de mesures: %7
-)")
+	nombre de mesures: %7)")
                       .arg(nContacts)
                       .arg(coilToPowerOn)
                       .arg(coilToPowerOff)
@@ -99,8 +98,7 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
     auto staticReadings = StaticReadings::getInstance();
     auto currentAdjuster = CurrentAdjuster::instance();
 
-    if (!powerControl || !staticReadings || !powerSupply || !dynamicReadings || !contactSelector
-    || !currentAdjuster || !staticReadings->checkOpen() || !powerSupply->isConnected()) {
+    if (!powerControl || !staticReadings || !powerSupply || !dynamicReadings || !contactSelector || !currentAdjuster || !staticReadings->checkOpen() || !powerSupply->isConnected()) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
         return ResultCantMeasure;
     }
