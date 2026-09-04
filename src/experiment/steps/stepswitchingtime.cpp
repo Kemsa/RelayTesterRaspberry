@@ -335,9 +335,9 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
             switchResult = switchFuture.get(); // Wait for the switch to complete
 
             if (switchResult && switchResult->isValid() && switchResult->getContactBTransistionType() == INT_EDGE_FALLING) { // contact open measures high
-                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::WorkTime][i] = switchResult->getContactAWorkSwitchTime_us();
-                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::WorkTimeStable][i] = switchResult->getContactAStableSwitchTime_us();
-                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::WorkReboundTime][i] = switchResult->getContactAReboundTime_us();
+                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::WorkTime][i] = switchResult->getContactBWorkSwitchTime_us();
+                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::WorkTimeStable][i] = switchResult->getContactBStableSwitchTime_us();
+                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::WorkReboundTime][i] = switchResult->getContactBReboundTime_us();
             } else {
                 qWarning() << "Switch result is invalid for contact" << c << "on iteration" << i;
 
@@ -363,9 +363,9 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
             switchResult = switchFuture.get(); // Wait for the switch to complete
 
             if (switchResult && switchResult->isValid() && switchResult->getContactBTransistionType() == INT_EDGE_RISING) { // contact closed measures low
-                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseTime][i] = switchResult->getContactAWorkSwitchTime_us();
-                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseTimeStable][i] = switchResult->getContactAStableSwitchTime_us();
-                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseReboundTime][i] = switchResult->getContactAReboundTime_us();
+                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseTime][i] = switchResult->getContactBWorkSwitchTime_us();
+                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseTimeStable][i] = switchResult->getContactBStableSwitchTime_us();
+                measurementValues.contactBSwitchTimes_us[c - 1][switchTimeType::ReleaseReboundTime][i] = switchResult->getContactBReboundTime_us();
             } else {
                 qWarning() << "Switch result is invalid for contact" << c << "on iteration" << i;
 
