@@ -29,6 +29,7 @@ public:
     static StaticReadings* getInstance();
     static StaticReadings* initialize();
 
+    bool checkOpen() const;
     bool getReading(ReadingFlags type, std::shared_ptr<ADCValue> reading, ADCBase::ADCCaliber caliber = ADCBase::Caliber_Auto);
     int getNReadings(ReadingFlags type, int nReadings, ADCValue readings[], ADCBase::ADCCaliber caliber = ADCBase::Caliber_Auto);
 
@@ -45,7 +46,7 @@ private:
     StaticReadings();
     ~StaticReadings() = default;
 
-    bool checkOpen() const;
+
     void configureValueForChannel(ReadingFlags type, std::shared_ptr<ADCValue> reading, ADCBase::ADCCaliber caliber);
 
     ADCBase::ADCCaliber selectCaliberForChannel(ReadingFlags type, std::shared_ptr<ADCValue> reading);

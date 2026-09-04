@@ -99,7 +99,8 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
     auto staticReadings = StaticReadings::getInstance();
     auto currentAdjuster = CurrentAdjuster::instance();
 
-    if (!powerControl || !staticReadings || !powerSupply || !dynamicReadings || !contactSelector) {
+    if (!powerControl || !staticReadings || !powerSupply || !dynamicReadings || !contactSelector
+    || !currentAdjuster || !staticReadings->checkOpen() || !powerSupply->isConnected()) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
         return ResultCantMeasure;
     }

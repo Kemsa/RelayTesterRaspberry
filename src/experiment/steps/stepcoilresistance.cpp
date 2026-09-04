@@ -85,7 +85,8 @@ GenericStep::ResultStatus StepCoilResistance::runMeasureAsync(const std::atomic<
     auto staticReadings = StaticReadings::getInstance();
     auto powerSupply = powerSupply::instance();
 
-    if (!powerControl || !staticReadings || !powerSupply) {
+    if (!powerControl || !staticReadings || !powerSupply
+    || !staticReadings->checkOpen() || !powerSupply->isConnected()) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
         return ResultCantMeasure;
     }

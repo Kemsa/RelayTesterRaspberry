@@ -24,6 +24,7 @@ public:
     static DynamicReadings* getInstance();
     static DynamicReadings* initialize(int coil1Pin, int coil2Pin, int contact1Pin, int contact2Pin);
 
+    bool isReady() const { return m_GPIOHandler != nullptr; }
     void clearInterrupts();
     std::future<std::shared_ptr<DynamicSwitch>> waitAndProcessOneSwitch(ContactType triggerCoil, int timeoutMs = 500);
     bool isContactClosed(ContactType contact) const;

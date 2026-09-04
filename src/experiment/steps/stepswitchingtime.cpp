@@ -186,7 +186,8 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
     auto contactSelector = ContactSelector::instance();
     auto currentAdjuster = CurrentAdjuster::instance();
 
-    if (!powerControl || !powerSupply || !dynamicReadings || !contactSelector) {
+    if (!powerControl || !powerSupply || !dynamicReadings || !contactSelector
+    || !currentAdjuster || !dynamicReadings->isReady() || !powerSupply->isConnected()) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
         return ResultCantMeasure;
     }

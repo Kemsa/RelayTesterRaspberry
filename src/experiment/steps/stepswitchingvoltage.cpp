@@ -92,7 +92,8 @@ GenericStep::ResultStatus StepSwitchingVoltage::runMeasureAsync(const std::atomi
     auto contactSelector = ContactSelector::instance();
     auto staticReadings = StaticReadings::getInstance();
 
-    if (!powerControl || !staticReadings || !powerSupply || !dynamicReadings || !contactSelector) {
+    if (!powerControl || !staticReadings || !powerSupply || !dynamicReadings || !contactSelector
+    || !staticReadings->checkOpen() || !powerSupply->isConnected()) {
         qCritical() << "One or more required instances are not available. Aborting measurement.";
         return ResultCantMeasure;
     }
