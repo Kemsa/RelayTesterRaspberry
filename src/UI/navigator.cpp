@@ -42,7 +42,7 @@ void Navigator::goBack() {
     if (!m_navigationHistory.isEmpty()) {
         m_navigationHistory.pop(); // Remove the current screen
         if (!m_navigationHistory.isEmpty()) {
-            NavigationScreen previousScreen = m_navigationHistory.top();
+            NavigationScreen previousScreen = m_navigationHistory.pop();
             navigateTo(previousScreen);
         } else {
             navigateTo(Home_screen); // If no previous screen, go to HomeScreen
