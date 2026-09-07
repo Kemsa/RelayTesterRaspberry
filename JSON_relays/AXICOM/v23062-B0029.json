@@ -2,7 +2,7 @@
   "$schema": "../relay_schema.json",
   "relayBrand": "axicom",
   "relayModel": "v23062-B00029",
-  "description": "Relais Axicom v23062-B00029:\n- monostable\n- 35V\n- 4 voies",
+  "description": "Relais Axicom v23062-B00029:\n- monostable\n- 48V\n- 4 voies",
   "measures": [
     {
       "name": "resistance de bobine",
@@ -23,10 +23,10 @@
         "coilToMeasure": 1,
         "nContacts": 4,
         "startVoltage_cV": 1000,
-        "stopVoltage_cV": 3700,
+        "stopVoltage_cV": 5000,
         "voltageStep_cV": 100,
         "successValues": {
-          "maxSwitchingVoltage_cV": 3500
+          "maxSwitchingVoltage_cV": 4800
         }
       }
     },
@@ -53,7 +53,7 @@
         "contactDirection": "both",
         "nContacts": 4,
         "nMeasures": 4,
-        "supplyVoltage_cV": 35e2,
+        "supplyVoltage_cV": 48e2,
         "successValues": {
           "maxResistanceClosed_mOhm": 5000
         }
@@ -67,12 +67,12 @@
         "coilToPowerOff": 0,
         "nContacts": 4,
         "switchCount": 20,
-        "supplyVoltage_cV": 35e2,
+        "supplyVoltage_cV": 48e2,
         "successValues": {
-          "maxWorkTime_ms": 8,
-          "maxWorkTimeRebound_ms": 2,
-          "maxCutTime_ms": 11,
-          "maxCutTimeRebound_ms": 2
+          "maxWorkTime_no_ms": 16,
+          "maxCutTime_no_ms": 2,
+          "maxWorkTime_nc_ms": 16,
+          "maxCutTime_nc_ms": 2
         }
       }
     }

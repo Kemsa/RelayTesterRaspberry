@@ -34,10 +34,14 @@ private:
     int maxCurrent_mA = 200;
 
     struct SuccessValues {
-        int maxWorkTime_ms = 0;
-        int maxWorkTimeRebound_ms = 0;
-        int maxCutTime_ms = 0;
-        int maxCutTimeRebound_ms = 0;
+        double maxWorkTime_no_ms = 0;
+        double maxWorkTimeRebound_no_ms = -1;
+        double maxCutTime_no_ms = 0;
+        double maxCutTimeRebound_no_ms = -1;
+        double maxWorkTime_nc_ms = 0;
+        double maxWorkTimeRebound_nc_ms = -1;
+        double maxCutTime_nc_ms = 0;
+        double maxCutTimeRebound_nc_ms = -1;
     } successValues;
 
     struct MeasurementValues {

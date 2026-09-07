@@ -40,7 +40,7 @@
       "default": 3
     },
     "time_ms": {
-      "type": "integer",
+      "type": "number",
       "minimum": 0
     },
     "contactVoltage_mV": {
@@ -188,16 +188,20 @@
         "successValues": {
           "type": "object",
           "properties": {
-            "maxWorkTime_ms": { "$ref": "#/definitions/time_ms" },
-            "maxWorkTimeRebound_ms": { "$ref": "#/definitions/time_ms" },
-            "maxCutTime_ms": { "$ref": "#/definitions/time_ms" },
-            "maxCutTimeRebound_ms": { "$ref": "#/definitions/time_ms" }
+            "maxWorkTime_no_ms": { "$ref": "#/definitions/time_ms" },
+            "maxWorkTimeRebound_no_ms": { "$ref": "#/definitions/time_ms" },
+            "maxCutTime_no_ms": { "$ref": "#/definitions/time_ms" },
+            "maxCutTimeRebound_no_ms": { "$ref": "#/definitions/time_ms" },
+            "maxWorkTime_nc_ms": { "$ref": "#/definitions/time_ms" },
+            "maxWorkTimeRebound_nc_ms": { "$ref": "#/definitions/time_ms" },
+            "maxCutTime_nc_ms": { "$ref": "#/definitions/time_ms" },
+            "maxCutTimeRebound_nc_ms": { "$ref": "#/definitions/time_ms" }
           },
           "required": [
-            "maxWorkTime_ms",
-            "maxWorkTimeRebound_ms",
-            "maxCutTime_ms",
-            "maxCutTimeRebound_ms"
+            "maxWorkTime_no_ms",
+            "maxCutTime_no_ms",
+            "maxWorkTime_nc_ms",
+            "maxCutTime_nc_ms"
           ]
         }
       },
