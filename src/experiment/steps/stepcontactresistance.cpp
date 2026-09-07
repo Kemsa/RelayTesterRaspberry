@@ -229,6 +229,6 @@ double StepContactResistance::getResistanceForContact(StaticReadings::ReadingFla
 
     qDebug() << "Mean voltage (mV):" << meanVoltage << ", Mean current (mA):" << meanCurrent;
 
-    double meanResistance_Ohm = (meanCurrent != 0.0) ? (meanVoltage / meanCurrent) : std::numeric_limits<double>::infinity();
+    double meanResistance_Ohm = (meanCurrent != 0.0) ? abs(meanVoltage / meanCurrent) : std::numeric_limits<double>::infinity();
     return meanResistance_Ohm; // Return in ohms
 }
