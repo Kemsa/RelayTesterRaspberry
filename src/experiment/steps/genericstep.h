@@ -48,6 +48,10 @@ signals:
     void measureStatusChanged(ResultStatus status);
 
 protected:
+    static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue);
+    static double doubleValueOrDefault(const QJsonObject& object, const QString& key, double defaultValue);
+    static QString stringValueOrDefault(const QJsonObject& object, const QString& key, const QString& defaultValue);
+
     QString name;
     const QString measureType = QStringLiteral("generic measure");
 

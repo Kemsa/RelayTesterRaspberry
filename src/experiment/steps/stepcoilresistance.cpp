@@ -13,11 +13,6 @@
 StepCoilResistance::StepCoilResistance(QString name) : GenericStep(name) {
 }
 
-static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue) {
-    const QJsonValue value = object.value(key);
-    return value.isDouble() ? value.toInt(defaultValue) : defaultValue;
-}
-
 void StepCoilResistance::fromJSON(const QJsonObject& object) {
     coilToMeasure = intValueOrDefault(object, QStringLiteral("coilToMeasure"), coilToMeasure);
     supplyVoltage_cV = intValueOrDefault(object, QStringLiteral("supplyVoltage_cV"), supplyVoltage_cV);

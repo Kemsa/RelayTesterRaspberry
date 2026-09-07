@@ -11,11 +11,6 @@
 
 StepCutVoltage::StepCutVoltage(QString name) : GenericStep(name) {}
 
-static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue) {
-    const QJsonValue value = object.value(key);
-    return value.isDouble() ? value.toInt(defaultValue) : defaultValue;
-}
-
 void StepCutVoltage::fromJSON(const QJsonObject& object) {
     coilToMeasure = intValueOrDefault(object, QStringLiteral("coilToMeasure"), coilToMeasure);
     nContacts = intValueOrDefault(object, QStringLiteral("nContacts"), nContacts);

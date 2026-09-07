@@ -12,16 +12,6 @@
 
 StepContactResistance::StepContactResistance(QString name) : GenericStep(name) {}
 
-static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue) {
-    const QJsonValue value = object.value(key);
-    return value.isDouble() ? value.toInt(defaultValue) : defaultValue;
-}
-
-static QString stringValueOrDefault(const QJsonObject& object, const QString& key, const QString& defaultValue) {
-    const QJsonValue value = object.value(key);
-    return value.isString() ? value.toString() : defaultValue;
-}
-
 void StepContactResistance::fromJSON(const QJsonObject& object) {
     coilToPowerOn = intValueOrDefault(object, QStringLiteral("coilToPowerOn"), coilToPowerOn);
     coilToPowerOff = intValueOrDefault(object, QStringLiteral("coilToPowerOff"), coilToPowerOff);

@@ -6,6 +6,21 @@ GenericStep::GenericStep(QString name, QObject* parent)
     qRegisterMetaType<GenericStep::ResultStatus>("ResultStatus");
 }
 
+int GenericStep::intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue) {
+    const QJsonValue value = object.value(key);
+    return value.isDouble() ? value.toInt(defaultValue) : defaultValue;
+}
+
+double GenericStep::doubleValueOrDefault(const QJsonObject& object, const QString& key, double defaultValue) {
+    const QJsonValue value = object.value(key);
+    return value.isDouble() ? value.toDouble(defaultValue) : defaultValue;
+}
+
+QString GenericStep::stringValueOrDefault(const QJsonObject& object, const QString& key, const QString& defaultValue) {
+    const QJsonValue value = object.value(key);
+    return value.isString() ? value.toString() : defaultValue;
+}
+
 void GenericStep::setResultStatus(ResultStatus status) {
     if (resultStatus != status) {
         resultStatus = status;
