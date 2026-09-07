@@ -1,8 +1,8 @@
 {
   "$schema": "../relay_schema.json",
-  "relayBrand": "axicom",
-  "relayModel": "v23062-B00029",
-  "description": "Relais Axicom v23062-B00029:\n- monostable\n- 48V\n- 4 voies",
+  "relayBrand": "TEC",
+  "relayModel": "TEC1804880B00",
+  "description": "Relais TEC 1804880B00:\n- monostable\n- 24V\n- 4 voies",
   "measures": [
     {
       "name": "resistance de bobine",
@@ -11,8 +11,8 @@
         "coilToMeasure": 1,
         "supplyVoltage_cV": 5e2,
         "successValues": {
-          "minResistance_ohm": 2125,
-          "maxResistance_ohm": 2875
+          "minResistance_ohm": 400,
+          "maxResistance_ohm": 550
         }
       }
     },
@@ -22,11 +22,11 @@
         "measureType": "switchingVoltage",
         "coilToMeasure": 1,
         "nContacts": 4,
-        "startVoltage_cV": 1000,
-        "stopVoltage_cV": 5000,
+        "startVoltage_cV": 10e2,
+        "stopVoltage_cV": 28e2,
         "voltageStep_cV": 100,
         "successValues": {
-          "maxSwitchingVoltage_cV": 4800
+          "maxSwitchingVoltage_cV": 24e2
         }
       }
     },
@@ -36,11 +36,11 @@
         "measureType": "cutVoltage",
         "coilToMeasure": 1,
         "nContacts": 4,
-        "startVoltage_cV": 4800,
-        "stopVoltage_cV": 900,
+        "startVoltage_cV": 28e2,
+        "stopVoltage_cV": 5e2,
         "voltageStep_cV": 100,
         "successValues": {
-          "minCutVoltage_cV": 1000
+          "minCutVoltage_cV": 10e2
         }
       }
     },
@@ -53,7 +53,7 @@
         "contactDirection": "both",
         "nContacts": 4,
         "nMeasures": 4,
-        "supplyVoltage_cV": 4800,
+        "supplyVoltage_cV": 24e2,
         "successValues": {
           "maxResistanceClosed_mOhm": 5000
         }
@@ -67,12 +67,12 @@
         "coilToPowerOff": 0,
         "nContacts": 4,
         "switchCount": 20,
-        "supplyVoltage_cV": 4800,
+        "supplyVoltage_cV": 24e2,
         "successValues": {
-          "maxWorkTime_no_ms": 16,
-          "maxCutTime_no_ms": 2,
-          "maxWorkTime_nc_ms": 16,
-          "maxCutTime_nc_ms": 2
+          "maxWorkTime_no_ms": 11.5,
+          "maxCutTime_no_ms": 2.5,
+          "maxWorkTime_nc_ms": 8,
+          "maxCutTime_nc_ms": 5
         }
       }
     }
