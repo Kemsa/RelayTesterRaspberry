@@ -65,11 +65,13 @@ QString StepContactResistance::getResultSummary() const {
     switch (resultStatus) {
     case ResultSuccess:
         return QString::fromUtf8(R"(SUCCES
-            %1)")
+
+%1)")
             .arg(getFormattedResults());
     case ResultFailure:
         return QString::fromUtf8(R"(ECHEC
-            %1)")
+
+%1)")
             .arg(getFormattedResults());
     default:
         return GenericStep::getResultSummary();

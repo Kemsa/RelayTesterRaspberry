@@ -61,19 +61,24 @@ QString StepSwitchingTime::getFormattedResults() const {
     QString str;
     str.append(QString("Temps de travail max normalement ouvert (ms): %1\n")
                    .arg(successValues.maxWorkTime_no_ms));
+                   if(successValues.maxWorkTimeRebound_no_ms >= 0)
     str.append(QString("Temps de travail rebond max normalement ouvert (ms): %1\n")
-                   .arg(successValues.maxWorkTimeRebound_no_ms));
-    str.append(QString("Temps de coupure max normalement ouvert (ms): %1\n")
-                   .arg(successValues.maxCutTime_no_ms));
+                   .arg(successValues.maxWorkTimeRebound_no_ms));    
+    if(successValues.maxCutTime_no_ms >= 0) {
+        str.append(QString("Temps de coupure max normalement ouvert (ms): %1\n")
+                       .arg(successValues.maxCutTime_no_ms));
+    }
     str.append(QString("Temps de coupure rebond max normalement ouvert (ms): %1\n")
                    .arg(successValues.maxCutTimeRebound_no_ms));
     str.append(QString("Temps de travail max normalement fermé (ms): %1\n")
                    .arg(successValues.maxWorkTime_nc_ms));
-    str.append(QString("Temps de travail rebond max normalement fermé (ms): %1\n")
-                   .arg(successValues.maxWorkTimeRebound_nc_ms));
+    if(successValues.maxWorkTimeRebound_nc_ms >= 0) {
+        str.append(QString("Temps de travail rebond max normalement fermé (ms): %1\n")
+                       .arg(successValues.maxWorkTimeRebound_nc_ms));
+    }
     str.append(QString("Temps de coupure max normalement fermé (ms): %1\n")
                    .arg(successValues.maxCutTime_nc_ms));
-    str.append(QString("Temps de coupure rebond max normalement fermé (ms): %1\n")
+    str.append(QString("Temps de coupure rebond max normalement fermé (ms): %1\n\n")
                    .arg(successValues.maxCutTimeRebound_nc_ms));
 
     str.append("résultats formattés:\n");
@@ -131,25 +136,25 @@ QString StepSwitchingTime::getFormattedResults() const {
         signmaCutTimeB_ms = std::sqrt(signmaCutTimeB_ms / switchCount);
         signmaCutTimeReboundB_ms = std::sqrt(signmaCutTimeReboundB_ms / switchCount);
 
-        str.append(QString("temps %1/A: %2/A: %3, %4, %5\n")
+        str.append(QString("temps %1/A: %2: %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(avrgWorkTimeA_ms, 0, 'f', 2)
                        .arg(avrgWorkTimeReboundA_ms, 0, 'f', 2)
                        .arg(avrgCutTimeA_ms, 0, 'f', 2)
                        .arg(avrgCutTimeReboundA_ms, 0, 'f', 2));
-        str.append(QString("deviation %1/A: %2/A: %3, %4, %5\n")
+        str.append(QString("deviation %1/A: %2: %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(signmaWorkTimeA_ms, 0, 'f', 2)
                        .arg(signmaWorkTimeReboundA_ms, 0, 'f', 2)
                        .arg(signmaCutTimeA_ms, 0, 'f', 2)
                        .arg(signmaCutTimeReboundA_ms, 0, 'f', 2));
-        str.append(QString("temps %1/B: %2/B: %3, %4, %5\n")
+        str.append(QString("temps %1/B: %2: %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(avrgWorkTimeB_ms, 0, 'f', 2)
                        .arg(avrgWorkTimeReboundB_ms, 0, 'f', 2)
                        .arg(avrgCutTimeB_ms, 0, 'f', 2)
                        .arg(avrgCutTimeReboundB_ms, 0, 'f', 2));
-        str.append(QString("deviation %1/B: %2/B: %3, %4, %5\n")
+        str.append(QString("deviation %1/B: %2: %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(signmaWorkTimeB_ms, 0, 'f', 2)
                        .arg(signmaWorkTimeReboundB_ms, 0, 'f', 2)
@@ -164,11 +169,11 @@ QString StepSwitchingTime::getResultSummary() const {
     switch (resultStatus) {
     case ResultSuccess:
         return QString::fromUtf8(R"(SUCCES
-            %1)")
+%1)")
             .arg(getFormattedResults());
     case ResultFailure:
         return QString::fromUtf8(R"(ECHEC
-            %1)")
+%1)")
             .arg(getFormattedResults());
     default:
         return GenericStep::getResultSummary();

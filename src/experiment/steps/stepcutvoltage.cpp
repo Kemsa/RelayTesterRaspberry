@@ -44,14 +44,16 @@ QString StepCutVoltage::getResultSummary() const {
     switch (resultStatus) {
     case ResultSuccess:
         return QString::fromUtf8(R"(SUCCES
-            Tension de commutation: %1 V (min autorisée: %2 V))")
+
+Tension de commutation: %1 V (min autorisée: %2 V))")
             .arg(measurementValues.switchingVoltage_V, 0, 'f', 2)
             .arg(successValues.minCutVoltage_cV / 100.0f, 0, 'f', 2);
 
     case ResultFailure:
         return QString::fromUtf8(R"(ECHEC
-        Contacts commutés: %1
-        Contacts non commutés: %2)")
+
+Contacts commutés: %1
+Contacts non commutés: %2)")
             .arg([this]() {
                 QStringList switchedContacts;
                 for (int i = 0; i < nContacts; ++i) {
