@@ -33,6 +33,7 @@ public:
 
     bool reload();
     QString filePath(const QModelIndex& index) const;
+    QString description(const QModelIndex& index) const;
     bool isFile(const QModelIndex& index) const;
 
 private:
@@ -45,6 +46,7 @@ private:
     struct Node {
         QString name;
         QString path;
+        QString description;
         NodeType type = NodeType::Root;
         Node* parent = nullptr;
         std::vector<std::unique_ptr<Node>> children;
@@ -52,7 +54,7 @@ private:
         int row() const;
     };
 
-    void loadChildren(Node* parentNode);
+    void loadChildren(Node* parentNode, int depth);
     Node* nodeFromIndex(const QModelIndex& index) const;
 
     QString m_rootPath;

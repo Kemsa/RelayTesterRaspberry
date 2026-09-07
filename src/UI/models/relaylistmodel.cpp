@@ -129,7 +129,7 @@ bool relayListModel::reload() {
         qWarning().noquote() << QStringLiteral("Unable to load relay schema \"%1\": %2").arg(schemaPath, schemaError);
     }
 
-    loadChildren(m_rootNode.get());
+    loadChildren(m_rootNode.get(), 0);
 
     endResetModel();
     return QDir(m_rootPath).exists();
@@ -144,12 +144,21 @@ QString relayListModel::filePath(const QModelIndex& index) const {
     return node->path;
 }
 
+QString relayListModel::description(const QModelIndex& index) const {
+    Node* node = nodeFromIndex(index);
+    if (node == nullptr || node->type != NodeType::File) {
+        return QString();
+    }
+
+    return node->description;
+}
+
 bool relayListModel::isFile(const QModelIndex& index) const {
     Node* node = nodeFromIndex(index);
     return node != nullptr && node->type == NodeType::File;
 }
 
-void relayListModel::loadChildren(Node* parentNode) {
+void relayListModel::loadChildren(Node* parentNode, int depth) {
     QDir directory(parentNode->path);
     const QFileInfoList entries = directory.entryInfoList(
         QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot,
@@ -157,13 +166,17 @@ void relayListModel::loadChildren(Node* parentNode) {
 
     for (const QFileInfo& entry : entries) {
         if (entry.isDir()) {
+            if (depth >= 1) {
+                continue;
+            }
+
             auto folderNode = std::make_unique<Node>();
             folderNode->name = entry.fileName();
             folderNode->path = entry.absoluteFilePath();
             folderNode->type = NodeType::Folder;
             folderNode->parent = parentNode;
 
-            loadChildren(folderNode.get());
+            loadChildren(folderNode.get(), depth + 1);
 
             if (!folderNode->children.empty()) {
                 parentNode->children.push_back(std::move(folderNode));
@@ -197,6 +210,7 @@ void relayListModel::loadChildren(Node* parentNode) {
         auto fileNode = std::make_unique<Node>();
         fileNode->name = entry.completeBaseName();
         fileNode->path = entry.absoluteFilePath();
+        fileNode->description = relayJson.value(QStringLiteral("description")).toString();
         fileNode->type = NodeType::File;
         fileNode->parent = parentNode;
         parentNode->children.push_back(std::move(fileNode));

@@ -3,6 +3,7 @@
 #include "relaylistmodel.h"
 #include "ui_relayselectscreen.h"
 #include <QItemSelectionModel>
+#include <QTextBrowser>
 
 RelaySelectScreen::RelaySelectScreen(QWidget* parent)
     : QWidget(parent),
@@ -11,10 +12,18 @@ RelaySelectScreen::RelaySelectScreen(QWidget* parent)
     ui->setupUi(this);
     ui->relaySelect_CV->setModel(m_model.get());
     ui->selectRelay_PB->setEnabled(false);
+    ui->relaySelect_CV->setResizeGripsVisible(false);
+    auto* descriptionBrowser = new QTextBrowser;
+    descriptionBrowser->setReadOnly(true);
+    ui->relaySelect_CV->setPreviewWidget(descriptionBrowser);
 
     connect(ui->relaySelect_CV->selectionModel(), &QItemSelectionModel::currentChanged,
             this, [this](const QModelIndex& current, const QModelIndex&) {
                 updateSelectionState(current);
+                auto* preview = qobject_cast<QTextBrowser*>(ui->relaySelect_CV->previewWidget());
+                if (preview != nullptr) {
+                    preview->setText(m_model->description(current));
+                }
             });
 
     connect(ui->selectRelay_PB, &QPushButton::clicked, this, [this]() {

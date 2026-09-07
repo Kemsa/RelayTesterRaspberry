@@ -2,6 +2,7 @@
   "$schema": "../relay_schema.json",
   "relayBrand": "axicom",
   "relayModel": "v23062-B00029",
+  "description": "Relais Axicom v23062-B00029:\n- monostable\n- 35V\n- 4 voies",
   "measures": [
     {
       "name": "resistance de bobine",

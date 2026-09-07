@@ -2,6 +2,7 @@
   "$schema": "../relay_schema.json",
   "relayBrand": "TEC",
   "relayModel": "TEC1804820000",
+  "description": "Relais TEC 1804820000:\n- monostable\n- 12V\n- 4 voies",
   "measures": [
     {
       "name": "resistance de bobine",
