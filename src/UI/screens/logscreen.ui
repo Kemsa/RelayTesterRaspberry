@@ -43,6 +43,9 @@
     <property name="rightMargin">
      <number>5</number>
     </property>
+    <property name="bottomMargin">
+     <number>2</number>
+    </property>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="spacing">
@@ -97,6 +100,16 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="clearLogs_PB">
+        <property name="text">
+         <string>Effacer</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="logDate_CB"/>
       </item>
      </layout>
     </item>

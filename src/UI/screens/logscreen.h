@@ -28,10 +28,13 @@ protected:
 
 private slots:
     void refreshLogDisplay();
+    void clearOldLogs();
 
 private:
     Ui::LogScreen* ui;
     QVector<Log> m_allLogLines;
+    void populateLogDurationOptions();
+    QDateTime getThresholdForSelectedDuration() const;
 };
 
 #endif // LOGSCREEN_H
