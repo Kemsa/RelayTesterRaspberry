@@ -1,6 +1,7 @@
 #include "navigator.h"
 #include "calibrationscreen.h"
 #include "homescreen.h"
+#include "logscreen.h"
 #include "relaymeasurescreen.h"
 #include "relayselectscreen.h"
 #include <QDebug>
@@ -26,6 +27,7 @@ Navigator::Navigator(QMainWindow* mainWindow, QStackedWidget* stackedWidget)
     addWidgetForScreen(Calibration_screen, new CalibrationScreen(m_stackedWidget));
     addWidgetForScreen(RelaySelect_screen, new RelaySelectScreen(m_stackedWidget));
     addWidgetForScreen(RelayMeasure_screen, new RelayMeasureScreen(m_stackedWidget));
+    addWidgetForScreen(Logs_screen, new LogScreen(m_stackedWidget));
 
     navigateTo(Home_screen); // Show HomeScreen by default
 }

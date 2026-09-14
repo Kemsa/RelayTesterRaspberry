@@ -13,6 +13,9 @@ HomeScreen::HomeScreen(QWidget* parent)
     connect(ui->relayMeasure_PB, &QPushButton::clicked, this, [this]() {
         Navigator::instance().navigateTo(Navigator::RelaySelect_screen);
     });
+    connect(ui->logs_PB, &QPushButton::clicked, this, [this]() {
+        Navigator::instance().navigateTo(Navigator::Logs_screen);
+    });
 }
 
 HomeScreen::~HomeScreen() {

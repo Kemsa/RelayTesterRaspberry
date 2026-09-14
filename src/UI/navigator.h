@@ -13,6 +13,8 @@ public:
         Calibration_screen,
         RelaySelect_screen,
         RelayMeasure_screen,
+        Logs_screen,
+
         // Add more screens as needed
     };
 

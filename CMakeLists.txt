@@ -60,6 +60,7 @@ add_executable(relayTester
   src/experiment/steps/stepselftestresistance.h src/experiment/steps/stepselftestresistance.cpp
   src/experiment/steps/stepswitchingtime.h src/experiment/steps/stepswitchingtime.cpp
   src/experiment/steps/genericstep.h src/experiment/steps/genericstep.cpp
+  src/UI/screens/logscreen.h src/UI/screens/logscreen.cpp src/UI/screens/logscreen.ui
 )
 target_include_directories(relayTester PRIVATE
   ${CMAKE_CURRENT_BINARY_DIR}
