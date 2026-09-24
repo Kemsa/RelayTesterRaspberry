@@ -61,10 +61,10 @@ QString StepSwitchingTime::getFormattedResults() const {
     QString str;
     str.append(QString("Temps de travail max normalement ouvert (ms): %1\n")
                    .arg(successValues.maxWorkTime_no_ms));
-                   if(successValues.maxWorkTimeRebound_no_ms >= 0)
-    str.append(QString("Temps de travail rebond max normalement ouvert (ms): %1\n")
-                   .arg(successValues.maxWorkTimeRebound_no_ms));    
-    if(successValues.maxCutTime_no_ms >= 0) {
+    if (successValues.maxWorkTimeRebound_no_ms >= 0)
+        str.append(QString("Temps de travail rebond max normalement ouvert (ms): %1\n")
+                       .arg(successValues.maxWorkTimeRebound_no_ms));
+    if (successValues.maxCutTime_no_ms >= 0) {
         str.append(QString("Temps de coupure max normalement ouvert (ms): %1\n")
                        .arg(successValues.maxCutTime_no_ms));
     }
@@ -72,7 +72,7 @@ QString StepSwitchingTime::getFormattedResults() const {
                    .arg(successValues.maxCutTimeRebound_no_ms));
     str.append(QString("Temps de travail max normalement fermé (ms): %1\n")
                    .arg(successValues.maxWorkTime_nc_ms));
-    if(successValues.maxWorkTimeRebound_nc_ms >= 0) {
+    if (successValues.maxWorkTimeRebound_nc_ms >= 0) {
         str.append(QString("Temps de travail rebond max normalement fermé (ms): %1\n")
                        .arg(successValues.maxWorkTimeRebound_nc_ms));
     }
@@ -205,6 +205,9 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
     powerSupply->setMaxValues(supplyVoltage_cV / 100.0, maxCurrent_mA / 1000.0);
     powerSupply->setVoltage(supplyVoltage_cV / 100.0);
     powerSupply->enableOutput();
+    powerControl->enableContactPower();
+    powerControl->enableCoilTop(static_cast<PowerControl::Coil>(coilToPowerOn));
+    powerControl->enableCoilTop(static_cast<PowerControl::Coil>(coilToPowerOff));
     QThread::msleep(100); // Wait for the power supply to stabilize
 
     // prepare results storage
@@ -253,13 +256,13 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
             // Enable coil to power on
             if (coilToPowerOn == 1) {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, SWITCH_WAIT_TIME_MS);
-                powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToPowerOn));
+                powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToPowerOn));
             } else if (coilToPowerOn == 2) {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL2, SWITCH_WAIT_TIME_MS);
-                powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToPowerOn));
+                powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToPowerOn));
             } else {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COILS_OFF, SWITCH_WAIT_TIME_MS);
-                powerControl->disableCoils();
+                powerControl->disableCoilsBottom();
             }
             // Measure work time, stable time, and rebound time for contact
             // Store results in measurementValues.contactASwitchTimes_ms
@@ -280,13 +283,13 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
             // Enable coil to power off
             if (coilToPowerOff == 1) {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, SWITCH_WAIT_TIME_MS);
-                powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToPowerOff));
+                powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToPowerOff));
             } else if (coilToPowerOff == 2) {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL2, SWITCH_WAIT_TIME_MS);
-                powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToPowerOff));
+                powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToPowerOff));
             } else {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COILS_OFF, SWITCH_WAIT_TIME_MS);
-                powerControl->disableCoils();
+                powerControl->disableCoilsBottom();
             }
 
             // Measure release time, stable time, and rebound time for contact A
@@ -326,13 +329,13 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
             // Enable coil to power on
             if (coilToPowerOn == 1) {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, SWITCH_WAIT_TIME_MS);
-                powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToPowerOn));
+                powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToPowerOn));
             } else if (coilToPowerOn == 2) {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL2, SWITCH_WAIT_TIME_MS);
-                powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToPowerOn));
+                powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToPowerOn));
             } else {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COILS_OFF, SWITCH_WAIT_TIME_MS);
-                powerControl->disableCoils();
+                powerControl->disableCoilsBottom();
             }
             // Measure work time, stable time, and rebound time for contact
             // Store results in measurementValues.contactASwitchTimes_ms
@@ -353,13 +356,13 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
             // Enable coil to power off
             if (coilToPowerOff == 1) {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL1, SWITCH_WAIT_TIME_MS);
-                powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToPowerOff));
+                powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToPowerOff));
             } else if (coilToPowerOff == 2) {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COIL2, SWITCH_WAIT_TIME_MS);
-                powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToPowerOff));
+                powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToPowerOff));
             } else {
                 switchFuture = dynamicReadings->waitAndProcessOneSwitch(DynamicReadings::ContactType::COILS_OFF, SWITCH_WAIT_TIME_MS);
-                powerControl->disableCoils();
+                powerControl->disableCoilsBottom();
             }
 
             // Measure release time, stable time, and rebound time for contact A
@@ -380,8 +383,10 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
         }
     }
 
-    powerControl->disableCoils();
+    powerControl->disableContactPower();
+    powerControl->disableCoilsBottom();
     contactSelector->selectContact(0);
+    powerControl->disableCoilsTop();
     powerSupply->disableOutput();
     QThread::msleep(100); // Wait for the contact to settle
 

@@ -10,8 +10,10 @@
 #define CONTACT_SELECT_S2 22
 #define CONTACT_SELECT_EN 26
 
-#define COIL1_ENABLE 6
-#define COIL2_ENABLE 5
+#define COIL1_ENABLE_BOTTOM 6
+#define COIL2_ENABLE_BOTTOM 5
+#define COIL1_ENABLE_TOP 9
+#define COIL2_ENABLE_TOP 10
 #define COIL1_DETECT 19
 #define COIL2_DETECT 18
 
@@ -31,7 +33,7 @@
 #define H_BRIDGE2 7
 #define H_BRIDGE3 8
 
-#define CONTACT_POWER_ENABLE 5
+#define CONTACT_POWER_ENABLE 15
 
 // #############  Serial port defines ####################
 

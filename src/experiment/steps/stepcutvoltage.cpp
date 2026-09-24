@@ -103,11 +103,13 @@ GenericStep::ResultStatus StepCutVoltage::runMeasureAsync(const std::atomic<bool
         measurementValues.switchedContacts[i] = false; // Initialize all contacts as not switched
     }
 
-    powerControl->disableCoils();
+    powerControl->disableCoilsBottom();
     powerSupply->setMaxValues(stopVoltage_cV / 100.0, maxCurrent_mA / 1000.0);
     powerSupply->setVoltage(startVoltage_cV / 100.0);
     powerSupply->enableOutput();
-    powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToMeasure));
+    powerControl->enableCoilTop(static_cast<PowerControl::Coil>(coilToMeasure));
+    powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToMeasure));
+    powerControl->enableContactPower();
     QThread::msleep(100); // Wait for the coil to stabilize
 
     StaticReadings::ReadingFlags coilToMeasureFlag = (coilToMeasure == 1) ? StaticReadings::ReadingFlags::coil1Voltage : StaticReadings::ReadingFlags::coil2Voltage;
@@ -155,7 +157,9 @@ GenericStep::ResultStatus StepCutVoltage::runMeasureAsync(const std::atomic<bool
         }
     }
 
-    powerControl->disableCoils();
+    powerControl->disableCoilsBottom();
+    powerControl->disableCoilsTop();
+    powerControl->disableContactPower();
     powerSupply->disableOutput();
 
     if (isAllSwitched() && measurementValues.switchingVoltage_V >= successValues.minCutVoltage_cV / 100.0) {

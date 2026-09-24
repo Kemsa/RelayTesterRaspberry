@@ -34,8 +34,8 @@ private:
 
     DynamicReadings(int coil1Pin, int coil2Pin, int contact1Pin, int contact2Pin);
 
-    int m_coil1Pin;
-    int m_coil2Pin;
+    int m_coil1PinBottom;
+    int m_coil2PinBottom;
     int m_contact1Pin;
     int m_contact2Pin;
 

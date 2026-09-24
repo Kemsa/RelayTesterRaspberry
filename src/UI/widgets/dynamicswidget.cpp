@@ -15,12 +15,18 @@ DynamicsWidget::DynamicsWidget(QWidget* parent)
 
     const auto triggerMeasurementWithCoil = [this](DynamicReadings::ContactType contactType) {
         QPointer<DynamicsWidget> self(this);
+
+        if (contactType == DynamicReadings::ContactType::COIL1 || contactType == DynamicReadings::ContactType::COIL2) {
+            PowerControl::getInstance()->enableCoilTop(contactType == DynamicReadings::ContactType::COIL1 ? PowerControl::Coil::COIL1 : PowerControl::Coil::COIL2);
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50)); // Small delay to ensure the coil is properly enabled before proceeding
+
         auto future = DynamicReadings::getInstance()->waitAndProcessOneSwitch(contactType, 500);
 
         if (contactType == DynamicReadings::ContactType::COIL1 || contactType == DynamicReadings::ContactType::COIL2) {
-            PowerControl::getInstance()->enableCoil(contactType == DynamicReadings::ContactType::COIL1 ? PowerControl::Coil::COIL1 : PowerControl::Coil::COIL2);
+            PowerControl::getInstance()->enableCoilBottom(contactType == DynamicReadings::ContactType::COIL1 ? PowerControl::Coil::COIL1 : PowerControl::Coil::COIL2);
         } else {
-            PowerControl::getInstance()->disableCoils();
+            PowerControl::getInstance()->disableCoilsBottom();
         }
 
         std::thread([self, future = std::move(future)]() mutable {

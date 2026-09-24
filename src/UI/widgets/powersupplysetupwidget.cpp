@@ -1,4 +1,5 @@
 #include "powersupplysetupwidget.h"
+#include "powerControl.h"
 #include "powerSupply.h"
 #include "ui_powersupplysetupwidget.h"
 #include <QDebug>
@@ -9,13 +10,19 @@ PowerSupplySetupWidget::PowerSupplySetupWidget(QWidget* parent)
 
     connect(ui->toggleSupply_PB, &QPushButton::clicked, this, [this]() {
         powerSupply* supply = powerSupply::instance();
-        if (!supply && !supply->isConnected()) {
+        PowerControl* control = PowerControl::getInstance();
+        if (!supply || !supply->isConnected()) {
             qWarning() << "Power supply instance is not initialized and connected.";
+            return;
+        }
+        if (!control) {
+            qWarning() << "Power control instance is not initialized.";
             return;
         }
 
         if (ui->toggleSupply_PB->text() == "Toggle OFF") {
             supply->disableOutput();
+            control->disableCoilsTop();
             ui->toggleSupply_PB->setText("Toggle ON");
             ui->supply_LED->setState(false);
         } else {
@@ -29,7 +36,7 @@ PowerSupplySetupWidget::PowerSupplySetupWidget(QWidget* parent)
 
     connect(ui->predef12V_PB, &QPushButton::clicked, this, [this]() {
         powerSupply* supply = powerSupply::instance();
-        if (!supply && !supply->isConnected()) {
+        if (!supply || !supply->isConnected()) {
             qWarning() << "Power supply instance is not initialized and connected.";
             return;
         }
@@ -39,7 +46,7 @@ PowerSupplySetupWidget::PowerSupplySetupWidget(QWidget* parent)
     });
     connect(ui->predef24V_PB, &QPushButton::clicked, this, [this]() {
         powerSupply* supply = powerSupply::instance();
-        if (!supply && !supply->isConnected()) {
+        if (!supply || !supply->isConnected()) {
             qWarning() << "Power supply instance is not initialized and connected.";
             return;
         }
@@ -49,7 +56,7 @@ PowerSupplySetupWidget::PowerSupplySetupWidget(QWidget* parent)
     });
     connect(ui->predef48V_PB, &QPushButton::clicked, this, [this]() {
         powerSupply* supply = powerSupply::instance();
-        if (!supply && !supply->isConnected()) {
+        if (!supply || !supply->isConnected()) {
             qWarning() << "Power supply instance is not initialized and connected.";
             return;
         }

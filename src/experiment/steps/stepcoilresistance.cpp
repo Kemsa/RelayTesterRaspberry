@@ -95,10 +95,11 @@ GenericStep::ResultStatus StepCoilResistance::runMeasureAsync(const std::atomic<
     powerSupply->setMaxValues(supplyVoltage_cV / 100.0f, maxCurrent_mA / 1000.0f); // Convert mA to A
     powerSupply->setVoltage(supplyVoltage_cV / 100.0f);                            // Convert cV to V
     powerSupply->enableOutput();
+    powerControl->enableCoilTop(static_cast<PowerControl::Coil>(coilToMeasure));
     QThread::msleep(100); // Wait for the coil to stabilize
 
     STEP_CHECK_STOP_TOKEN();
-    powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToMeasure));
+    powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToMeasure));
 
     QMap<StaticReadings::ReadingFlags, std::vector<ADCValue>> readings;
     if (coilToMeasure == 1) {
@@ -107,7 +108,9 @@ GenericStep::ResultStatus StepCoilResistance::runMeasureAsync(const std::atomic<
         readings = staticReadings->getMultipleReadings(static_cast<uint8_t>(StaticReadings::ReadingFlags::coil2Current) | static_cast<uint8_t>(StaticReadings::ReadingFlags::coil2Voltage), nMeasures);
     }
 
-    powerControl->disableCoils();
+    powerControl->disableCoilsBottom();
+    powerControl->disableCoilsTop();
+    powerControl->disableContactPower();
     powerSupply->disableOutput();
 
     STEP_CHECK_STOP_TOKEN();
