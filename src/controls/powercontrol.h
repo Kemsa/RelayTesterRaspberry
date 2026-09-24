@@ -8,13 +8,13 @@ class PowerControl : public QObject {
     Q_OBJECT
 public:
     enum Coil {
-        COIIL_NONE = 0,
+        COIL_NONE = 0,
         COIL1 = 1,
         COIL2 = 2
     };
 
     static PowerControl* getInstance();
-    static PowerControl* initialize(int coil1Pin, int coil2Pin, int contactPowerEnablePin,
+    static PowerControl* initialize(int coil1PinBottom, int coil2PinBottom, int coil1PinTop, int coil2PinTop, int contactPowerEnablePin,
                                     int reedPin, int boardPin);
     bool checkSafetyStatus() const { return reedClosed && boardClosed; }
     bool checkReedStatus() const { return reedClosed; }
@@ -22,10 +22,12 @@ public:
     bool forceCheckSafetyStatus();
 
 public slots:
-    bool enableCoil(Coil coil);
-    bool disableCoils();
-    // bool enableContactPower();
-    // bool disableContactPower();
+    bool enableCoilBottom(Coil coil);
+    bool disableCoilsBottom();
+    bool enableCoilTop(Coil coil);
+    bool disableCoilsTop();
+    bool enableContactPower();
+    bool disableContactPower();
 
 signals:
     void safetyStatusChanged(bool isSafe);
@@ -35,11 +37,13 @@ signals:
 private:
     static PowerControl* s_instance;
 
-    PowerControl(int coil1Pin, int coil2Pin, int contactPowerEnablePin,
+    PowerControl(int coil1PinBottom, int coil2PinBottom, int coil1PinTop, int coil2PinTop, int contactPowerEnablePin,
                  int reedPin, int boardPin);
 
-    int m_coil1Pin;
-    int m_coil2Pin;
+    int m_coil1PinBottom;
+    int m_coil2PinBottom;
+    int m_coil1PinTop;
+    int m_coil2PinTop;
     int m_contactPowerEnablePin;
     int m_reedPin;
     int m_boardPin;

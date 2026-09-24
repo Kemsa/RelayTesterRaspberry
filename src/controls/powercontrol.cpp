@@ -5,13 +5,15 @@
 
 PowerControl* PowerControl::s_instance = nullptr;
 
-PowerControl::PowerControl(int coil1Pin, int coil2Pin, int contactPowerEnablePin,
+PowerControl::PowerControl(int coil1PinBottom, int coil2PinBottom, int coil1PinTop, int coil2PinTop, int contactPowerEnablePin,
                            int reedPin, int boardPin)
-    : m_coil1Pin(coil1Pin), m_coil2Pin(coil2Pin), m_contactPowerEnablePin(contactPowerEnablePin),
+    : m_coil1PinBottom(coil1PinBottom), m_coil2PinBottom(coil2PinBottom), m_coil1PinTop(coil1PinTop), m_coil2PinTop(coil2PinTop), m_contactPowerEnablePin(contactPowerEnablePin),
       m_reedPin(reedPin), m_boardPin(boardPin) {
 
-    m_GPIOHandler->setPinMode(m_coil1Pin, GPIOHandler::PinMode::WPI_OUTPUT);
-    m_GPIOHandler->setPinMode(m_coil2Pin, GPIOHandler::PinMode::WPI_OUTPUT);
+    m_GPIOHandler->setPinMode(m_coil1PinBottom, GPIOHandler::PinMode::WPI_OUTPUT);
+    m_GPIOHandler->setPinMode(m_coil2PinBottom, GPIOHandler::PinMode::WPI_OUTPUT);
+    m_GPIOHandler->setPinMode(m_coil1PinTop, GPIOHandler::PinMode::WPI_OUTPUT);
+    m_GPIOHandler->setPinMode(m_coil2PinTop, GPIOHandler::PinMode::WPI_OUTPUT);
     m_GPIOHandler->setPinMode(m_contactPowerEnablePin, GPIOHandler::PinMode::WPI_OUTPUT);
     m_GPIOHandler->setPinMode(m_reedPin, GPIOHandler::PinMode::WPI_INPUT);
     m_GPIOHandler->setPinMode(m_boardPin, GPIOHandler::PinMode::WPI_INPUT);
@@ -19,8 +21,10 @@ PowerControl::PowerControl(int coil1Pin, int coil2Pin, int contactPowerEnablePin
     m_GPIOHandler->setPullUpDown(m_reedPin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
     m_GPIOHandler->setPullUpDown(m_boardPin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
 
-    m_GPIOHandler->pinWrite(m_coil1Pin, GPIOHandler::Level::WPI_LOW);
-    m_GPIOHandler->pinWrite(m_coil2Pin, GPIOHandler::Level::WPI_LOW);
+    m_GPIOHandler->pinWrite(m_coil1PinBottom, GPIOHandler::Level::WPI_LOW);
+    m_GPIOHandler->pinWrite(m_coil2PinBottom, GPIOHandler::Level::WPI_LOW);
+    m_GPIOHandler->pinWrite(m_coil1PinTop, GPIOHandler::Level::WPI_LOW);
+    m_GPIOHandler->pinWrite(m_coil2PinTop, GPIOHandler::Level::WPI_LOW);
     m_GPIOHandler->pinWrite(m_contactPowerEnablePin, GPIOHandler::Level::WPI_LOW);
 
     m_GPIOHandler->setupInterrupt(m_reedPin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticReedInterrupt, 10, nullptr);
@@ -37,15 +41,16 @@ PowerControl* PowerControl::getInstance() {
     return s_instance;
 }
 
-PowerControl* PowerControl::initialize(int coil1Pin, int coil2Pin, int contactPowerEnablePin,
+PowerControl* PowerControl::initialize(int coil1PinBottom, int coil2PinBottom, int coil1PinTop, int coil2PinTop, int contactPowerEnablePin,
                                        int reedPin, int boardPin) {
     if (!s_instance) {
-        s_instance = new PowerControl(coil1Pin, coil2Pin, contactPowerEnablePin, reedPin, boardPin);
+        s_instance = new PowerControl(coil1PinBottom, coil2PinBottom, coil1PinTop, coil2PinTop, contactPowerEnablePin, reedPin, boardPin);
     }
     return s_instance;
 }
 
-bool PowerControl::enableCoil(Coil coil) {
+bool PowerControl::enableCoilBottom(Coil coil) {
+    // fast activation (ns)
     if (!checkSafetyStatus()) {
         qWarning() << "PowerControl: Cannot enable coil, safety status is not safe.";
         return false;
@@ -53,43 +58,73 @@ bool PowerControl::enableCoil(Coil coil) {
 
     switch (coil) {
     case COIL1:
-        m_GPIOHandler->pinWrite(m_coil2Pin, GPIOHandler::Level::WPI_LOW);
-        m_GPIOHandler->pinWrite(m_coil1Pin, GPIOHandler::Level::WPI_HIGH);
-        qDebug() << "PowerControl: Coil 1 enabled";
+        m_GPIOHandler->pinWrite(m_coil2PinBottom, GPIOHandler::Level::WPI_LOW);
+        m_GPIOHandler->pinWrite(m_coil1PinBottom, GPIOHandler::Level::WPI_HIGH);
+        qDebug() << "PowerControl: bottom Coil 1 enabled";
         return true;
     case COIL2:
-        m_GPIOHandler->pinWrite(m_coil1Pin, GPIOHandler::Level::WPI_LOW);
-        m_GPIOHandler->pinWrite(m_coil2Pin, GPIOHandler::Level::WPI_HIGH);
-        qDebug() << "PowerControl: Coil 2 enabled";
+        m_GPIOHandler->pinWrite(m_coil1PinBottom, GPIOHandler::Level::WPI_LOW);
+        m_GPIOHandler->pinWrite(m_coil2PinBottom, GPIOHandler::Level::WPI_HIGH);
+        qDebug() << "PowerControl: bottom Coil 2 enabled";
         return true;
     default:
         return false;
     }
 }
 
-bool PowerControl::disableCoils() {
-    m_GPIOHandler->pinWrite(m_coil1Pin, GPIOHandler::Level::WPI_LOW);
-    m_GPIOHandler->pinWrite(m_coil2Pin, GPIOHandler::Level::WPI_LOW);
-    qDebug() << "PowerControl: coils disabled";
+bool PowerControl::disableCoilsBottom() {
+    // fast activation (ns)
+    m_GPIOHandler->pinWrite(m_coil1PinBottom, GPIOHandler::Level::WPI_LOW);
+    m_GPIOHandler->pinWrite(m_coil2PinBottom, GPIOHandler::Level::WPI_LOW);
+    qDebug() << "PowerControl: bottom coils disabled";
     return true;
 }
 
-// bool PowerControl::enableContactPower() {
-//     if(!checkSafetyStatus()) {
-//         qWarning() << "PowerControl: Cannot enable contact power, safety status is not safe.";
-//         return false;
-//     }
+bool PowerControl::enableCoilTop(Coil coil) {
+    // Slow activation (ms)
+    if (!checkSafetyStatus()) {
+        qWarning() << "PowerControl: Cannot enable coil, safety status is not safe.";
+        return false;
+    }
 
-//     m_GPIOHandler->pinWrite(m_contactPowerEnablePin, GPIOHandler::Level::WPI_HIGH);
-//     qDebug() << "PowerControl: contact power enabled";
-//     return true;
-// }
+    switch (coil) {
+    case COIL1:
+        m_GPIOHandler->pinWrite(m_coil1PinTop, GPIOHandler::Level::WPI_HIGH);
+        qDebug() << "PowerControl: Coil 1 top enabled";
+        return true;
+    case COIL2:
+        m_GPIOHandler->pinWrite(m_coil2PinTop, GPIOHandler::Level::WPI_HIGH);
+        qDebug() << "PowerControl: Coil 2 top enabled";
+        return true;
+    default:
+        return false;
+    }
+}
 
-// bool PowerControl::disableContactPower() {
-//     m_GPIOHandler->pinWrite(m_contactPowerEnablePin, GPIOHandler::Level::WPI_LOW);
-//     qDebug() << "PowerControl: contact power disabled";
-//     return true;
-// }
+bool PowerControl::disableCoilsTop() {
+    // Slow activation (ms)
+    m_GPIOHandler->pinWrite(m_coil1PinTop, GPIOHandler::Level::WPI_LOW);
+    m_GPIOHandler->pinWrite(m_coil2PinTop, GPIOHandler::Level::WPI_LOW);
+    qDebug() << "PowerControl: top coils disabled";
+    return true;
+}
+
+bool PowerControl::enableContactPower() {
+    if (!checkSafetyStatus()) {
+        qWarning() << "PowerControl: Cannot enable contact power, safety status is not safe.";
+        return false;
+    }
+
+    m_GPIOHandler->pinWrite(m_contactPowerEnablePin, GPIOHandler::Level::WPI_HIGH);
+    qDebug() << "PowerControl: contact power enabled";
+    return true;
+}
+
+bool PowerControl::disableContactPower() {
+    m_GPIOHandler->pinWrite(m_contactPowerEnablePin, GPIOHandler::Level::WPI_LOW);
+    qDebug() << "PowerControl: contact power disabled";
+    return true;
+}
 
 void PowerControl::handleReedInterrupt(GPIOHandler::InterruptStatus wfiStatus) {
     reedClosed = (wfiStatus.statusOK == 1) && (wfiStatus.edge == GPIOHandler::Interrupt::WPI_INT_EDGE_RISING);
@@ -98,7 +133,7 @@ void PowerControl::handleReedInterrupt(GPIOHandler::InterruptStatus wfiStatus) {
 
     if (!reedClosed) {
         qInfo() << "PowerControl: Capot ouvert, coupure des bobines et contacts";
-        disableCoils();
+        disableCoilsBottom();
         // disableContactPower();
         safetyStatusChanged(false);
     } else if (reedClosed && boardClosed) {
@@ -114,7 +149,7 @@ void PowerControl::handleBoardInterrupt(GPIOHandler::InterruptStatus wfiStatus) 
 
     if (!boardClosed) {
         qInfo() << "PowerControl: Carte mal placée, coupure des bobines et contacts";
-        disableCoils();
+        disableCoilsBottom();
         // disableContactPower();
     } else if (reedClosed && boardClosed) {
         qInfo() << "PowerControl: Capot fermé et carte en place, sécurité OK";

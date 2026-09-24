@@ -9,20 +9,20 @@
 DynamicReadings* DynamicReadings::s_instance = nullptr;
 
 DynamicReadings::DynamicReadings(int coil1Pin, int coil2Pin, int contact1Pin, int contact2Pin)
-    : m_coil1Pin(coil1Pin), m_coil2Pin(coil2Pin), m_contact1Pin(contact1Pin), m_contact2Pin(contact2Pin), m_mutexWrite() {
+    : m_coil1PinBottom(coil1Pin), m_coil2PinBottom(coil2Pin), m_contact1Pin(contact1Pin), m_contact2Pin(contact2Pin), m_mutexWrite() {
 
-    m_GPIOHandler->setPinMode(m_coil1Pin, GPIOHandler::PinMode::WPI_INPUT);
-    m_GPIOHandler->setPinMode(m_coil2Pin, GPIOHandler::PinMode::WPI_INPUT);
+    m_GPIOHandler->setPinMode(m_coil1PinBottom, GPIOHandler::PinMode::WPI_INPUT);
+    m_GPIOHandler->setPinMode(m_coil2PinBottom, GPIOHandler::PinMode::WPI_INPUT);
     m_GPIOHandler->setPinMode(m_contact1Pin, GPIOHandler::PinMode::WPI_INPUT);
     m_GPIOHandler->setPinMode(m_contact2Pin, GPIOHandler::PinMode::WPI_INPUT);
 
-    m_GPIOHandler->setPullUpDown(m_coil1Pin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
-    m_GPIOHandler->setPullUpDown(m_coil2Pin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
+    m_GPIOHandler->setPullUpDown(m_coil1PinBottom, GPIOHandler::PullUpDown::WPI_PUD_OFF);
+    m_GPIOHandler->setPullUpDown(m_coil2PinBottom, GPIOHandler::PullUpDown::WPI_PUD_OFF);
     m_GPIOHandler->setPullUpDown(m_contact1Pin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
     m_GPIOHandler->setPullUpDown(m_contact2Pin, GPIOHandler::PullUpDown::WPI_PUD_OFF);
 
-    m_GPIOHandler->setupInterrupt(m_coil1Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::COIL1)));
-    m_GPIOHandler->setupInterrupt(m_coil2Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::COIL2)));
+    m_GPIOHandler->setupInterrupt(m_coil1PinBottom, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::COIL1)));
+    m_GPIOHandler->setupInterrupt(m_coil2PinBottom, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::COIL2)));
     m_GPIOHandler->setupInterrupt(m_contact1Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::CONTACT_A)));
     m_GPIOHandler->setupInterrupt(m_contact2Pin, GPIOHandler::Interrupt::WPI_INT_EDGE_BOTH, staticInterruptHandler, 0, reinterpret_cast<void*>(static_cast<std::intptr_t>(ContactType::CONTACT_B)));
 }
@@ -102,16 +102,16 @@ std::future<std::shared_ptr<DynamicSwitch>> DynamicReadings::waitAndProcessOneSw
         qDebug() << "interrupt status for contact 1" << m_interruptStatusesContact1.size();
         qDebug() << "interrupt status for contact 2" << m_interruptStatusesContact2.size();
 
-        if(!m_interruptStatusesCoil1.isEmpty() ) {
+        if (!m_interruptStatusesCoil1.isEmpty()) {
             qDebug() << "transition edge for coil 1:" << m_interruptStatusesCoil1.last().edge;
         }
-        if(!m_interruptStatusesCoil2.isEmpty() ) {
+        if (!m_interruptStatusesCoil2.isEmpty()) {
             qDebug() << "transition edge for coil 2:" << m_interruptStatusesCoil2.last().edge;
         }
-        if(!m_interruptStatusesContact1.isEmpty() ) {
+        if (!m_interruptStatusesContact1.isEmpty()) {
             qDebug() << "transition edge for contact 1:" << m_interruptStatusesContact1.last().edge;
         }
-        if(!m_interruptStatusesContact2.isEmpty() ) {
+        if (!m_interruptStatusesContact2.isEmpty()) {
             qDebug() << "transition edge for contact 2:" << m_interruptStatusesContact2.last().edge;
         }
 

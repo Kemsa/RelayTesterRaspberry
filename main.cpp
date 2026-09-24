@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
 
     // initialize components
     GPIOHandler* gpioHandler = GPIOHandler::setupInstance(false);
-    PowerControl::initialize(COIL1_ENABLE, COIL2_ENABLE, CONTACT_POWER_ENABLE, REED_PIN, BOARD_CLOSED_PIN);
+    PowerControl::initialize(COIL1_ENABLE_BOTTOM, COIL2_ENABLE_BOTTOM, COIL1_ENABLE_TOP, COIL2_ENABLE_TOP, CONTACT_POWER_ENABLE, REED_PIN, BOARD_CLOSED_PIN);
     StaticReadings::initialize();
     DynamicReadings::initialize(COIL1_DETECT, COIL2_DETECT, CONTACT_TRIGGER1, CONTACT_TRIGGER2);
     ContactSelector::initialize(CONTACT_SELECT_S0, CONTACT_SELECT_S1, CONTACT_SELECT_S2, CONTACT_SELECT_EN,
@@ -52,7 +52,10 @@ int main(int argc, char* argv[]) {
                          if (!isSafe) {
                              qDebug() << "Safety status changed: Unsafe condition detected. Disabling all contacts.";
                              ContactSelector::instance()->selectContact(0); // Deselect contact
-                             powerSupply::instance()->disableOutput();      // Disable power supply output
+                             PowerControl::getInstance()->disableCoilsBottom();
+                             PowerControl::getInstance()->disableCoilsTop();
+                             PowerControl::getInstance()->disableContactPower();
+                             powerSupply::instance()->disableOutput(); // Disable power supply output
                          }
                      });
 

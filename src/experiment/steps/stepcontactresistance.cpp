@@ -104,6 +104,9 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
     powerSupply->setMaxValues(supplyVoltage_cV / 100.0, maxCurrent_mA / 1000.0);
     powerSupply->setVoltage(supplyVoltage_cV / 100.0);
     powerSupply->enableOutput();
+    powerControl->enableCoilTop(static_cast<PowerControl::Coil>(coilToPowerOn));
+    powerControl->enableCoilTop(static_cast<PowerControl::Coil>(coilToPowerOff));
+    powerControl->enableContactPower();
 
     QThread::msleep(100); // Wait for the coil to stabilize
 
@@ -122,9 +125,9 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
 
         // Measure with relay "OFF"
         if (coilToPowerOff != 0) {
-            powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToPowerOff));
+            powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToPowerOff));
         } else {
-            powerControl->disableCoils();
+            powerControl->disableCoilsBottom();
         }
         QThread::msleep(10);
 
@@ -153,9 +156,9 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
 
         // Measure with relay "ON"
         if (coilToPowerOn != 0) {
-            powerControl->enableCoil(static_cast<PowerControl::Coil>(coilToPowerOn));
+            powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(coilToPowerOn));
         } else {
-            powerControl->disableCoils();
+            powerControl->disableCoilsBottom();
         }
 
         // Measure "normally open" contact
@@ -183,7 +186,10 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
         QThread::msleep(10);
     }
 
-    powerControl->disableCoils();
+    powerControl->disableCoilsBottom();
+    powerControl->disableCoilsTop();
+    powerControl->disableContactPower();
+    powerSupply->disableOutput();
 
     bool success = true;
     // check results against success criteria
