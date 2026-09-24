@@ -1,5 +1,5 @@
 #include "powersupplysetupwidget.h"
-#include "powerControl.h"
+#include "powercontrol.h"
 #include "powerSupply.h"
 #include "ui_powersupplysetupwidget.h"
 #include <QDebug>
