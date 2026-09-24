@@ -24,9 +24,11 @@ QString ContactSelector::hBridgeOptionToString(HBridge_options option) {
 }
 
 ContactSelector* ContactSelector::initialize(int s0, int s1, int s2, int en,
-                                             int hbridge1, int hbridge2, int hbridge3) {
+                                             int hbridge1_top, int hbridge2_top, int hbridge3_top,
+                                             int hbridge1_bottom, int hbridge2_bottom, int hbridge3_bottom) {
     if (!s_instance) {
-        s_instance = new ContactSelector(s0, s1, s2, en, hbridge1, hbridge2, hbridge3);
+        s_instance = new ContactSelector(s0, s1, s2, en, hbridge1_top, hbridge2_top, hbridge3_top,
+                                         hbridge1_bottom, hbridge2_bottom, hbridge3_bottom);
     }
     return s_instance;
 }
@@ -37,9 +39,11 @@ ContactSelector* ContactSelector::instance() {
 }
 
 ContactSelector::ContactSelector(int s0, int s1, int s2, int en,
-                                 int hbridge1, int hbridge2, int hbridge3)
+                                 int hbridge1_top, int hbridge2_top, int hbridge3_top,
+                                 int hbridge1_bottom, int hbridge2_bottom, int hbridge3_bottom)
     : m_s0(s0), m_s1(s1), m_s2(s2), m_en(en),
-      m_hbridge1(hbridge1), m_hbridge2(hbridge2), m_hbridge3(hbridge3) {
+      m_hbridge1_top(hbridge1_top), m_hbridge2_top(hbridge2_top), m_hbridge3_top(hbridge3_top),
+      m_hbridge1_bottom(hbridge1_bottom), m_hbridge2_bottom(hbridge2_bottom), m_hbridge3_bottom(hbridge3_bottom) {
 
     m_contactMap.insert(0, PinSelection::None);
     m_contactMap.insert(1, PinSelection::Contact1);
@@ -57,9 +61,12 @@ ContactSelector::ContactSelector(int s0, int s1, int s2, int en,
     GPIOHandler::instance()->setPinMode(m_s2, GPIOHandler::PinMode::WPI_OUTPUT);
     GPIOHandler::instance()->setPinMode(m_en, GPIOHandler::PinMode::WPI_OUTPUT);
 
-    GPIOHandler::instance()->setPinMode(m_hbridge1, GPIOHandler::PinMode::WPI_OUTPUT);
-    GPIOHandler::instance()->setPinMode(m_hbridge2, GPIOHandler::PinMode::WPI_OUTPUT);
-    GPIOHandler::instance()->setPinMode(m_hbridge3, GPIOHandler::PinMode::WPI_OUTPUT);
+    GPIOHandler::instance()->setPinMode(m_hbridge1_top, GPIOHandler::PinMode::WPI_OUTPUT);
+    GPIOHandler::instance()->setPinMode(m_hbridge2_top, GPIOHandler::PinMode::WPI_OUTPUT);
+    GPIOHandler::instance()->setPinMode(m_hbridge3_top, GPIOHandler::PinMode::WPI_OUTPUT);
+    GPIOHandler::instance()->setPinMode(m_hbridge1_bottom, GPIOHandler::PinMode::WPI_OUTPUT);
+    GPIOHandler::instance()->setPinMode(m_hbridge2_bottom, GPIOHandler::PinMode::WPI_OUTPUT);
+    GPIOHandler::instance()->setPinMode(m_hbridge3_bottom, GPIOHandler::PinMode::WPI_OUTPUT);
 
     // Set initial state to None (no contact selected)
     selectContact(0);
@@ -92,9 +99,12 @@ void ContactSelector::selectHBridge(HBridge_options option) {
     }
 
     qDebug() << "Selecting H-Bridge option:" << hBridgeOptionToString(option);
-    GPIOHandler::instance()->pinWrite(m_hbridge1, (GPIOHandler::Level)((option & hbridge1_mask) > 0));
-    GPIOHandler::instance()->pinWrite(m_hbridge2, (GPIOHandler::Level)((option & hbridge2_mask) > 0));
-    GPIOHandler::instance()->pinWrite(m_hbridge3, (GPIOHandler::Level)((option & hbridge3_mask) > 0));
+    GPIOHandler::instance()->pinWrite(m_hbridge1_top, (GPIOHandler::Level)((option & hbridge1_top_mask) > 0));
+    GPIOHandler::instance()->pinWrite(m_hbridge2_top, (GPIOHandler::Level)((option & hbridge2_top_mask) > 0));
+    GPIOHandler::instance()->pinWrite(m_hbridge3_top, (GPIOHandler::Level)((option & hbridge3_top_mask) > 0));
+    GPIOHandler::instance()->pinWrite(m_hbridge1_bottom, (GPIOHandler::Level)((option & hbridge1_bottom_mask) > 0));
+    GPIOHandler::instance()->pinWrite(m_hbridge2_bottom, (GPIOHandler::Level)((option & hbridge2_bottom_mask) > 0));
+    GPIOHandler::instance()->pinWrite(m_hbridge3_bottom, (GPIOHandler::Level)((option & hbridge3_bottom_mask) > 0));
 
     m_currentHBridgeOption = option;
     emit hBridgeOptionSelected(option);

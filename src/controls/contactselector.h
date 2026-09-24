@@ -11,16 +11,17 @@ class ContactSelector : public QObject {
 public:
     enum HBridge_options {
         HBridge_none = 0x00,
-        HBridge_forward_all = 0x01,
-        HBridge_reverse_all = 0x06,
-        HBridge_forward_p1 = 0x05,
-        HBridge_reverse_p1 = 0x04,
-        HBridge_forward_p2 = 0x03,
-        HBridge_reverse_p2 = 0x02,
+        HBridge_forward_all = 0x61,
+        HBridge_reverse_all = 0x16,
+        HBridge_forward_p1 = 0x21,
+        HBridge_reverse_p1 = 0x12,
+        HBridge_forward_p2 = 0x41,
+        HBridge_reverse_p2 = 0x14,
     };
 
     static ContactSelector* initialize(int s0, int s1, int s2, int en,
-                                       int hbridge1, int hbridge2, int hbridge3);
+                                       int hbridge1_top, int hbridge2_top, int hbridge3_top,
+                                       int hbridge1_bottom, int hbridge2_bottom, int hbridge3_bottom);
     static ContactSelector* instance();
     static QString hBridgeOptionToString(HBridge_options option);
 
@@ -60,13 +61,17 @@ private:
     };
 
     enum HBridge_masks {
-        hbridge1_mask = 0x01,
-        hbridge2_mask = 0x02,
-        hbridge3_mask = 0x04
+        hbridge1_top_mask = 0x01,
+        hbridge2_top_mask = 0x02,
+        hbridge3_top_mask = 0x04,
+        hbridge1_bottom_mask = 0x10,
+        hbridge2_bottom_mask = 0x20,
+        hbridge3_bottom_mask = 0x40
     };
 
     ContactSelector(int s0, int s1, int s2, int en,
-                    int hbridge1, int hbridge2, int hbridge3);
+                    int hbridge1_top, int hbridge2_top, int hbridge3_top,
+                    int hbridge1_bottom, int hbridge2_bottom, int hbridge3_bottom);
 
     static ContactSelector* s_instance;
 
@@ -76,9 +81,12 @@ private:
     const int m_s1;
     const int m_s2;
     const int m_en;
-    const int m_hbridge1;
-    const int m_hbridge2;
-    const int m_hbridge3;
+    const int m_hbridge1_top;
+    const int m_hbridge2_top;
+    const int m_hbridge3_top;
+    const int m_hbridge1_bottom;
+    const int m_hbridge2_bottom;
+    const int m_hbridge3_bottom;
 
     QMap<int, PinSelection> m_contactMap;
 };
