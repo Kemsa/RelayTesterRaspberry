@@ -136,7 +136,7 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
             STEP_CHECK_STOP_TOKEN();
             qDebug() << "Measuring contact" << c << "with relay OFF";
 
-            contactSelector->selectHBridge(ContactSelector::HBridge_forward_all);
+            contactSelector->selectHBridge(ContactSelector::HBridge_forward_p1);
             contactSelector->selectContact(c);
             QThread::msleep(10);
             // currentAdjuster->adjustCurrentToTarget(10, 0.8, false);
@@ -144,7 +144,7 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
             double meanResistanceForward_Ohm = getResistanceForContact(StaticReadings::ReadingFlags::contactAVoltage, nMeasures, stopToken);
             qDebug() << "Contact" << c << "mean resistance forward(Ohm):" << meanResistanceForward_Ohm;
 
-            contactSelector->selectHBridge(ContactSelector::HBridge_reverse_all);
+            contactSelector->selectHBridge(ContactSelector::HBridge_reverse_p1);
             QThread::msleep(10);
             double meanResistanceReverse_Ohm = getResistanceForContact(StaticReadings::ReadingFlags::contactAVoltage, nMeasures, stopToken);
             qDebug() << "Contact" << c << "mean resistance reverse(Ohm):" << meanResistanceReverse_Ohm;
@@ -166,7 +166,7 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
             STEP_CHECK_STOP_TOKEN();
             qDebug() << "Measuring contact" << c << "with relay ON";
 
-            contactSelector->selectHBridge(ContactSelector::HBridge_forward_all);
+            contactSelector->selectHBridge(ContactSelector::HBridge_forward_p2);
             contactSelector->selectContact(c);
             QThread::msleep(10);
             // currentAdjuster->adjustCurrentToTarget(10, 0.8, false);
@@ -175,7 +175,7 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
             qDebug() << "Contact" << c << "mean resistance forward(Ohm):" << meanResistanceForward_Ohm;
             measurementValues.averageResistanceContactB_Ohm[i][c - 1] = meanResistanceForward_Ohm;
 
-            contactSelector->selectHBridge(ContactSelector::HBridge_reverse_all);
+            contactSelector->selectHBridge(ContactSelector::HBridge_reverse_p2);
             QThread::msleep(10);
             double meanResistanceReverse_Ohm = getResistanceForContact(StaticReadings::ReadingFlags::contactBVoltage, nMeasures, stopToken);
             qDebug() << "Contact" << c << "mean resistance reverse(Ohm):" << meanResistanceReverse_Ohm;
