@@ -6,8 +6,10 @@
 #include "powercontrol.h"
 
 namespace {
-constexpr int kCoil1Pin = 21;
-constexpr int kCoil2Pin = 22;
+constexpr int kCoil1BottomPin = 21;
+constexpr int kCoil2BottomPin = 22;
+constexpr int kCoil1TopPin = 26;
+constexpr int kCoil2TopPin = 27;
 constexpr int kContactPowerEnablePin = 23;
 constexpr int kReedPin = 24;
 constexpr int kBoardPin = 25;
@@ -33,7 +35,7 @@ void PowerControlTest::initTestCase() {
     mock->mockupPinWrite(kReedPin, GPIOHandler::WPI_HIGH);
     mock->mockupPinWrite(kBoardPin, GPIOHandler::WPI_HIGH);
 
-    PowerControl::initialize(kCoil1Pin, kCoil2Pin, kContactPowerEnablePin, kReedPin, kBoardPin);
+    PowerControl::initialize(kCoil1BottomPin, kCoil2BottomPin, kCoil1TopPin, kCoil2TopPin, kContactPowerEnablePin, kReedPin, kBoardPin);
 }
 
 void PowerControlTest::cleanupTestCase() {
@@ -54,8 +56,8 @@ void PowerControlTest::enableCoil_whenSafe_setsExpectedGpioLevels() {
     QVERIFY(powerControl->enableCoilBottom(PowerControl::COIL1));
 
     QVERIFY(mock != nullptr);
-    QCOMPARE(mock->pinRead(kCoil1Pin), GPIOHandler::WPI_HIGH);
-    QCOMPARE(mock->pinRead(kCoil2Pin), GPIOHandler::WPI_LOW);
+    QCOMPARE(mock->pinRead(kCoil1BottomPin), GPIOHandler::WPI_HIGH);
+    QCOMPARE(mock->pinRead(kCoil2BottomPin), GPIOHandler::WPI_LOW);
 }
 
 void PowerControlTest::enableCoil_whenUnsafe_failsAndKeepsCoilsDisabled() {
@@ -72,8 +74,8 @@ void PowerControlTest::enableCoil_whenUnsafe_failsAndKeepsCoilsDisabled() {
     QVERIFY(!powerControl->enableCoilBottom(PowerControl::COIL2));
     QVERIFY(powerControl->checkSafetyStatus() == false);
 
-    QCOMPARE(mock->pinRead(kCoil1Pin), GPIOHandler::WPI_LOW);
-    QCOMPARE(mock->pinRead(kCoil2Pin), GPIOHandler::WPI_LOW);
+    QCOMPARE(mock->pinRead(kCoil1BottomPin), GPIOHandler::WPI_LOW);
+    QCOMPARE(mock->pinRead(kCoil2BottomPin), GPIOHandler::WPI_LOW);
 
     // Check again with both reed and board disabled
     mock->mockupPinWrite(kReedPin, GPIOHandler::WPI_LOW);
@@ -82,8 +84,8 @@ void PowerControlTest::enableCoil_whenUnsafe_failsAndKeepsCoilsDisabled() {
     QVERIFY(!powerControl->enableCoilBottom(PowerControl::COIL2));
     QVERIFY(powerControl->checkSafetyStatus() == false);
 
-    QCOMPARE(mock->pinRead(kCoil1Pin), GPIOHandler::WPI_LOW);
-    QCOMPARE(mock->pinRead(kCoil2Pin), GPIOHandler::WPI_LOW);
+    QCOMPARE(mock->pinRead(kCoil1BottomPin), GPIOHandler::WPI_LOW);
+    QCOMPARE(mock->pinRead(kCoil2BottomPin), GPIOHandler::WPI_LOW);
 }
 
 void PowerControlTest::forceCheckSafetyStatus_tracksPinStateAndEmitsSignal() {

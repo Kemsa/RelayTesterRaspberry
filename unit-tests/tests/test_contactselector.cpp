@@ -9,9 +9,12 @@ constexpr int kS0 = 10;
 constexpr int kS1 = 11;
 constexpr int kS2 = 12;
 constexpr int kEnable = 13;
-constexpr int kHBridge1 = 14;
-constexpr int kHBridge2 = 15;
-constexpr int kHBridge3 = 16;
+constexpr int kHBridge1_top = 14;
+constexpr int kHBridge2_top = 15;
+constexpr int kHBridge3_top = 16;
+constexpr int kHBridge1_bottom = 17;
+constexpr int kHBridge2_bottom = 18;
+constexpr int kHBridge3_bottom = 19;
 } // namespace
 
 class ContactSelectorTest : public QObject {
@@ -30,7 +33,8 @@ private slots:
 void ContactSelectorTest::initTestCase() {
     GPIOHandler::setupInstance(true);
     qRegisterMetaType<ContactSelector::HBridge_options>("HBridge_options");
-    ContactSelector::initialize(kS0, kS1, kS2, kEnable, kHBridge1, kHBridge2, kHBridge3);
+    ContactSelector::initialize(kS0, kS1, kS2, kEnable, kHBridge1_top, kHBridge2_top, kHBridge3_top,
+                                kHBridge1_bottom, kHBridge2_bottom, kHBridge3_bottom);
 }
 
 void ContactSelectorTest::cleanupTestCase() {
@@ -78,9 +82,12 @@ void ContactSelectorTest::selectHBridge_updatesGpioStateAndEmitsSignal() {
     GPIOHandler* gpio = GPIOHandler::instance();
     QVERIFY(gpio != nullptr);
 
-    QCOMPARE(gpio->pinRead(kHBridge1), GPIOHandler::WPI_LOW);
-    QCOMPARE(gpio->pinRead(kHBridge2), GPIOHandler::WPI_LOW);
-    QCOMPARE(gpio->pinRead(kHBridge3), GPIOHandler::WPI_HIGH);
+    QCOMPARE(gpio->pinRead(kHBridge1_top), GPIOHandler::WPI_LOW);
+    QCOMPARE(gpio->pinRead(kHBridge2_top), GPIOHandler::WPI_LOW);
+    QCOMPARE(gpio->pinRead(kHBridge3_top), GPIOHandler::WPI_HIGH);
+    QCOMPARE(gpio->pinRead(kHBridge1_bottom), GPIOHandler::WPI_HIGH);
+    QCOMPARE(gpio->pinRead(kHBridge2_bottom), GPIOHandler::WPI_LOW);
+    QCOMPARE(gpio->pinRead(kHBridge3_bottom), GPIOHandler::WPI_LOW);
 }
 
 void ContactSelectorTest::selectHBridge_sameValueDoesNotEmitSignal() {

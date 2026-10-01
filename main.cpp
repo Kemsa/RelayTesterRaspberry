@@ -41,7 +41,8 @@ int main(int argc, char* argv[]) {
     StaticReadings::initialize();
     DynamicReadings::initialize(COIL1_DETECT, COIL2_DETECT, CONTACT_TRIGGER1, CONTACT_TRIGGER2);
     ContactSelector::initialize(CONTACT_SELECT_S0, CONTACT_SELECT_S1, CONTACT_SELECT_S2, CONTACT_SELECT_EN,
-                                H_BRIDGE1, H_BRIDGE2, H_BRIDGE3);
+                                H_BRIDGE1_TOP, H_BRIDGE2_TOP, H_BRIDGE3_TOP,
+                                H_BRIDGE1_BOTTOM, H_BRIDGE2_BOTTOM, H_BRIDGE3_BOTTOM);
     powerSupply::initialize(powerSupply::SupplyType::DMP86xx, SERIAL_PORT_NAME);
     powerSupply::instance()->connect();
     CurrentAdjuster::initialize(StaticReadings::getInstance(), VAR_RESISTANCE_ADDRESS);
