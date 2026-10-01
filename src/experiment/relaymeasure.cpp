@@ -15,9 +15,19 @@
 #include <QJsonValue>
 #include <QMetaType>
 
+#include "powercontrol.h"
+
 RelayMeasure::RelayMeasure(QJsonObject schema, QObject* parent)
     : QObject(parent), m_schema(std::move(schema)), m_hasSchema(true) {
     qRegisterMetaType<GenericStep::ResultStatus>("ResultStatus");
+
+    connect(PowerControl::getInstance(), &PowerControl::safetyStatusChanged, this, [this](bool isSafe) {
+        // Handle safety status change here
+        if (!isSafe) {
+            // Handle unsafe condition here
+            stopMeasure();
+        }
+    });
 }
 
 static QString definitionForMeasureType(const QString& measureType) {

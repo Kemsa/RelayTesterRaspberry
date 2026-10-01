@@ -129,23 +129,23 @@ bool PowerControl::disableContactPower() {
 void PowerControl::handleReedInterrupt(GPIOHandler::InterruptStatus wfiStatus) {
     reedClosed = (wfiStatus.statusOK == 1) && (wfiStatus.edge == GPIOHandler::Interrupt::WPI_INT_EDGE_RISING);
     qDebug() << "PowerControl: Reed interrupt triggered: " << (reedClosed ? "closed" : "open");
-    reedStatusChanged(reedClosed);
+    emit reedStatusChanged(reedClosed);
 
     if (!reedClosed) {
         qInfo() << "PowerControl: Capot ouvert, coupure des bobines et contacts";
         disableCoilsBottom();
         // disableContactPower();
-        safetyStatusChanged(false);
+        emit safetyStatusChanged(false);
     } else if (reedClosed && boardClosed) {
         qInfo() << "PowerControl: Capot fermé et carte en place, sécurité OK";
-        safetyStatusChanged(true);
+        emit safetyStatusChanged(true);
     }
 }
 
 void PowerControl::handleBoardInterrupt(GPIOHandler::InterruptStatus wfiStatus) {
     boardClosed = (wfiStatus.statusOK == 1) && (wfiStatus.edge == GPIOHandler::Interrupt::WPI_INT_EDGE_RISING);
     qDebug() << "PowerControl: Board interrupt triggered: " << (boardClosed ? "closed" : "open");
-    boardStatusChanged(boardClosed);
+    emit boardStatusChanged(boardClosed);
 
     if (!boardClosed) {
         qInfo() << "PowerControl: Carte mal placée, coupure des bobines et contacts";
@@ -153,7 +153,7 @@ void PowerControl::handleBoardInterrupt(GPIOHandler::InterruptStatus wfiStatus) 
         // disableContactPower();
     } else if (reedClosed && boardClosed) {
         qInfo() << "PowerControl: Capot fermé et carte en place, sécurité OK";
-        safetyStatusChanged(true);
+        emit safetyStatusChanged(true);
     }
 }
 
@@ -163,15 +163,15 @@ bool PowerControl::forceCheckSafetyStatus() {
 
     if (currentReedStatus != reedClosed) {
         reedClosed = currentReedStatus;
-        reedStatusChanged(reedClosed);
+        emit reedStatusChanged(reedClosed);
     }
 
     if (currentBoardStatus != boardClosed) {
         boardClosed = currentBoardStatus;
-        boardStatusChanged(boardClosed);
+        emit boardStatusChanged(boardClosed);
     }
 
     bool isSafe = reedClosed && boardClosed;
-    safetyStatusChanged(isSafe);
+    emit safetyStatusChanged(isSafe);
     return isSafe;
 }

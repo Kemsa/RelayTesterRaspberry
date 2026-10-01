@@ -7,10 +7,19 @@
 #include <future>
 #include <thread>
 
-#define STEP_CHECK_STOP_TOKEN()                         \
-    if (stopToken.load()) {                             \
-        qDebug() << "Stop requested for step:" << name; \
-        return ResultStopped;                           \
+#include "contactselector.h"
+#include "powercontrol.h"
+#include "powerSupply.h"
+
+#define STEP_CHECK_STOP_TOKEN()                             \
+    if (stopToken.load()) {                                 \
+        qDebug() << "Stop requested for step:" << name;     \
+        PowerControl::getInstance()->disableContactPower(); \
+        PowerControl::getInstance()->disableCoilsBottom();  \
+        ContactSelector::instance()->selectContact(0);      \
+        PowerControl::getInstance()->disableCoilsTop();     \
+        powerSupply::instance()->disableOutput();           \
+        return ResultStopped;                               \
     }
 
 class GenericStep : public QObject {
