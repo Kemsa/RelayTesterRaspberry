@@ -51,8 +51,8 @@ bool StaticReadings::getReading(ReadingFlags type, std::shared_ptr<ADCValue> rea
     }
 
     if (caliber == ADCBase::Caliber_Auto) {
-        // caliber = selectCaliberForChannel(type, reading);
-        caliber = ADCBase::ADCCaliber::Caliber_2500mV; 
+        caliber = selectCaliberForChannel(type, reading);
+        // caliber = ADCBase::ADCCaliber::Caliber_2500mV;
         if (caliber < 0 || caliber >= ADCBase::Caliber_Max) {
             qWarning() << "Readings: Invalid caliber selected for channel";
             return false;
@@ -83,7 +83,7 @@ int StaticReadings::getNReadings(ReadingFlags type, int nReadings, ADCValue read
 
     if (caliber == ADCBase::Caliber_Auto) {
         // caliber = selectCaliberForChannel(type, std::make_shared<ADCValue>());
-        caliber = ADCBase::ADCCaliber::Caliber_2500mV; 
+        caliber = ADCBase::ADCCaliber::Caliber_2500mV;
         if (caliber < 0 || caliber >= ADCBase::Caliber_Max) {
             qWarning() << "Readings: Invalid caliber selected for channel";
             return 0;
@@ -129,6 +129,26 @@ ADCBase::ADCCaliber StaticReadings::selectCaliberForChannel(ReadingFlags type, s
 
     std::shared_ptr<ADCValue> tempValue = std::make_shared<ADCValue>();
     configureValueForChannel(type, tempValue, ADCBase::Caliber_2500mV);
+
+    // Common mode is 1.9V max for every caliber except 2500mV, which is 3.0V
+    // Measure single channel to check if above 1800mV
+    if (!tempValue.get()->singleEnded) {
+        auto diff1 = std::make_shared<ADCValue>();
+        configureValueForChannel(type, diff1, ADCBase::Caliber_2500mV);
+        diff1->singleEnded = true;
+
+        auto diff2 = std::make_shared<ADCValue>();
+        configureValueForChannel(type, diff2, ADCBase::Caliber_2500mV);
+        diff2->singleEnded = true;
+
+        if (!m_adc->getSingleValue(diff1.get()) && !m_adc->getSingleValue(diff2.get())) {
+            return ADCBase::Caliber_error;
+        }
+
+        if (diff1->getMillivolts() > 1800 || diff2->getMillivolts() > 1800) {
+            return ADCBase::Caliber_2500mV;
+        }
+    }
     if (!m_adc->getSingleValue(tempValue.get())) {
         return ADCBase::Caliber_error;
     }
