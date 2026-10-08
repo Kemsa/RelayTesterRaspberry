@@ -8,8 +8,8 @@
 #include <thread>
 
 #include "contactselector.h"
-#include "powercontrol.h"
 #include "powerSupply.h"
+#include "powercontrol.h"
 
 #define STEP_CHECK_STOP_TOKEN()                             \
     if (stopToken.load()) {                                 \
@@ -34,6 +34,7 @@ public:
         ResultStopPending,
         ResultStopped,
         ResultCantMeasure,
+        ResultPreMeasure,
     };
     Q_ENUM(ResultStatus)
 
@@ -69,6 +70,9 @@ protected:
     void setResultStatus(ResultStatus status);
 
     virtual ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) = 0;
+
+private:
+    bool prerun_checks();
 };
 
 Q_DECLARE_METATYPE(GenericStep::ResultStatus)
