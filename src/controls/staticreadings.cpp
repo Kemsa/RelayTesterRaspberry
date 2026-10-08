@@ -56,7 +56,7 @@ bool StaticReadings::getReading(ReadingFlags type, std::shared_ptr<ADCValue> rea
         if (caliber < 0 || caliber >= ADCBase::Caliber_Max) {
             qWarning() << "Readings: Invalid caliber selected for channel";
             return false;
-        }
+        }        
     }
 
     configureValueForChannel(type, reading, caliber);
@@ -82,12 +82,13 @@ int StaticReadings::getNReadings(ReadingFlags type, int nReadings, ADCValue read
     int successfulReadings = 0;
 
     if (caliber == ADCBase::Caliber_Auto) {
-        // caliber = selectCaliberForChannel(type, std::make_shared<ADCValue>());
-        caliber = ADCBase::ADCCaliber::Caliber_2500mV;
+        caliber = selectCaliberForChannel(type, std::make_shared<ADCValue>());
+        //caliber = ADCBase::ADCCaliber::Caliber_2500mV;
         if (caliber < 0 || caliber >= ADCBase::Caliber_Max) {
             qWarning() << "Readings: Invalid caliber selected for channel";
             return 0;
         }
+        // qDebug() << "Readings: Selected caliber for channel" << static_cast<int>(type) << "is" << caliberToString(caliber);
     }
 
     for (int i = 0; i < nReadings; ++i) {
@@ -136,12 +137,15 @@ ADCBase::ADCCaliber StaticReadings::selectCaliberForChannel(ReadingFlags type, s
         auto diff1 = std::make_shared<ADCValue>();
         configureValueForChannel(type, diff1, ADCBase::Caliber_2500mV);
         diff1->singleEnded = true;
+        auto val1 = m_adc->getSingleValue(diff1.get());
 
         auto diff2 = std::make_shared<ADCValue>();
         configureValueForChannel(type, diff2, ADCBase::Caliber_2500mV);
         diff2->singleEnded = true;
+        diff2->channel = (HRDL_INPUTS)(diff2->channel + 1);
+        auto val2 = m_adc->getSingleValue(diff2.get());
 
-        if (!m_adc->getSingleValue(diff1.get()) && !m_adc->getSingleValue(diff2.get())) {
+        if (val1 == false || val2 == false) {
             return ADCBase::Caliber_error;
         }
 
@@ -156,18 +160,19 @@ ADCBase::ADCCaliber StaticReadings::selectCaliberForChannel(ReadingFlags type, s
     if (reading != nullptr) {
         *reading = *tempValue;
     }
+    //qDebug() << "Readings: Measured value for channel" << static_cast<int>(type) << "is" << tempValue->getMillivolts() << "mV";
 
-    if (tempValue->getMillivolts() > 1250.0 * 1.5) { // 10% margin
+    if (tempValue->getMillivolts() > 1250.0 * 0.9) { // 10% margin
         return ADCBase::Caliber_2500mV;
-    } else if (tempValue->getMillivolts() > 625.0 * 1.5) {
+    } else if (tempValue->getMillivolts() > 625.0 * 0.9) {
         return ADCBase::Caliber_1250mV;
-    } else if (tempValue->getMillivolts() > 313.0 * 1.5) {
+    } else if (tempValue->getMillivolts() > 313.0 * 0.9) {
         return ADCBase::Caliber_625mV;
-    } else if (tempValue->getMillivolts() > 156.0 * 1.5) {
+    } else if (tempValue->getMillivolts() > 156.0 * 0.9) {
         return ADCBase::Caliber_313mV;
-    } else if (tempValue->getMillivolts() > 78.0 * 1.5) {
+    } else if (tempValue->getMillivolts() > 78.0 * 0.9) {
         return ADCBase::Caliber_156mV;
-    } else if (tempValue->getMillivolts() > 39.0 * 1.5) {
+    } else if (tempValue->getMillivolts() > 39.0 * 0.9) {
         return ADCBase::Caliber_78mV;
     } else {
         return ADCBase::Caliber_39mV;
@@ -204,7 +209,7 @@ void StaticReadings::configureValueForChannel(ReadingFlags type, std::shared_ptr
 }
 
 float StaticReadings::toCoilCurrent_mA(ADCValue& reading) {
-    return reading.getMillivolts(); // 1ohm current sense resistor, so 1mV = 1mA
+    return reading.getMillivolts() / 10.0; // 10ohm current sense resistor, so 10mV = 1mA
 }
 
 float StaticReadings::toCoilVoltage_V(ADCValue& reading) {
@@ -217,4 +222,31 @@ float StaticReadings::toContactCurrent_mA(ADCValue& reading) {
 
 float StaticReadings::toContactVoltage_mV(ADCValue& reading) {
     return reading.getMillivolts(); // direct reading in mV
+}
+
+QString StaticReadings::caliberToString(ADCBase::ADCCaliber caliber) {
+    switch (caliber) {
+    case ADCBase::Caliber_error:
+        return "Caliber_error";
+    case ADCBase::Caliber_2500mV:
+        return "Caliber_2500mV";
+    case ADCBase::Caliber_1250mV:
+        return "Caliber_1250mV";
+    case ADCBase::Caliber_625mV:
+        return "Caliber_625mV";
+    case ADCBase::Caliber_313mV:
+        return "Caliber_313mV";
+    case ADCBase::Caliber_156mV:
+        return "Caliber_156mV";
+    case ADCBase::Caliber_78mV:
+        return "Caliber_78mV";
+    case ADCBase::Caliber_39mV:
+        return "Caliber_39mV";
+    case ADCBase::Caliber_Max:
+        return "Caliber_Max";
+    case ADCBase::Caliber_Auto:
+        return "Caliber_Auto";
+    default:
+        return "Caliber_Unknown";
+    }
 }

@@ -3,6 +3,7 @@
 #include "ADCBase.h"
 #include "ADCValue.h"
 #include <QMap>
+#include <QString>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -39,6 +40,7 @@ public:
     static float toCoilVoltage_V(ADCValue& reading);
     static float toContactCurrent_mA(ADCValue& reading);
     static float toContactVoltage_mV(ADCValue& reading);
+    static QString caliberToString(ADCBase::ADCCaliber caliber);
 
 private:
     static StaticReadings* s_instance;
