@@ -31,7 +31,7 @@ private:
     int nContacts = 1;
     int switchCount = 1;
     int supplyVoltage_cV = 0;
-    int maxCurrent_mA = 200;
+    int maxCurrent_mA = 150;
 
     struct SuccessValues {
         double maxWorkTime_no_ms = 0;

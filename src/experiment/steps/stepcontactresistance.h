@@ -1,6 +1,7 @@
 #ifndef STEPCONTACTRESISTANCE_H
 #define STEPCONTACTRESISTANCE_H
 
+#include "config.h"
 #include "genericstep.h"
 #include "staticreadings.h"
 #include <QString>
@@ -24,7 +25,7 @@ private:
     int nContacts = 1;
     int nCycles = 3;
     int supplyVoltage_cV = 0;
-    int maxCurrent_mA = 200;
+    int maxCurrent_mA = MAX_CURRENT_mA;
     int nMeasures = 16;
 
     struct SuccessValues {

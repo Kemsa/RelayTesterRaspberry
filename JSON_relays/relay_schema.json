@@ -20,7 +20,7 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 5000,
-      "default": 200
+      "default": 150
     },
     "nContacts": {
       "type": "integer",

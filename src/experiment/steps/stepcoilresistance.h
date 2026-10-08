@@ -1,6 +1,7 @@
 #ifndef STEPCOILRESISTANCE_H
 #define STEPCOILRESISTANCE_H
 
+#include "config.h"
 #include "genericstep.h"
 #include <QString>
 
@@ -19,7 +20,7 @@ private:
 
     int coilToMeasure = 1;
     int supplyVoltage_cV = 0;
-    int maxCurrent_mA = 200;
+    int maxCurrent_mA = MAX_CURRENT_mA;
     int nMeasures = 16;
 
     struct SuccessValues {

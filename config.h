@@ -73,4 +73,7 @@
 
 #define VAR_RESISTANCE_ADDRESS 0x3c
 
+// ############# limits defines ####################
+#define MAX_CURRENT_mA 150
+
 #endif // CONFIG_H

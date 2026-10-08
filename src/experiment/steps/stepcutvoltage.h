@@ -1,6 +1,7 @@
 #ifndef STEPCUTVOLTAGE_H
 #define STEPCUTVOLTAGE_H
 
+#include "config.h"
 #include "genericstep.h"
 #include <QString>
 
@@ -22,7 +23,7 @@ private:
     int startVoltage_cV = 0;
     int stopVoltage_cV = 0;
     int voltageStep_cV = 0;
-    int maxCurrent_mA = 200;
+    int maxCurrent_mA = MAX_CURRENT_mA;
     int nMeasures = 16;
 
     struct SuccessValues {
