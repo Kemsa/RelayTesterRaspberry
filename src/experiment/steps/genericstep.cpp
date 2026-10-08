@@ -108,24 +108,33 @@ bool GenericStep::prerun_checks() {
     auto staticReadings = StaticReadings::getInstance();
     auto powerSupply = powerSupply::instance();
 
+    if (!powerControl || !staticReadings || !powerSupply || !staticReadings->checkOpen() || !powerSupply->isConnected()) {
+        qCritical() << "One or more required instances are not available. Aborting measurement.";
+        return false;
+    }
+    if (!powerControl->checkSafetyStatus()) {
+        qCritical() << "Safety status check failed. Aborting measurement.";
+        return false;
+    }
+
     // Check coil resistances: if <10ohm, stop immediately, risk of burning the board!
 
-    powerSupply->setMaxValues(5 / 100.0f, MAX_CURRENT_mA / 1000.0f); // Convert mA to A
-    powerSupply->setVoltage(5 / 100.0f);                             // Convert cV to V
+    powerSupply->setMaxValues(5 , MAX_CURRENT_mA / 1000.0f); // Convert mA to A
+    powerSupply->setVoltage(5);                             // Convert cV to V
     powerSupply->enableOutput();
 
     // coil 1
-    powerControl->enableCoilTop(static_cast<PowerControl::Coil>(1));
-    powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(1));
-    QThread::msleep(50); // Wait for the coil to stabilize
+    powerControl->enableCoilTop(static_cast<PowerControl::Coil>(static_cast<PowerControl::Coil>(1)));    
+    powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(static_cast<PowerControl::Coil>(1)));
+    QThread::msleep(100); // Wait for the coil to stabilize
 
     auto voltage1 = std::make_shared<ADCValue>();
-    staticReadings->getReading(StaticReadings::ReadingFlags::coil1Voltage, voltage1, ADCBase::Caliber_2500mV);
+    staticReadings->getReading(StaticReadings::ReadingFlags::coil1Voltage, voltage1);
 
     auto current1 = std::make_shared<ADCValue>();
-    staticReadings->getReading(StaticReadings::ReadingFlags::coil1Current, current1, ADCBase::Caliber_2500mV);
+    staticReadings->getReading(StaticReadings::ReadingFlags::coil1Current, current1);
 
-    auto resistance1 = StaticReadings::toCoilVoltage_V(*voltage1) / StaticReadings::toCoilCurrent_mA(*current1);
+    auto resistance1 = abs(StaticReadings::toCoilVoltage_V(*voltage1) / StaticReadings::toCoilCurrent_mA(*current1)*1000);
 
     powerControl->disableCoilsTop();
     powerControl->disableCoilsBottom();
@@ -133,7 +142,8 @@ bool GenericStep::prerun_checks() {
     // coil2
     powerControl->enableCoilTop(static_cast<PowerControl::Coil>(2));
     powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(2));
-    QThread::msleep(50); // Wait for the coil to stabilize
+    QThread::msleep(100); // Wait for the coil to stabilize
+
 
     auto voltage2 = std::make_shared<ADCValue>();
     staticReadings->getReading(StaticReadings::ReadingFlags::coil2Voltage, voltage2, ADCBase::Caliber_2500mV);
@@ -141,13 +151,25 @@ bool GenericStep::prerun_checks() {
     auto current2 = std::make_shared<ADCValue>();
     staticReadings->getReading(StaticReadings::ReadingFlags::coil2Current, current2, ADCBase::Caliber_2500mV);
 
-    auto resistance2 = StaticReadings::toCoilVoltage_V(*voltage2) / StaticReadings::toCoilCurrent_mA(*current2);
+    auto resistance2 = abs(StaticReadings::toCoilVoltage_V(*voltage2) / StaticReadings::toCoilCurrent_mA(*current2)*1000);
 
-    powerControl->disableCoilsTop();
     powerControl->disableCoilsBottom();
+    powerControl->disableCoilsTop();
+    powerControl->disableContactPower();
+    powerSupply->disableOutput();
 
-    if (resistance1 < 10 || resistance2 < 10) {
-        qCritical() << "Coil resistance too low! Coil1:" << resistance1 << "Ohm, Coil2:" << resistance2 << "Ohm";
+    if (resistance1 < 10 && StaticReadings::toCoilVoltage_V(*voltage1) > 1)
+    {
+        qCritical() << "Coil1 resistance is too low:" << resistance1 << "Ohm, Voltage:" << StaticReadings::toCoilVoltage_V(*voltage1) << "V. Aborting measurement.";
+        return false;
+    } else if(resistance2 < 10 && StaticReadings::toCoilVoltage_V(*voltage2) > 1) {
+        qCritical() << "Coil2 resistance is too low:" << resistance2 << "Ohm, Voltage:" << StaticReadings::toCoilVoltage_V(*voltage2) << "V. Aborting measurement.";
+        return false;
+    }else if(StaticReadings::toCoilVoltage_V(*voltage1) < 1) {
+        qCritical() << "Coil1 voltage is too low:" << StaticReadings::toCoilVoltage_V(*voltage1) << "V. Aborting measurement.";
+        return false;
+    }else if(StaticReadings::toCoilVoltage_V(*voltage2) < 1) {
+        qCritical() << "Coil2 voltage is too low:" << StaticReadings::toCoilVoltage_V(*voltage2) << "V. Aborting measurement.";
         return false;
     }
 
