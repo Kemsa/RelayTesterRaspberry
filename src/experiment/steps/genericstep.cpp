@@ -1,5 +1,13 @@
 #include "genericstep.h"
 #include <QMetaType>
+#include <QThread>
+#include <memory>
+
+#include "config.h"
+
+#include "powerSupply.h"
+#include "powercontrol.h"
+#include "staticreadings.h"
 
 GenericStep::GenericStep(QString name, QObject* parent)
     : QObject(parent), name(name) {
@@ -47,6 +55,13 @@ std::future<GenericStep::ResultStatus> GenericStep::measureAsync() {
     std::thread([this, promise]() {
         qDebug() << "Starting measure for step:" << name;
         setResultStatus(GenericStep::ResultMeasuring);
+
+        if (prerun_checks() == false) {
+            promise->set_value(ResultPreMeasure);
+            setResultStatus(ResultPreMeasure);
+            return;
+        }
+
         GenericStep::ResultStatus result = runMeasureAsync(stopRequested);
         promise->set_value(result);
         setResultStatus(result);
@@ -84,4 +99,57 @@ QString GenericStep::getResultSummary() const {
         return QString::fromUtf8(R"(Résultat: Inconnu, veuillez faire une mesure pour obtenir un résultat.
  )");
     }
+}
+
+bool GenericStep::prerun_checks() {
+    // Implement any necessary checks before running the measure
+
+    auto powerControl = PowerControl::getInstance();
+    auto staticReadings = StaticReadings::getInstance();
+    auto powerSupply = powerSupply::instance();
+
+    // Check coil resistances: if <10ohm, stop immediately, risk of burning the board!
+
+    powerSupply->setMaxValues(5 / 100.0f, MAX_CURRENT_mA / 1000.0f); // Convert mA to A
+    powerSupply->setVoltage(5 / 100.0f);                             // Convert cV to V
+    powerSupply->enableOutput();
+
+    // coil 1
+    powerControl->enableCoilTop(static_cast<PowerControl::Coil>(1));
+    powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(1));
+    QThread::msleep(50); // Wait for the coil to stabilize
+
+    auto voltage1 = std::make_shared<ADCValue>();
+    staticReadings->getReading(StaticReadings::ReadingFlags::coil1Voltage, voltage1, ADCBase::Caliber_2500mV);
+
+    auto current1 = std::make_shared<ADCValue>();
+    staticReadings->getReading(StaticReadings::ReadingFlags::coil1Current, current1, ADCBase::Caliber_2500mV);
+
+    auto resistance1 = StaticReadings::toCoilVoltage_V(*voltage1) / StaticReadings::toCoilCurrent_mA(*current1);
+
+    powerControl->disableCoilsTop();
+    powerControl->disableCoilsBottom();
+
+    // coil2
+    powerControl->enableCoilTop(static_cast<PowerControl::Coil>(2));
+    powerControl->enableCoilBottom(static_cast<PowerControl::Coil>(2));
+    QThread::msleep(50); // Wait for the coil to stabilize
+
+    auto voltage2 = std::make_shared<ADCValue>();
+    staticReadings->getReading(StaticReadings::ReadingFlags::coil2Voltage, voltage2, ADCBase::Caliber_2500mV);
+
+    auto current2 = std::make_shared<ADCValue>();
+    staticReadings->getReading(StaticReadings::ReadingFlags::coil2Current, current2, ADCBase::Caliber_2500mV);
+
+    auto resistance2 = StaticReadings::toCoilVoltage_V(*voltage2) / StaticReadings::toCoilCurrent_mA(*current2);
+
+    powerControl->disableCoilsTop();
+    powerControl->disableCoilsBottom();
+
+    if (resistance1 < 10 || resistance2 < 10) {
+        qCritical() << "Coil resistance too low! Coil1:" << resistance1 << "Ohm, Coil2:" << resistance2 << "Ohm";
+        return false;
+    }
+
+    return true;
 }

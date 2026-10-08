@@ -1,6 +1,7 @@
 #ifndef STEPSWITCHINGTIME_H
 #define STEPSWITCHINGTIME_H
 
+#include "config.h"
 #include "genericstep.h"
 #include <QString>
 
@@ -31,7 +32,7 @@ private:
     int nContacts = 1;
     int switchCount = 1;
     int supplyVoltage_cV = 0;
-    int maxCurrent_mA = 150;
+    int maxCurrent_mA = MAX_CURRENT_mA;
 
     struct SuccessValues {
         double maxWorkTime_no_ms = 0;

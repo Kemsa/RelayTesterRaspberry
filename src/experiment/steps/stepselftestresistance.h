@@ -1,6 +1,7 @@
 #ifndef STEPSELFTESTRESISTANCE_H
 #define STEPSELFTESTRESISTANCE_H
 
+#include "config.h"
 #include "genericstep.h"
 #include <QString>
 
