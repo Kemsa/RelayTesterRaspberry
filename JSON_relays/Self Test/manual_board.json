@@ -1,6 +1,6 @@
 {
   "$schema": "../relay_schema.json",
-  "relayBrand": "axicom",
+  "###relayBrand": "axicom",
   "relayModel": "v23062-B00029",
   "measures": [
     {
