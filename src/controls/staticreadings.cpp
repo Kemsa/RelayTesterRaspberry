@@ -56,8 +56,10 @@ bool StaticReadings::getReading(ReadingFlags type, std::shared_ptr<ADCValue> rea
         if (caliber < 0 || caliber >= ADCBase::Caliber_Max) {
             qWarning() << "Readings: Invalid caliber selected for channel";
             return false;
-        }        
+        }
     }
+
+    applyCalibrationFactor(*reading, type);
 
     configureValueForChannel(type, reading, caliber);
 
@@ -83,7 +85,7 @@ int StaticReadings::getNReadings(ReadingFlags type, int nReadings, ADCValue read
 
     if (caliber == ADCBase::Caliber_Auto) {
         caliber = selectCaliberForChannel(type, std::make_shared<ADCValue>());
-        //caliber = ADCBase::ADCCaliber::Caliber_2500mV;
+        // caliber = ADCBase::ADCCaliber::Caliber_2500mV;
         if (caliber < 0 || caliber >= ADCBase::Caliber_Max) {
             qWarning() << "Readings: Invalid caliber selected for channel";
             return 0;
@@ -160,7 +162,7 @@ ADCBase::ADCCaliber StaticReadings::selectCaliberForChannel(ReadingFlags type, s
     if (reading != nullptr) {
         *reading = *tempValue;
     }
-    //qDebug() << "Readings: Measured value for channel" << static_cast<int>(type) << "is" << tempValue->getMillivolts() << "mV";
+    // qDebug() << "Readings: Measured value for channel" << static_cast<int>(type) << "is" << tempValue->getMillivolts() << "mV";
 
     if (tempValue->getMillivolts() > 1250.0 * 0.9) { // 10% margin
         return ADCBase::Caliber_2500mV;
@@ -208,6 +210,19 @@ void StaticReadings::configureValueForChannel(ReadingFlags type, std::shared_ptr
     }
 }
 
+void StaticReadings::applyCalibrationFactor(ADCValue& reading, ReadingFlags type) {
+    switch (type) {
+    case ReadingFlags::coil1Voltage:
+        reading.calibrationFactor = m_coil1CalibrationFactor;
+        break;
+    case ReadingFlags::coil2Voltage:
+        reading.calibrationFactor = m_coil2CalibrationFactor;
+        break;
+    default:
+        break;
+    }
+}
+
 float StaticReadings::toCoilCurrent_mA(ADCValue& reading) {
     return reading.getMillivolts() / 10.0; // 10ohm current sense resistor, so 10mV = 1mA
 }
@@ -222,6 +237,16 @@ float StaticReadings::toContactCurrent_mA(ADCValue& reading) {
 
 float StaticReadings::toContactVoltage_mV(ADCValue& reading) {
     return reading.getMillivolts(); // direct reading in mV
+}
+
+void StaticReadings::setCoilCalibrationFactor(double coil1, double coil2) {
+    m_coil1CalibrationFactor = coil1;
+    m_coil2CalibrationFactor = coil2;
+}
+
+void StaticReadings::resetCoilCalibrationFactor() {
+    m_coil1CalibrationFactor = 1.0;
+    m_coil2CalibrationFactor = 1.0;
 }
 
 QString StaticReadings::caliberToString(ADCBase::ADCCaliber caliber) {

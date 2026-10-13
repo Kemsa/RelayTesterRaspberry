@@ -34,7 +34,7 @@ add_executable(relayTester
   main.cpp src/UI/screens/mainWindow.cpp src/UI/screens/mainWindow.h
   src/controls/logbus.cpp src/controls/logbus.h
   src/UI/screens/homescreen.h src/UI/screens/homescreen.cpp src/UI/screens/homescreen.ui
-  src/UI/screens/calibrationscreen.h src/UI/screens/calibrationscreen.cpp src/UI/screens/calibrationscreen.ui
+  src/UI/screens/testingscreen.h src/UI/screens/testingscreen.cpp src/UI/screens/testingscreen.ui
   src/UI/navigator.h src/UI/navigator.cpp
   src/UI/widgets/contactselectwidget.h src/UI/widgets/contactselectwidget.cpp src/UI/widgets/contactselectwidget.ui
   src/controls/contactselector.h src/controls/contactselector.cpp
@@ -61,6 +61,7 @@ add_executable(relayTester
   src/experiment/steps/stepswitchingtime.h src/experiment/steps/stepswitchingtime.cpp
   src/experiment/steps/genericstep.h src/experiment/steps/genericstep.cpp
   src/UI/screens/logscreen.h src/UI/screens/logscreen.cpp src/UI/screens/logscreen.ui
+  src/UI/screens/calibrationscreen.h src/UI/screens/calibrationscreen.cpp src/UI/screens/calibrationscreen.ui
 )
 target_include_directories(relayTester PRIVATE
   ${CMAKE_CURRENT_BINARY_DIR}

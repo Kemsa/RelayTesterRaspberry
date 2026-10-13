@@ -4,7 +4,7 @@
 #include <QWidget>
 
 namespace Ui {
-class Calibration;
+class CalibrationScreen;
 }
 
 class CalibrationScreen : public QWidget
@@ -15,8 +15,12 @@ public:
     explicit CalibrationScreen(QWidget *parent = nullptr);
     ~CalibrationScreen();
 
+private slots:
+    void calibrate();
+    void exportCalibration();
+
 private:
-    Ui::Calibration *ui;
+    Ui::CalibrationScreen *ui;
 };
 
 #endif // CALIBRATIONSCREEN_H

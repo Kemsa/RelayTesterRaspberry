@@ -82,6 +82,19 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="testPB">
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>15</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Test</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="calibrationPB">
         <property name="font">
          <font>
@@ -90,7 +103,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Étalonnage &amp;&amp; Test</string>
+         <string>Étalonnage</string>
         </property>
        </widget>
       </item>

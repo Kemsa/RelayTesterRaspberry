@@ -34,6 +34,9 @@ public:
     bool getReading(ReadingFlags type, std::shared_ptr<ADCValue> reading, ADCBase::ADCCaliber caliber = ADCBase::Caliber_Auto);
     int getNReadings(ReadingFlags type, int nReadings, ADCValue readings[], ADCBase::ADCCaliber caliber = ADCBase::Caliber_Auto);
 
+    void setCoilCalibrationFactor(double coil1, double coil2);
+    void resetCoilCalibrationFactor();
+
     QMap<ReadingFlags, std::vector<ADCValue>> getMultipleReadings(uint8_t types, int nReadings);
 
     static float toCoilCurrent_mA(ADCValue& reading);
@@ -48,10 +51,13 @@ private:
     StaticReadings();
     ~StaticReadings() = default;
 
-
     void configureValueForChannel(ReadingFlags type, std::shared_ptr<ADCValue> reading, ADCBase::ADCCaliber caliber);
 
     ADCBase::ADCCaliber selectCaliberForChannel(ReadingFlags type, std::shared_ptr<ADCValue> reading);
+    void applyCalibrationFactor(ADCValue& reading, ReadingFlags type);
 
     std::unique_ptr<ADCBase> m_adc;
+
+    double m_coil1CalibrationFactor = 1.0;
+    double m_coil2CalibrationFactor = 1.0;
 };

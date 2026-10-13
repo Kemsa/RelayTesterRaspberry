@@ -76,4 +76,8 @@
 // ############# limits defines ####################
 #define MAX_CURRENT_mA 150
 
+// ############# Self test resistances ####################
+#define SELF_TEST_RESISTANCE_1 1000  // Ohms
+#define SELF_TEST_RESISTANCE_2 10000 // Ohms
+
 #endif // CONFIG_H

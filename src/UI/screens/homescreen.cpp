@@ -6,8 +6,8 @@ HomeScreen::HomeScreen(QWidget* parent)
     : QWidget(parent), ui(new Ui::HomeScreen) {
     ui->setupUi(this);
 
-    connect(ui->calibrationPB, &QPushButton::clicked, this, [this]() {
-        Navigator::instance().navigateTo(Navigator::Calibration_screen);
+    connect(ui->testPB, &QPushButton::clicked, this, [this]() {
+        Navigator::instance().navigateTo(Navigator::Test_screen);
     });
 
     connect(ui->relayMeasure_PB, &QPushButton::clicked, this, [this]() {
@@ -15,6 +15,9 @@ HomeScreen::HomeScreen(QWidget* parent)
     });
     connect(ui->logs_PB, &QPushButton::clicked, this, [this]() {
         Navigator::instance().navigateTo(Navigator::Logs_screen);
+    });
+    connect(ui->calibrationPB, &QPushButton::clicked, this, [this]() {
+        Navigator::instance().navigateTo(Navigator::Calibration_screen);
     });
 }
 

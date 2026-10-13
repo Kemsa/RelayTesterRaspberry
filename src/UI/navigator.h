@@ -10,10 +10,11 @@ class Navigator {
 public:
     enum NavigationScreen {
         Home_screen,
-        Calibration_screen,
+        Test_screen,
         RelaySelect_screen,
         RelayMeasure_screen,
         Logs_screen,
+        Calibration_screen,
 
         // Add more screens as needed
     };
