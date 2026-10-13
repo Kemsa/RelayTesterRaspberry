@@ -119,6 +119,14 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
         measurementValues.averageResistanceContactB_Ohm.emplace_back(nContacts, 0.0);
     }
 
+    //adjust current to 10mA
+    contactSelector->selectHBridge(ContactSelector::HBridge_forward_all);
+    contactSelector->selectContact(1);
+    currentAdjuster->adjustCurrentToTarget(10, 0.8, false);
+    contactSelector->selectHBridge(ContactSelector::HBridge_none);
+    contactSelector->selectContact(0);
+
+
     for (int i = 0; i < nCycles; ++i) {
         STEP_CHECK_STOP_TOKEN();
         qDebug() << "Starting cycle" << (i + 1) << "of" << nCycles;
@@ -138,8 +146,7 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
 
             contactSelector->selectHBridge(ContactSelector::HBridge_forward_all);
             contactSelector->selectContact(c);
-            QThread::msleep(10);
-            // currentAdjuster->adjustCurrentToTarget(10, 0.8, false);
+            QThread::msleep(10);            
 
             double meanResistanceForward_Ohm = getResistanceForContact(StaticReadings::ReadingFlags::contactAVoltage, nMeasures, stopToken);
             qDebug() << "Contact" << c << "mean resistance forward(Ohm):" << meanResistanceForward_Ohm;
@@ -169,7 +176,6 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
             contactSelector->selectHBridge(ContactSelector::HBridge_forward_all);
             contactSelector->selectContact(c);
             QThread::msleep(10);
-            // currentAdjuster->adjustCurrentToTarget(10, 0.8, false);
 
             double meanResistanceForward_Ohm = getResistanceForContact(StaticReadings::ReadingFlags::contactBVoltage, nMeasures, stopToken);
             qDebug() << "Contact" << c << "mean resistance forward(Ohm):" << meanResistanceForward_Ohm;

@@ -18,6 +18,8 @@ QString ContactSelector::hBridgeOptionToString(HBridge_options option) {
         return "Forward P2";
     case HBridge_reverse_p2:
         return "Reverse P2";
+    case HBridge_none:
+        return "None";
     }
 
     return "Unknown";
