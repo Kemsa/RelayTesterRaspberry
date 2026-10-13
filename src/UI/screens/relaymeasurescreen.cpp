@@ -20,6 +20,10 @@
 #include <QStyle>
 #include <memory>
 
+#ifdef Q_OS_LINUX
+#include <unistd.h>
+#endif
+
 namespace {
 
 QString findSchemaPath(const QString& relayFilePath) {
@@ -150,6 +154,10 @@ RelayMeasureScreen::RelayMeasureScreen(QWidget* parent)
 
         file.write(m_relayMeasure->getFullSummary().toUtf8());
         file.close();
+
+#ifdef Q_OS_LINUX
+        ::sync();
+#endif
 
         QMessageBox::information(this, QStringLiteral("Export terminé"),
                                  QStringLiteral("Les résultats ont été exportés dans :\n%1")
