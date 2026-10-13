@@ -19,7 +19,7 @@
     "coilCurrent": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 5000,
+      "maximum": 150,
       "default": 150
     },
     "nContacts": {
