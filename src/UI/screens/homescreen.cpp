@@ -19,6 +19,9 @@ HomeScreen::HomeScreen(QWidget* parent)
     connect(ui->calibrationPB, &QPushButton::clicked, this, [this]() {
         Navigator::instance().navigateTo(Navigator::Calibration_screen);
     });
+
+    // Not ready for deployment
+    ui->calibrationPB->setVisible(false);
 }
 
 HomeScreen::~HomeScreen() {
