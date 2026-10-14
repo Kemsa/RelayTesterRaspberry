@@ -43,12 +43,17 @@ QString StepCutVoltage::getDescription() const {
 QString StepCutVoltage::getResultSummary() const {
     switch (resultStatus) {
     case ResultSuccess:
-        return QString::fromUtf8(R"(SUCCES
+        if (measurementValues.switchingVoltage_V == 0.0) {
+            return QString::fromUtf8(R"(SUCCES PARTIEL
+
+Commutation complète pour une tension nulle)");
+        } else {
+            return QString::fromUtf8(R"(SUCCES
 
 Tension de commutation: %1 V (min autorisée: %2 V))")
-            .arg(measurementValues.switchingVoltage_V, 0, 'f', 2)
-            .arg(successValues.minCutVoltage_cV / 100.0f, 0, 'f', 2);
-
+                .arg(measurementValues.switchingVoltage_V, 0, 'f', 2)
+                .arg(successValues.minCutVoltage_cV / 100.0f, 0, 'f', 2);
+        }
     case ResultFailure:
         return QString::fromUtf8(R"(ECHEC
 
@@ -114,6 +119,7 @@ GenericStep::ResultStatus StepCutVoltage::runMeasureAsync(const std::atomic<bool
 
     StaticReadings::ReadingFlags coilToMeasureFlag = (coilToMeasure == 1) ? StaticReadings::ReadingFlags::coil1Voltage : StaticReadings::ReadingFlags::coil2Voltage;
 
+    // Check for every voltage
     for (int voltage_cV = startVoltage_cV; voltage_cV >= stopVoltage_cV; voltage_cV -= voltageStep_cV) {
         STEP_CHECK_STOP_TOKEN();
 
@@ -157,12 +163,48 @@ GenericStep::ResultStatus StepCutVoltage::runMeasureAsync(const std::atomic<bool
         }
     }
 
+    // now, if cut was not made yet, try with no voltage for intermediate success
+    if (!isAllSwitched()) {
+        powerControl->disableCoilsBottom();
+        powerControl->disableCoilsTop();
+
+        bool nowSwitched = true;
+        for (int contactIndex = 1; contactIndex <= nContacts; ++contactIndex) {
+            STEP_CHECK_STOP_TOKEN();
+
+            contactSelector->selectContact(contactIndex);
+            contactSelector->selectHBridge(ContactSelector::HBridge_forward_p2);
+            QThread::msleep(1); // Wait for the contact to settle
+
+            bool isContactBClosed = dynamicReadings->isContactClosed(DynamicReadings::ContactType::CONTACT_B);
+
+            contactSelector->selectHBridge(ContactSelector::HBridge_forward_p1);
+            QThread::msleep(1); // Wait for the contact to settle
+
+            bool isContactAClosed = dynamicReadings->isContactClosed(DynamicReadings::ContactType::CONTACT_A);
+
+            if (isContactAClosed && !isContactBClosed) {
+                measurementValues.switchedContacts[contactIndex - 1] = true;
+            } else {
+                nowSwitched = false;
+            }
+
+            qDebug() << "Contact" << contactIndex << "status: A closed:" << isContactAClosed << ", B closed:" << isContactBClosed;
+        }
+        qDebug() << "nowSwitched:" << nowSwitched;
+        if (isAllSwitched() && measurementValues.switchingVoltage_V < 0.0) {
+            measurementValues.switchingVoltage_V = 0;
+        } else if (!isAllSwitched()) {
+            measurementValues.switchingVoltage_V = -1.0;
+        }
+    }
+
     powerControl->disableCoilsBottom();
     powerControl->disableCoilsTop();
     powerControl->disableContactPower();
     powerSupply->disableOutput();
 
-    if (isAllSwitched() && measurementValues.switchingVoltage_V >= successValues.minCutVoltage_cV / 100.0) {
+    if (isAllSwitched() && measurementValues.switchingVoltage_V >= 0) {
         qDebug() << "Cut voltage measurement successful. Cut voltage:" << measurementValues.switchingVoltage_V << "V";
         return ResultSuccess;
     } else {
