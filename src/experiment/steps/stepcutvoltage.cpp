@@ -167,6 +167,7 @@ GenericStep::ResultStatus StepCutVoltage::runMeasureAsync(const std::atomic<bool
     if (!isAllSwitched()) {
         powerControl->disableCoilsBottom();
         powerControl->disableCoilsTop();
+        QThread::msleep(100); // Wait for the coil to stabilize
 
         bool nowSwitched = true;
         for (int contactIndex = 1; contactIndex <= nContacts; ++contactIndex) {
