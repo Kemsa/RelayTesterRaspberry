@@ -468,22 +468,16 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
     for (int c = 0; c < nContacts; ++c) {
         for (int i = 0; i < switchCount; ++i) {
             if (measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] > successValues.maxWorkTime_no_ms * 1000 ||
-                measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTimeStable][i] > successValues.maxWorkTime_no_ms * 1000 ||
                 measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] > successValues.maxCutTime_no_ms * 1000 ||
-                measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] > successValues.maxCutTime_no_ms * 1000 ||
                 measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] < successValues.minWorkTime_no_ms * 1000 ||
-                measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTimeStable][i] < successValues.minWorkTime_no_ms * 1000 ||
                 measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] < successValues.minCutTime_no_ms * 1000 ||
-                measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] < successValues.minCutTime_no_ms * 1000 ||
                 (successValues.maxWorkTimeRebound_no_ms >= 0 && measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkReboundTime][i] > successValues.maxWorkTimeRebound_no_ms * 1000) ||
                 (successValues.maxCutTimeRebound_no_ms >= 0 && measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] > successValues.maxCutTimeRebound_no_ms * 1000)) {
                 success = false;
                 qDebug() << "Contact" << c + 1 << ".A switching time exceeded success criteria on iteration" << i + 1;
                 qDebug() << "WorkTime:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] << "us, Min/Max allowed:" << successValues.minWorkTime_no_ms * 1000 << "/" << successValues.maxWorkTime_no_ms * 1000 << "us";
-                qDebug() << "WorkTimeStable:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTimeStable][i] << "us, Min/Max allowed:" << successValues.maxWorkTime_no_ms * 1000 << "us";
                 qDebug() << "WorkTimeRebound:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkReboundTime][i] << "us, Min/Max allowed:" << successValues.minWorkTimeRebound_no_ms * 1000 << "/" << successValues.maxWorkTimeRebound_no_ms * 1000 << "us";
                 qDebug() << "ReleaseTime:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] << "us, Min/Max allowed:" << successValues.minCutTime_no_ms * 1000 << "/" << successValues.maxCutTime_no_ms * 1000 << "us";
-                qDebug() << "ReleaseTimeStable:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] << "us, Min/Max allowed:" << successValues.minCutTime_no_ms * 1000 << "/" << successValues.maxCutTime_no_ms * 1000 << "us";
                 qDebug() << "ReleaseTimeRebound:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] << "us, Min/Max allowed:" << successValues.minCutTimeRebound_no_ms * 1000 << "/" << successValues.maxCutTimeRebound_no_ms * 1000 << "us";
                 // break;
             }
@@ -496,23 +490,16 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
     for (int c = 0; c < nContacts; ++c) {
         for (int i = 0; i < switchCount; ++i) {
             if (measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTime][i] > successValues.maxWorkTime_nc_ms * 1000 ||
-                measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTimeStable][i] > successValues.maxWorkTime_nc_ms * 1000 ||
                 measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] > successValues.maxCutTime_nc_ms * 1000 ||
-                measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] > successValues.maxCutTime_nc_ms * 1000 ||
                 measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTime][i] < successValues.minWorkTime_nc_ms * 1000 ||
-                measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTimeStable][i] < successValues.minWorkTime_nc_ms * 1000 ||
                 measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] < successValues.minCutTime_nc_ms * 1000 ||
-                measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] < successValues.minCutTime_nc_ms * 1000 ||
                 (successValues.maxWorkTimeRebound_nc_ms >= 0 && measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkReboundTime][i] > successValues.maxWorkTimeRebound_nc_ms * 1000) ||
                 (successValues.maxCutTimeRebound_nc_ms >= 0 && measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] > successValues.maxCutTimeRebound_nc_ms * 1000)) {
                 success = false;
-                qDebug() << "Contact" << c + 1 << "switching time exceeded success criteria on iteration" << i + 1;
-                success = false;
                 qDebug() << "Contact" << c + 1 << ".B switching time exceeded success criteria on iteration" << i + 1;
-                qDebug() << "WorkTimeStable:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTimeStable][i] << "us, Min/Max allowed:" << successValues.minWorkTime_nc_ms * 1000 << "/" << successValues.maxWorkTime_nc_ms * 1000 << "us";
+                qDebug() << "WorkTime:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTime][i] << "us, Min/Max allowed:" << successValues.minWorkTime_nc_ms * 1000 << "/" << successValues.maxWorkTime_nc_ms * 1000 << "us";
                 qDebug() << "WorkTimeRebound:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkReboundTime][i] << "us, Min/Max allowed:" << successValues.minWorkTimeRebound_nc_ms * 1000 << "/" << successValues.maxWorkTimeRebound_nc_ms * 1000 << "us";
                 qDebug() << "ReleaseTime:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] << "us, Min/Max allowed:" << successValues.minCutTime_nc_ms * 1000 << "/" << successValues.maxCutTime_nc_ms * 1000 << "us";
-                qDebug() << "ReleaseTimeStable:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] << "us, Min/Max allowed:" << successValues.minCutTime_nc_ms * 1000 << "/" << successValues.maxCutTime_nc_ms * 1000 << "us";
                 qDebug() << "ReleaseTimeRebound:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] << "us, Min/Max allowed:" << successValues.minCutTimeRebound_nc_ms * 1000 << "/" << successValues.maxCutTimeRebound_nc_ms * 1000 << "us";
                 // break;
             }
