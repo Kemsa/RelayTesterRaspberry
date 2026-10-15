@@ -69,14 +69,14 @@
         "switchCount": 20,
         "supplyVoltage_cV": 4800,
         "successValues": {
-          "maxWorkTime_no_ms": 32,
-          "maxCutTime_no_ms": 2,
-          "maxWorkTime_nc_ms": 32,
-          "maxCutTime_nc_ms": 2,
-          "minWorkTime_no_ms": 8,
-          "minCutTime_no_ms": 1,
-          "minWorkTime_nc_ms": 8,
-          "minCutTime_nc_ms": 1
+          "maxWorkTime_no_ms": 4,
+          "maxCutTime_no_ms": 32,
+          "maxWorkTime_nc_ms": 4,
+          "maxCutTime_nc_ms": 32,
+          "minWorkTime_no_ms": 1,
+          "minCutTime_no_ms": 8,
+          "minWorkTime_nc_ms": 1,
+          "minCutTime_nc_ms": 8
         }
       }
     }
