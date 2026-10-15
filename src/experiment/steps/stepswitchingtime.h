@@ -36,13 +36,24 @@ private:
 
     struct SuccessValues {
         double maxWorkTime_no_ms = 0;
-        double maxWorkTimeRebound_no_ms = -1;
         double maxCutTime_no_ms = 0;
-        double maxCutTimeRebound_no_ms = -1;
         double maxWorkTime_nc_ms = 0;
-        double maxWorkTimeRebound_nc_ms = -1;
         double maxCutTime_nc_ms = 0;
+
+        double minWorkTime_no_ms = 0;
+        double minCutTime_no_ms = 0;
+        double minWorkTime_nc_ms = 0;
+        double minCutTime_nc_ms = 0;
+
+        double maxWorkTimeRebound_no_ms = -1;
+        double maxCutTimeRebound_no_ms = -1;
+        double maxWorkTimeRebound_nc_ms = -1;
         double maxCutTimeRebound_nc_ms = -1;
+        
+        double minWorkTimeRebound_no_ms = -1;
+        double minCutTimeRebound_no_ms = -1;
+        double minWorkTimeRebound_nc_ms = -1;
+        double minCutTimeRebound_nc_ms = -1;
     } successValues;
 
     struct MeasurementValues {

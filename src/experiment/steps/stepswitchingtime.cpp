@@ -33,6 +33,14 @@ void StepSwitchingTime::fromJSON(const QJsonObject& object) {
     successValues.maxWorkTimeRebound_nc_ms = doubleValueOrDefault(successObject, QStringLiteral("maxWorkTimeRebound_nc_ms"), successValues.maxWorkTimeRebound_nc_ms);
     successValues.maxCutTime_nc_ms = doubleValueOrDefault(successObject, QStringLiteral("maxCutTime_nc_ms"), successValues.maxCutTime_nc_ms);
     successValues.maxCutTimeRebound_nc_ms = doubleValueOrDefault(successObject, QStringLiteral("maxCutTimeRebound_nc_ms"), successValues.maxCutTimeRebound_nc_ms);
+    successValues.minWorkTime_no_ms = doubleValueOrDefault(successObject, QStringLiteral("minWorkTime_no_ms"), successValues.minWorkTime_no_ms);
+    successValues.minWorkTimeRebound_no_ms = doubleValueOrDefault(successObject, QStringLiteral("minWorkTimeRebound_no_ms"), successValues.minWorkTimeRebound_no_ms);
+    successValues.minCutTime_no_ms = doubleValueOrDefault(successObject, QStringLiteral("minCutTime_no_ms"), successValues.minCutTime_no_ms);
+    successValues.minCutTimeRebound_no_ms = doubleValueOrDefault(successObject, QStringLiteral("minCutTimeRebound_no_ms"), successValues.minCutTimeRebound_no_ms);
+    successValues.minWorkTime_nc_ms = doubleValueOrDefault(successObject, QStringLiteral("minWorkTime_nc_ms"), successValues.minWorkTime_nc_ms);
+    successValues.minWorkTimeRebound_nc_ms = doubleValueOrDefault(successObject, QStringLiteral("minWorkTimeRebound_nc_ms"), successValues.minWorkTimeRebound_nc_ms);
+    successValues.minCutTime_nc_ms = doubleValueOrDefault(successObject, QStringLiteral("minCutTime_nc_ms"), successValues.minCutTime_nc_ms);
+    successValues.minCutTimeRebound_nc_ms = doubleValueOrDefault(successObject, QStringLiteral("minCutTimeRebound_nc_ms"), successValues.minCutTimeRebound_nc_ms);
 }
 
 QString StepSwitchingTime::getName() const {
@@ -59,47 +67,84 @@ QString StepSwitchingTime::getDescription() const {
 QString StepSwitchingTime::getFormattedResults() const {
 
     QString str;
-    str.append(QString("Temps de travail max normalement ouvert (ms): %1\n")
+    str.append(QString("Temps de travail min/max normalement ouvert (ms): %1/%2\n")
+                   .arg(successValues.minWorkTime_no_ms)
                    .arg(successValues.maxWorkTime_no_ms));
-    if (successValues.maxWorkTimeRebound_no_ms >= 0)
-        str.append(QString("Temps de travail rebond max normalement ouvert (ms): %1\n")
+    if (successValues.maxWorkTimeRebound_no_ms >= 0 || successValues.minWorkTimeRebound_no_ms >= 0) {
+        str.append(QString("Temps de travail rebond min/max normalement ouvert (ms): %1/%2\n")
+                       .arg(successValues.minWorkTimeRebound_no_ms)
                        .arg(successValues.maxWorkTimeRebound_no_ms));
-    if (successValues.maxCutTime_no_ms >= 0) {
-        str.append(QString("Temps de coupure max normalement ouvert (ms): %1\n")
+    }
+    if (successValues.minCutTime_no_ms >= 0 || successValues.maxCutTime_no_ms >= 0) {
+        str.append(QString("Temps de coupure min/max normalement ouvert (ms): %1/%2\n")
+                       .arg(successValues.minCutTime_no_ms)
                        .arg(successValues.maxCutTime_no_ms));
     }
-    str.append(QString("Temps de coupure rebond max normalement ouvert (ms): %1\n")
-                   .arg(successValues.maxCutTimeRebound_no_ms));
-    str.append(QString("Temps de travail max normalement fermé (ms): %1\n")
+    if (successValues.maxCutTimeRebound_no_ms >= 0 || successValues.minCutTimeRebound_no_ms >= 0) {
+        str.append(QString("Temps de coupure rebond min/max normalement ouvert (ms): %1/%2\n")
+                       .arg(successValues.minCutTimeRebound_no_ms)
+                       .arg(successValues.maxCutTimeRebound_no_ms));
+    }
+    str.append(QString("Temps de travail min/max normalement fermé (ms): %1/%2\n")
+                   .arg(successValues.minWorkTime_nc_ms)
                    .arg(successValues.maxWorkTime_nc_ms));
-    if (successValues.maxWorkTimeRebound_nc_ms >= 0) {
-        str.append(QString("Temps de travail rebond max normalement fermé (ms): %1\n")
+    if (successValues.maxWorkTimeRebound_nc_ms >= 0 || successValues.minWorkTimeRebound_nc_ms >= 0) {
+        str.append(QString("Temps de travail rebond min/max normalement fermé (ms): %1/%2\n")
+                       .arg(successValues.minWorkTimeRebound_nc_ms)
                        .arg(successValues.maxWorkTimeRebound_nc_ms));
     }
-    str.append(QString("Temps de coupure max normalement fermé (ms): %1\n")
+    str.append(QString("Temps de coupure min/max normalement fermé (ms): %1/%2\n")
+                   .arg(successValues.minCutTime_nc_ms)
                    .arg(successValues.maxCutTime_nc_ms));
-    str.append(QString("Temps de coupure rebond max normalement fermé (ms): %1\n\n")
-                   .arg(successValues.maxCutTimeRebound_nc_ms));
+    if (successValues.maxCutTimeRebound_nc_ms >= 0 || successValues.minCutTimeRebound_nc_ms >= 0) {
+        str.append(QString("Temps de coupure rebond min/max normalement fermé (ms): %1/%2\n")
+                       .arg(successValues.minCutTimeRebound_nc_ms)
+                       .arg(successValues.maxCutTimeRebound_nc_ms));
+    }
 
-    str.append("résultats formattés:\n");
-    str.append("temps x/y: temps de travail (ms)/temps de rebond travail(ms)/temps de coupure (ms)/temps de rebond de coupure (ms)\n");
-    str.append("deviation x/y: temps de travail (ms)/temps de rebond travail(ms)/temps de coupure (ms)/temps de rebond de coupure (ms)\n");
+    str.append("\nrésultats formattés:\n");
+    str.append("pour chaque ligne: temps de travail (ms)/temps de rebond travail(ms)/temps de coupure (ms)/temps de rebond de coupure (ms)\n");
+    str.append("pour chaque contact, lignes dans l'ordre: moyenne, minimum, maximum, sigma\n");
+    str.append("\n");
 
     for (int c = 0; c < nContacts; ++c) {
-        str += QString("Contact %1, A normalement fermé, B normalement ouvert:\n").arg(c + 1);
 
         double avrgWorkTimeA_ms = 0, avrgWorkTimeReboundA_ms = 0, avrgCutTimeA_ms = 0, avrgCutTimeReboundA_ms = 0;
         double avrgWorkTimeB_ms = 0, avrgWorkTimeReboundB_ms = 0, avrgCutTimeB_ms = 0, avrgCutTimeReboundB_ms = 0;
+        double minWorkTimeA_ms = std::numeric_limits<double>::max(), minWorkTimeReboundA_ms = std::numeric_limits<double>::max(), minCutTimeA_ms = std::numeric_limits<double>::max(), minCutTimeReboundA_ms = std::numeric_limits<double>::max();
+        double minWorkTimeB_ms = std::numeric_limits<double>::max(), minWorkTimeReboundB_ms = std::numeric_limits<double>::max(), minCutTimeB_ms = std::numeric_limits<double>::max(), minCutTimeReboundB_ms = std::numeric_limits<double>::max();
+        double maxWorkTimeA_ms = 0, maxWorkTimeReboundA_ms = 0, maxCutTimeA_ms = 0, maxCutTimeReboundA_ms = 0;
+        double maxWorkTimeB_ms = 0, maxWorkTimeReboundB_ms = 0, maxCutTimeB_ms = 0, maxCutTimeReboundB_ms = 0;
         for (int i = 0; i < switchCount; ++i) {
             avrgWorkTimeA_ms += measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] / 1000.0;
             avrgWorkTimeReboundA_ms += measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkReboundTime][i] / 1000.0;
             avrgCutTimeA_ms += measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] / 1000.0;
             avrgCutTimeReboundA_ms += measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] / 1000.0;
 
+            minWorkTimeA_ms = std::min(minWorkTimeA_ms, measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] / 1000.0);
+            minWorkTimeReboundA_ms = std::min(minWorkTimeReboundA_ms, measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkReboundTime][i] / 1000.0);
+            minCutTimeA_ms = std::min(minCutTimeA_ms, measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] / 1000.0);
+            minCutTimeReboundA_ms = std::min(minCutTimeReboundA_ms, measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] / 1000.0);
+
+            maxWorkTimeA_ms = std::max(maxWorkTimeA_ms, measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] / 1000.0);
+            maxWorkTimeReboundA_ms = std::max(maxWorkTimeReboundA_ms, measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkReboundTime][i] / 1000.0);
+            maxCutTimeA_ms = std::max(maxCutTimeA_ms, measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] / 1000.0);
+            maxCutTimeReboundA_ms = std::max(maxCutTimeReboundA_ms, measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] / 1000.0);
+
             avrgWorkTimeB_ms += measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTime][i] / 1000.0;
             avrgWorkTimeReboundB_ms += measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkReboundTime][i] / 1000.0;
             avrgCutTimeB_ms += measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] / 1000.0;
             avrgCutTimeReboundB_ms += measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] / 1000.0;
+
+            minWorkTimeB_ms = std::min(minWorkTimeB_ms, measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTime][i] / 1000.0);
+            minWorkTimeReboundB_ms = std::min(minWorkTimeReboundB_ms, measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkReboundTime][i] / 1000.0);
+            minCutTimeB_ms = std::min(minCutTimeB_ms, measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] / 1000.0);
+            minCutTimeReboundB_ms = std::min(minCutTimeReboundB_ms, measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] / 1000.0);
+
+            maxWorkTimeB_ms = std::max(maxWorkTimeB_ms, measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTime][i] / 1000.0);
+            maxWorkTimeReboundB_ms = std::max(maxWorkTimeReboundB_ms, measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkReboundTime][i] / 1000.0);
+            maxCutTimeB_ms = std::max(maxCutTimeB_ms, measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] / 1000.0);
+            maxCutTimeReboundB_ms = std::max(maxCutTimeReboundB_ms, measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] / 1000.0);
         }
 
         avrgWorkTimeA_ms /= switchCount;
@@ -136,24 +181,51 @@ QString StepSwitchingTime::getFormattedResults() const {
         signmaCutTimeB_ms = std::sqrt(signmaCutTimeB_ms / switchCount);
         signmaCutTimeReboundB_ms = std::sqrt(signmaCutTimeReboundB_ms / switchCount);
 
-        str.append(QString("temps %1/A: %2: %3, %4, %5\n")
+        str += QString("Contact %1, A normalement fermé, B normalement ouvert:\n").arg(c + 1);
+        str.append("-------\n");
+        str.append(QString("moyen %1/A: %2: %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(avrgWorkTimeA_ms, 0, 'f', 2)
                        .arg(avrgWorkTimeReboundA_ms, 0, 'f', 2)
                        .arg(avrgCutTimeA_ms, 0, 'f', 2)
                        .arg(avrgCutTimeReboundA_ms, 0, 'f', 2));
+        str.append(QString("min %1/A: %2: %3, %4, %5\n")
+                       .arg(c + 1)
+                       .arg(minWorkTimeA_ms, 0, 'f', 2)
+                       .arg(minWorkTimeReboundA_ms, 0, 'f', 2)
+                       .arg(minCutTimeA_ms, 0, 'f', 2)
+                       .arg(minCutTimeReboundA_ms, 0, 'f', 2));
+        str.append(QString("max %1/A: %2: %3, %4, %5\n")
+                       .arg(c + 1)
+                       .arg(maxWorkTimeA_ms, 0, 'f', 2)
+                       .arg(maxWorkTimeReboundA_ms, 0, 'f', 2)
+                       .arg(maxCutTimeA_ms, 0, 'f', 2)
+                       .arg(maxCutTimeReboundA_ms, 0, 'f', 2));
         str.append(QString("deviation %1/A: %2: %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(signmaWorkTimeA_ms, 0, 'f', 2)
                        .arg(signmaWorkTimeReboundA_ms, 0, 'f', 2)
                        .arg(signmaCutTimeA_ms, 0, 'f', 2)
                        .arg(signmaCutTimeReboundA_ms, 0, 'f', 2));
+        str.append("-------\n");
         str.append(QString("temps %1/B: %2: %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(avrgWorkTimeB_ms, 0, 'f', 2)
                        .arg(avrgWorkTimeReboundB_ms, 0, 'f', 2)
                        .arg(avrgCutTimeB_ms, 0, 'f', 2)
                        .arg(avrgCutTimeReboundB_ms, 0, 'f', 2));
+        str.append(QString("min %1/B: %2: %3, %4, %5\n")
+                       .arg(c + 1)
+                       .arg(minWorkTimeB_ms, 0, 'f', 2)
+                       .arg(minWorkTimeReboundB_ms, 0, 'f', 2)
+                       .arg(minCutTimeB_ms, 0, 'f', 2)
+                       .arg(minCutTimeReboundB_ms, 0, 'f', 2));
+        str.append(QString("max %1/B: %2: %3, %4, %5\n")
+                       .arg(c + 1)
+                       .arg(maxWorkTimeB_ms, 0, 'f', 2)
+                       .arg(maxWorkTimeReboundB_ms, 0, 'f', 2)
+                       .arg(maxCutTimeB_ms, 0, 'f', 2)
+                       .arg(maxCutTimeReboundB_ms, 0, 'f', 2));
         str.append(QString("deviation %1/B: %2: %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(signmaWorkTimeB_ms, 0, 'f', 2)
@@ -399,16 +471,20 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
                 measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTimeStable][i] > successValues.maxWorkTime_no_ms * 1000 ||
                 measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] > successValues.maxCutTime_no_ms * 1000 ||
                 measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] > successValues.maxCutTime_no_ms * 1000 ||
+                measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] < successValues.minWorkTime_no_ms * 1000 ||
+                measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTimeStable][i] < successValues.minWorkTime_no_ms * 1000 ||
+                measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] < successValues.minCutTime_no_ms * 1000 ||
+                measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] < successValues.minCutTime_no_ms * 1000 ||
                 (successValues.maxWorkTimeRebound_no_ms >= 0 && measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkReboundTime][i] > successValues.maxWorkTimeRebound_no_ms * 1000) ||
                 (successValues.maxCutTimeRebound_no_ms >= 0 && measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] > successValues.maxCutTimeRebound_no_ms * 1000)) {
                 success = false;
                 qDebug() << "Contact" << c + 1 << ".A switching time exceeded success criteria on iteration" << i + 1;
-                qDebug() << "WorkTime:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] << "us, Max allowed:" << successValues.maxWorkTime_no_ms * 1000 << "us";
-                qDebug() << "WorkTimeStable:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTimeStable][i] << "us, Max allowed:" << successValues.maxWorkTime_no_ms * 1000 << "us";
-                qDebug() << "WorkTimeRebound:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkReboundTime][i] << "us, Max allowed:" << successValues.maxWorkTimeRebound_no_ms * 1000 << "us";
-                qDebug() << "ReleaseTime:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] << "us, Max allowed:" << successValues.maxCutTime_no_ms * 1000 << "us";
-                qDebug() << "ReleaseTimeStable:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] << "us, Max allowed:" << successValues.maxCutTime_no_ms * 1000 << "us";
-                qDebug() << "ReleaseTimeRebound:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] << "us, Max allowed:" << successValues.maxCutTimeRebound_no_ms * 1000 << "us";
+                qDebug() << "WorkTime:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTime][i] << "us, Min/Max allowed:" << successValues.minWorkTime_no_ms * 1000 << "/" << successValues.maxWorkTime_no_ms * 1000 << "us";
+                qDebug() << "WorkTimeStable:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkTimeStable][i] << "us, Min/Max allowed:" << successValues.maxWorkTime_no_ms * 1000 << "us";
+                qDebug() << "WorkTimeRebound:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::WorkReboundTime][i] << "us, Min/Max allowed:" << successValues.minWorkTimeRebound_no_ms * 1000 << "/" << successValues.maxWorkTimeRebound_no_ms * 1000 << "us";
+                qDebug() << "ReleaseTime:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTime][i] << "us, Min/Max allowed:" << successValues.minCutTime_no_ms * 1000 << "/" << successValues.maxCutTime_no_ms * 1000 << "us";
+                qDebug() << "ReleaseTimeStable:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] << "us, Min/Max allowed:" << successValues.minCutTime_no_ms * 1000 << "/" << successValues.maxCutTime_no_ms * 1000 << "us";
+                qDebug() << "ReleaseTimeRebound:" << measurementValues.contactASwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] << "us, Min/Max allowed:" << successValues.minCutTimeRebound_no_ms * 1000 << "/" << successValues.maxCutTimeRebound_no_ms * 1000 << "us";
                 // break;
             }
         }
@@ -423,17 +499,21 @@ GenericStep::ResultStatus StepSwitchingTime::runMeasureAsync(const std::atomic<b
                 measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTimeStable][i] > successValues.maxWorkTime_nc_ms * 1000 ||
                 measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] > successValues.maxCutTime_nc_ms * 1000 ||
                 measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] > successValues.maxCutTime_nc_ms * 1000 ||
+                measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTime][i] < successValues.minWorkTime_nc_ms * 1000 ||
+                measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTimeStable][i] < successValues.minWorkTime_nc_ms * 1000 ||
+                measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] < successValues.minCutTime_nc_ms * 1000 ||
+                measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] < successValues.minCutTime_nc_ms * 1000 ||
                 (successValues.maxWorkTimeRebound_nc_ms >= 0 && measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkReboundTime][i] > successValues.maxWorkTimeRebound_nc_ms * 1000) ||
                 (successValues.maxCutTimeRebound_nc_ms >= 0 && measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] > successValues.maxCutTimeRebound_nc_ms * 1000)) {
                 success = false;
                 qDebug() << "Contact" << c + 1 << "switching time exceeded success criteria on iteration" << i + 1;
                 success = false;
                 qDebug() << "Contact" << c + 1 << ".B switching time exceeded success criteria on iteration" << i + 1;
-                qDebug() << "WorkTimeStable:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTimeStable][i] << "us, Max allowed:" << successValues.maxWorkTime_nc_ms * 1000 << "us";
-                qDebug() << "WorkTimeRebound:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkReboundTime][i] << "us, Max allowed:" << successValues.maxWorkTimeRebound_nc_ms * 1000 << "us";
-                qDebug() << "ReleaseTime:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] << "us, Max allowed:" << successValues.maxCutTime_nc_ms * 1000 << "us";
-                qDebug() << "ReleaseTimeStable:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] << "us, Max allowed:" << successValues.maxCutTime_nc_ms * 1000 << "us";
-                qDebug() << "ReleaseTimeRebound:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] << "us, Max allowed:" << successValues.maxCutTimeRebound_nc_ms * 1000 << "us";
+                qDebug() << "WorkTimeStable:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkTimeStable][i] << "us, Min/Max allowed:" << successValues.minWorkTime_nc_ms * 1000 << "/" << successValues.maxWorkTime_nc_ms * 1000 << "us";
+                qDebug() << "WorkTimeRebound:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::WorkReboundTime][i] << "us, Min/Max allowed:" << successValues.minWorkTimeRebound_nc_ms * 1000 << "/" << successValues.maxWorkTimeRebound_nc_ms * 1000 << "us";
+                qDebug() << "ReleaseTime:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTime][i] << "us, Min/Max allowed:" << successValues.minCutTime_nc_ms * 1000 << "/" << successValues.maxCutTime_nc_ms * 1000 << "us";
+                qDebug() << "ReleaseTimeStable:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseTimeStable][i] << "us, Min/Max allowed:" << successValues.minCutTime_nc_ms * 1000 << "/" << successValues.maxCutTime_nc_ms * 1000 << "us";
+                qDebug() << "ReleaseTimeRebound:" << measurementValues.contactBSwitchTimes_us[c][switchTimeType::ReleaseReboundTime][i] << "us, Min/Max allowed:" << successValues.minCutTimeRebound_nc_ms * 1000 << "/" << successValues.maxCutTimeRebound_nc_ms * 1000 << "us";
                 // break;
             }
         }

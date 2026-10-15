@@ -195,13 +195,25 @@
             "maxWorkTime_nc_ms": { "$ref": "#/definitions/time_ms" },
             "maxWorkTimeRebound_nc_ms": { "$ref": "#/definitions/time_ms" },
             "maxCutTime_nc_ms": { "$ref": "#/definitions/time_ms" },
-            "maxCutTimeRebound_nc_ms": { "$ref": "#/definitions/time_ms" }
+            "maxCutTimeRebound_nc_ms": { "$ref": "#/definitions/time_ms" },
+            "minWorkTime_no_ms": { "$ref": "#/definitions/time_ms" },
+            "minWorkTimeRebound_no_ms": { "$ref": "#/definitions/time_ms" },
+            "minCutTime_no_ms": { "$ref": "#/definitions/time_ms" },
+            "minCutTimeRebound_no_ms": { "$ref": "#/definitions/time_ms" },
+            "minWorkTime_nc_ms": { "$ref": "#/definitions/time_ms" },
+            "minWorkTimeRebound_nc_ms": { "$ref": "#/definitions/time_ms" },
+            "minCutTime_nc_ms": { "$ref": "#/definitions/time_ms" },
+            "minCutTimeRebound_nc_ms": { "$ref": "#/definitions/time_ms" }
           },
           "required": [
             "maxWorkTime_no_ms",
             "maxCutTime_no_ms",
             "maxWorkTime_nc_ms",
-            "maxCutTime_nc_ms"
+            "maxCutTime_nc_ms",
+            "minWorkTime_no_ms",
+            "minCutTime_no_ms",
+            "minWorkTime_nc_ms",
+            "minCutTime_nc_ms"
           ]
         }
       },
