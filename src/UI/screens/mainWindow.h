@@ -22,4 +22,6 @@ private:
 
     void displayMessage(QtMsgType type, const QString& msg);
     void closeEvent(QCloseEvent* event) override;
+
+    void ejectUSB();
 };
