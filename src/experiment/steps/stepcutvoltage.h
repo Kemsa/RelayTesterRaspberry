@@ -28,6 +28,7 @@ private:
 
     struct SuccessValues {
         int minCutVoltage_cV = 0;
+        int maxCutVoltage_cV = 0;
     } successValues;
 
     struct MeasurementValues {

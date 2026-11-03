@@ -26,7 +26,7 @@
         "stopVoltage_cV": 15e2,
         "voltageStep_cV": 100,
         "successValues": {
-          "maxSwitchingVoltage_cV": 1200
+          "maxSwitchingVoltage_cV": 960
         }
       }
     },
@@ -40,7 +40,8 @@
         "stopVoltage_cV": 300,
         "voltageStep_cV": 100,
         "successValues": {
-          "minCutVoltage_cV": 400
+          "minCutVoltage_cV": 120,
+          "maxCutVoltage_cV": 960
         }
       }
     },
@@ -55,7 +56,7 @@
         "nMeasures": 4,
         "supplyVoltage_cV": 12e2,
         "successValues": {
-          "maxResistanceClosed_mOhm": 5000
+          "maxResistanceClosed_mOhm": 2500
         }
       }
     },

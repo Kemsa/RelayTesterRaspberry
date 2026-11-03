@@ -149,8 +149,14 @@ GenericStep::ResultStatus StepSwitchingVoltage::runMeasureAsync(const std::atomi
         }
         if (isAllSwitched() && measurementValues.switchingVoltage_V < 0.0) {
             measurementValues.switchingVoltage_V = measuredVoltage;
-        } else if (!isAllSwitched()) {
+        } else if (!isAllSwitched() && measurementValues.switchingVoltage_V != 0 && measurementValues.switchingVoltage_V > successValues.maxSwitchingVoltage_cV / 100.0) {
+            // Contact switched before and voltage is larger than stated voltage and we lost the contact => failure
             measurementValues.switchingVoltage_V = -1.0;
+            powerControl->disableCoilsTop();
+            powerControl->disableContactPower();
+            powerControl->disableCoilsBottom();
+            powerSupply->disableOutput();
+            return ResultFailure;
         }
     }
 

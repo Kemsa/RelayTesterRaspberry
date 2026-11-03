@@ -26,7 +26,7 @@
         "stopVoltage_cV": 28e2,
         "voltageStep_cV": 100,
         "successValues": {
-          "maxSwitchingVoltage_cV": 24e2
+          "maxSwitchingVoltage_cV": 1920
         }
       }
     },
@@ -37,10 +37,11 @@
         "coilToMeasure": 1,
         "nContacts": 4,
         "startVoltage_cV": 28e2,
-        "stopVoltage_cV": 5e2,
+        "stopVoltage_cV": 200,
         "voltageStep_cV": 100,
         "successValues": {
-          "minCutVoltage_cV": 10e2
+          "minCutVoltage_cV": 240,
+          "maxCutVoltage_cV": 1920
         }
       }
     },
@@ -55,7 +56,7 @@
         "nMeasures": 4,
         "supplyVoltage_cV": 24e2,
         "successValues": {
-          "maxResistanceClosed_mOhm": 5000
+          "maxResistanceClosed_mOhm": 2500
         }
       }
     },

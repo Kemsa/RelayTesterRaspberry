@@ -22,6 +22,7 @@ void StepCutVoltage::fromJSON(const QJsonObject& object) {
 
     const QJsonObject successObject = object.value(QStringLiteral("successValues")).toObject();
     successValues.minCutVoltage_cV = intValueOrDefault(successObject, QStringLiteral("minCutVoltage_cV"), successValues.minCutVoltage_cV);
+    successValues.maxCutVoltage_cV = intValueOrDefault(successObject, QStringLiteral("maxCutVoltage_cV"), successValues.maxCutVoltage_cV);
 }
 
 QString StepCutVoltage::getName() const {
@@ -47,12 +48,19 @@ QString StepCutVoltage::getResultSummary() const {
             return QString::fromUtf8(R"(SUCCES PARTIEL
 
 Commutation complète pour une tension nulle)");
+        } else if (measurementValues.switchingVoltage_V < successValues.minCutVoltage_cV / 100.0f) {
+            return QString::fromUtf8(R"(SUCCES PARTIEL
+
+Tension de commutation trop faible: %1 V (min autorisée: %2 V))")
+                .arg(measurementValues.switchingVoltage_V, 0, 'f', 2)
+                .arg(successValues.minCutVoltage_cV / 100.0f, 0, 'f', 2);
         } else {
             return QString::fromUtf8(R"(SUCCES
 
-Tension de commutation: %1 V (min autorisée: %2 V))")
+|Tension de commutation: %1 V (min autorisée: %2 V, max autorisée: %3 V))")
                 .arg(measurementValues.switchingVoltage_V, 0, 'f', 2)
-                .arg(successValues.minCutVoltage_cV / 100.0f, 0, 'f', 2);
+                .arg(successValues.minCutVoltage_cV / 100.0f, 0, 'f', 2)
+                .arg(successValues.maxCutVoltage_cV / 100.0f, 0, 'f', 2);
         }
     case ResultFailure:
         return QString::fromUtf8(R"(ECHEC
@@ -205,7 +213,7 @@ GenericStep::ResultStatus StepCutVoltage::runMeasureAsync(const std::atomic<bool
     powerControl->disableContactPower();
     powerSupply->disableOutput();
 
-    if (isAllSwitched() && measurementValues.switchingVoltage_V >= 0) {
+    if (isAllSwitched() && measurementValues.switchingVoltage_V >= 0 && measurementValues.switchingVoltage_V <= successValues.maxCutVoltage_cV / 100.0f) {
         qDebug() << "Cut voltage measurement successful. Cut voltage:" << measurementValues.switchingVoltage_V << "V";
         return ResultSuccess;
     } else {
