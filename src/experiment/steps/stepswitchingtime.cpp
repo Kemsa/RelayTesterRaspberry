@@ -183,50 +183,50 @@ QString StepSwitchingTime::getFormattedResults() const {
 
         str += QString("Contact %1, A normalement fermé, B normalement ouvert:\n").arg(c + 1);
         str.append("-------\n");
-        str.append(QString("moyen %1/A: %2: %3, %4, %5\n")
+        str.append(QString("moyen %1/A: %2, %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(avrgWorkTimeA_ms, 0, 'f', 2)
                        .arg(avrgWorkTimeReboundA_ms, 0, 'f', 2)
                        .arg(avrgCutTimeA_ms, 0, 'f', 2)
                        .arg(avrgCutTimeReboundA_ms, 0, 'f', 2));
-        str.append(QString("min %1/A: %2: %3, %4, %5\n")
+        str.append(QString("min %1/A: %2, %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(minWorkTimeA_ms, 0, 'f', 2)
                        .arg(minWorkTimeReboundA_ms, 0, 'f', 2)
                        .arg(minCutTimeA_ms, 0, 'f', 2)
                        .arg(minCutTimeReboundA_ms, 0, 'f', 2));
-        str.append(QString("max %1/A: %2: %3, %4, %5\n")
+        str.append(QString("max %1/A: %2, %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(maxWorkTimeA_ms, 0, 'f', 2)
                        .arg(maxWorkTimeReboundA_ms, 0, 'f', 2)
                        .arg(maxCutTimeA_ms, 0, 'f', 2)
                        .arg(maxCutTimeReboundA_ms, 0, 'f', 2));
-        str.append(QString("deviation %1/A: %2: %3, %4, %5\n")
+        str.append(QString("deviation %1/A: %2, %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(signmaWorkTimeA_ms, 0, 'f', 2)
                        .arg(signmaWorkTimeReboundA_ms, 0, 'f', 2)
                        .arg(signmaCutTimeA_ms, 0, 'f', 2)
                        .arg(signmaCutTimeReboundA_ms, 0, 'f', 2));
         str.append("-------\n");
-        str.append(QString("temps %1/B: %2: %3, %4, %5\n")
+        str.append(QString("temps %1/B: %2, %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(avrgWorkTimeB_ms, 0, 'f', 2)
                        .arg(avrgWorkTimeReboundB_ms, 0, 'f', 2)
                        .arg(avrgCutTimeB_ms, 0, 'f', 2)
                        .arg(avrgCutTimeReboundB_ms, 0, 'f', 2));
-        str.append(QString("min %1/B: %2: %3, %4, %5\n")
+        str.append(QString("min %1/B: %2, %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(minWorkTimeB_ms, 0, 'f', 2)
                        .arg(minWorkTimeReboundB_ms, 0, 'f', 2)
                        .arg(minCutTimeB_ms, 0, 'f', 2)
                        .arg(minCutTimeReboundB_ms, 0, 'f', 2));
-        str.append(QString("max %1/B: %2: %3, %4, %5\n")
+        str.append(QString("max %1/B: %2, %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(maxWorkTimeB_ms, 0, 'f', 2)
                        .arg(maxWorkTimeReboundB_ms, 0, 'f', 2)
                        .arg(maxCutTimeB_ms, 0, 'f', 2)
                        .arg(maxCutTimeReboundB_ms, 0, 'f', 2));
-        str.append(QString("deviation %1/B: %2: %3, %4, %5\n")
+        str.append(QString("deviation %1/B: %2, %3, %4, %5\n")
                        .arg(c + 1)
                        .arg(signmaWorkTimeB_ms, 0, 'f', 2)
                        .arg(signmaWorkTimeReboundB_ms, 0, 'f', 2)
