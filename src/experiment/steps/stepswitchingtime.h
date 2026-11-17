@@ -22,7 +22,7 @@ public:
     void fromJSON(const QJsonObject& object) override;
     QString getName() const override;
     QString getDescription() const override;
-    QString getResultSummary() const override;
+    QString getResultSummary(bool pretty = true) const override;
 
 private:
     const QString measureType = QStringLiteral("switchingTime");
@@ -49,7 +49,7 @@ private:
         double maxCutTimeRebound_no_ms = -1;
         double maxWorkTimeRebound_nc_ms = -1;
         double maxCutTimeRebound_nc_ms = -1;
-        
+
         double minWorkTimeRebound_no_ms = -1;
         double minCutTimeRebound_no_ms = -1;
         double minWorkTimeRebound_nc_ms = -1;
@@ -63,7 +63,7 @@ private:
 
     ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 
-    QString getFormattedResults() const;
+    QString getFormattedResults(bool pretty) const;
 };
 
 #endif // STEPSWITCHINGTIME_H

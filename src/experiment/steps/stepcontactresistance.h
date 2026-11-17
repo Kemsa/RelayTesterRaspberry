@@ -14,7 +14,7 @@ public:
     void fromJSON(const QJsonObject& object) override;
     QString getName() const override;
     QString getDescription() const override;
-    QString getResultSummary() const override;
+    QString getResultSummary(bool pretty = true) const override;
 
 private:
     const QString measureType = QStringLiteral("contactResistance");
@@ -32,6 +32,7 @@ private:
         int maxResistanceClosed_mOhm = 0;
         int minResistanceOpened_kOhm = 0;
     } successValues;
+    bool hasMaxResistanceClosedThreshold = false;
 
     struct MeasurementValues {
         std::vector<std::vector<double>> averageResistanceContactA_Ohm; // Map of contact index to average resistance in ohms
@@ -41,7 +42,7 @@ private:
     ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 
     double getResistanceForContact(StaticReadings::ReadingFlags contactFlag, int nMeasures, const std::atomic<bool>& stopToken);
-    QString getFormattedResults() const;
+    QString getFormattedResults(bool pretty) const;
 };
 
 #endif // STEPCONTACTRESISTANCE_H

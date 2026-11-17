@@ -21,6 +21,8 @@ void StepCutVoltage::fromJSON(const QJsonObject& object) {
     nMeasures = intValueOrDefault(object, QStringLiteral("nMeasures"), nMeasures);
 
     const QJsonObject successObject = object.value(QStringLiteral("successValues")).toObject();
+    hasMinCutVoltageThreshold = successObject.contains(QStringLiteral("minCutVoltage_cV"));
+    hasMaxCutVoltageThreshold = successObject.contains(QStringLiteral("maxCutVoltage_cV"));
     successValues.minCutVoltage_cV = intValueOrDefault(successObject, QStringLiteral("minCutVoltage_cV"), successValues.minCutVoltage_cV);
     successValues.maxCutVoltage_cV = intValueOrDefault(successObject, QStringLiteral("maxCutVoltage_cV"), successValues.maxCutVoltage_cV);
 }
@@ -41,24 +43,33 @@ QString StepCutVoltage::getDescription() const {
     return str;
 }
 
-QString StepCutVoltage::getResultSummary() const {
+QString StepCutVoltage::getResultSummary(bool pretty) const {
+    const QString formattedVoltage = formatResultValue(
+        measurementValues.switchingVoltage_V,
+        hasMinCutVoltageThreshold,
+        successValues.minCutVoltage_cV / 100.0,
+        hasMaxCutVoltageThreshold,
+        successValues.maxCutVoltage_cV / 100.0,
+        pretty);
+
     switch (resultStatus) {
     case ResultSuccess:
         if (measurementValues.switchingVoltage_V == 0.0) {
             return QString::fromUtf8(R"(SUCCES PARTIEL
 
-Commutation complète pour une tension nulle)");
+Commutation complète pour une tension nulle: %1 V)")
+                .arg(formattedVoltage);
         } else if (measurementValues.switchingVoltage_V < successValues.minCutVoltage_cV / 100.0f) {
             return QString::fromUtf8(R"(SUCCES PARTIEL
 
 Tension de commutation trop faible: %1 V (min autorisée: %2 V))")
-                .arg(measurementValues.switchingVoltage_V, 0, 'f', 2)
+                .arg(formattedVoltage)
                 .arg(successValues.minCutVoltage_cV / 100.0f, 0, 'f', 2);
         } else {
             return QString::fromUtf8(R"(SUCCES
 
 |Tension de commutation: %1 V (min autorisée: %2 V, max autorisée: %3 V))")
-                .arg(measurementValues.switchingVoltage_V, 0, 'f', 2)
+                .arg(formattedVoltage)
                 .arg(successValues.minCutVoltage_cV / 100.0f, 0, 'f', 2)
                 .arg(successValues.maxCutVoltage_cV / 100.0f, 0, 'f', 2);
         }

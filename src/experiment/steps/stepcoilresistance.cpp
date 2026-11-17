@@ -20,6 +20,8 @@ void StepCoilResistance::fromJSON(const QJsonObject& object) {
     nMeasures = intValueOrDefault(object, QStringLiteral("nMeasures"), nMeasures);
 
     const QJsonObject successObject = object.value(QStringLiteral("successValues")).toObject();
+    hasMinResistanceThreshold = successObject.contains(QStringLiteral("minResistance_ohm"));
+    hasMaxResistanceThreshold = successObject.contains(QStringLiteral("maxResistance_ohm"));
     successValues.minResistance_ohm = intValueOrDefault(successObject, QStringLiteral("minResistance_ohm"), successValues.minResistance_ohm);
     successValues.maxResistance_ohm = intValueOrDefault(successObject, QStringLiteral("maxResistance_ohm"), successValues.maxResistance_ohm);
 }
@@ -40,33 +42,38 @@ QString StepCoilResistance::getDescription() const {
     return str;
 }
 
-QString StepCoilResistance::getFormattedResults() const {
+QString StepCoilResistance::getFormattedResults(bool pretty) const {
     QString str = QString::fromUtf8(R"(Mesure de la bobine #%1 :
     courant moyen: %2 mA
     tension moyenne: %3 V
     résistance mesurée: %4 ohm (min: %5 ohm, max: %6 ohm)
 )")
                       .arg(coilToMeasure)
-                      .arg(measurementValues.averageCurrent_mA, 0, 'f', 2)
-                      .arg(measurementValues.averageVoltage_V, 0, 'f', 2)
-                      .arg(measurementValues.averageResistance_ohm, 0, 'f', 2)
+                      .arg(formatResultValue(measurementValues.averageCurrent_mA, false, 0, false, 0, pretty))
+                      .arg(formatResultValue(measurementValues.averageVoltage_V, false, 0, false, 0, pretty))
+                      .arg(formatResultValue(measurementValues.averageResistance_ohm,
+                                             hasMinResistanceThreshold,
+                                             successValues.minResistance_ohm,
+                                             hasMaxResistanceThreshold,
+                                             successValues.maxResistance_ohm,
+                                             pretty))
                       .arg(successValues.minResistance_ohm)
                       .arg(successValues.maxResistance_ohm);
     return str;
 }
 
-QString StepCoilResistance::getResultSummary() const {
+QString StepCoilResistance::getResultSummary(bool pretty) const {
     switch (resultStatus) {
     case ResultSuccess:
         return QString::fromUtf8(R"(SUCCES
 
 %1)")
-            .arg(getFormattedResults());
+            .arg(getFormattedResults(pretty));
     case ResultFailure:
         return QString::fromUtf8(R"(ECHEC
 
 %1)")
-            .arg(getFormattedResults());
+            .arg(getFormattedResults(pretty));
     default:
         return GenericStep::getResultSummary();
     }

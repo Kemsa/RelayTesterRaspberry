@@ -23,6 +23,7 @@ void StepContactResistance::fromJSON(const QJsonObject& object) {
     nCycles = intValueOrDefault(object, QStringLiteral("nCycles"), nMeasures);
 
     const QJsonObject successObject = object.value(QStringLiteral("successValues")).toObject();
+    hasMaxResistanceClosedThreshold = successObject.contains(QStringLiteral("maxResistanceClosed_mOhm"));
     successValues.maxResistanceClosed_mOhm = intValueOrDefault(successObject, QStringLiteral("maxResistanceClosed_mOhm"), successValues.maxResistanceClosed_mOhm);
     successValues.minResistanceOpened_kOhm = intValueOrDefault(successObject, QStringLiteral("minResistanceOpened_kOhm"), successValues.minResistanceOpened_kOhm);
 }
@@ -48,31 +49,43 @@ QString StepContactResistance::getDescription() const {
     return str;
 }
 
-QString StepContactResistance::getFormattedResults() const {
+QString StepContactResistance::getFormattedResults(bool pretty) const {
     QString str;
     str.append(QString("Résistance maximale pour contacts fermés: %1 mOhm\n").arg(successValues.maxResistanceClosed_mOhm));
     for (int c = 0; c < nContacts; ++c) {
         str.append(QString("\n Résistance de contact %1: normalement fermé: %2 Ohm, normalement ouvert: %3 Ohm\n")
                        .arg(c + 1)
-                       .arg(measurementValues.averageResistanceContactA_Ohm[0][c], 0, 'f', 3)
-                       .arg(measurementValues.averageResistanceContactB_Ohm[0][c], 0, 'f', 3));
+                       .arg(formatResultValue(measurementValues.averageResistanceContactA_Ohm[0][c],
+                                              false,
+                                              0,
+                                              hasMaxResistanceClosedThreshold,
+                                              successValues.maxResistanceClosed_mOhm / 1000.0,
+                                              pretty,
+                                              3))
+                       .arg(formatResultValue(measurementValues.averageResistanceContactB_Ohm[0][c],
+                                              false,
+                                              0,
+                                              hasMaxResistanceClosedThreshold,
+                                              successValues.maxResistanceClosed_mOhm / 1000.0,
+                                              pretty,
+                                              3)));
     }
 
     return str;
 }
 
-QString StepContactResistance::getResultSummary() const {
+QString StepContactResistance::getResultSummary(bool pretty) const {
     switch (resultStatus) {
     case ResultSuccess:
         return QString::fromUtf8(R"(SUCCES
 
 %1)")
-            .arg(getFormattedResults());
+            .arg(getFormattedResults(pretty));
     case ResultFailure:
         return QString::fromUtf8(R"(ECHEC
 
 %1)")
-            .arg(getFormattedResults());
+            .arg(getFormattedResults(pretty));
     default:
         return GenericStep::getResultSummary();
     }
@@ -119,13 +132,12 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
         measurementValues.averageResistanceContactB_Ohm.emplace_back(nContacts, 0.0);
     }
 
-    //adjust current to 10mA
+    // adjust current to 10mA
     contactSelector->selectHBridge(ContactSelector::HBridge_forward_all);
     contactSelector->selectContact(1);
     currentAdjuster->adjustCurrentToTarget(10, 0.8, false);
     contactSelector->selectHBridge(ContactSelector::HBridge_none);
     contactSelector->selectContact(0);
-
 
     for (int i = 0; i < nCycles; ++i) {
         STEP_CHECK_STOP_TOKEN();
@@ -146,7 +158,7 @@ GenericStep::ResultStatus StepContactResistance::runMeasureAsync(const std::atom
 
             contactSelector->selectHBridge(ContactSelector::HBridge_forward_all);
             contactSelector->selectContact(c);
-            QThread::msleep(10);            
+            QThread::msleep(10);
 
             double meanResistanceForward_Ohm = getResistanceForContact(StaticReadings::ReadingFlags::contactAVoltage, nMeasures, stopToken);
             qDebug() << "Contact" << c << "mean resistance forward(Ohm):" << meanResistanceForward_Ohm;

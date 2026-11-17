@@ -13,7 +13,7 @@ public:
     void fromJSON(const QJsonObject& object) override;
     QString getName() const override;
     QString getDescription() const override;
-    QString getResultSummary() const override;
+    QString getResultSummary(bool pretty = true) const override;
 
 private:
     const QString measureType = QStringLiteral("selfTestResistance");

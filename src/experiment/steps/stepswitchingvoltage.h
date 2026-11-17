@@ -13,7 +13,7 @@ public:
     void fromJSON(const QJsonObject& object) override;
     QString getName() const override;
     QString getDescription() const override;
-    QString getResultSummary() const override;
+    QString getResultSummary(bool pretty = true) const override;
 
 private:
     const QString measureType = QStringLiteral("switchingVoltage");
@@ -29,6 +29,7 @@ private:
     struct SuccessValues {
         int maxSwitchingVoltage_cV = 0;
     } successValues;
+    bool hasMaxSwitchingVoltageThreshold = false;
 
     struct MeasurementValues {
         bool switchedContacts[8] = {false};

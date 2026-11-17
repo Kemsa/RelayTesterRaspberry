@@ -64,9 +64,10 @@ QString StepSwitchingTime::getDescription() const {
     return str;
 }
 
-QString StepSwitchingTime::getFormattedResults() const {
+QString StepSwitchingTime::getFormattedResults(bool pretty) const {
 
     QString str;
+
     str.append(QString("Temps de travail min/max normalement ouvert (ms): %1/%2\n")
                    .arg(successValues.minWorkTime_no_ms)
                    .arg(successValues.maxWorkTime_no_ms));
@@ -185,68 +186,68 @@ QString StepSwitchingTime::getFormattedResults() const {
         str.append("-------\n");
         str.append(QString("moyen %1/A: %2, %3, %4, %5\n")
                        .arg(c + 1)
-                       .arg(avrgWorkTimeA_ms, 0, 'f', 2)
-                       .arg(avrgWorkTimeReboundA_ms, 0, 'f', 2)
-                       .arg(avrgCutTimeA_ms, 0, 'f', 2)
-                       .arg(avrgCutTimeReboundA_ms, 0, 'f', 2));
+                       .arg(formatResultValue(avrgWorkTimeA_ms, successValues.minWorkTime_no_ms >= 0, successValues.minWorkTime_no_ms, successValues.maxWorkTime_no_ms >= 0, successValues.maxWorkTime_no_ms, pretty))
+                       .arg(formatResultValue(avrgWorkTimeReboundA_ms, successValues.minWorkTimeRebound_no_ms >= 0, successValues.minWorkTimeRebound_no_ms, successValues.maxWorkTimeRebound_no_ms >= 0, successValues.maxWorkTimeRebound_no_ms, pretty))
+                       .arg(formatResultValue(avrgCutTimeA_ms, successValues.minCutTime_no_ms >= 0, successValues.minCutTime_no_ms, successValues.maxCutTime_no_ms >= 0, successValues.maxCutTime_no_ms, pretty))
+                       .arg(formatResultValue(avrgCutTimeReboundA_ms, successValues.minCutTimeRebound_no_ms >= 0, successValues.minCutTimeRebound_no_ms, successValues.maxCutTimeRebound_no_ms >= 0, successValues.maxCutTimeRebound_no_ms, pretty)));
         str.append(QString("min %1/A: %2, %3, %4, %5\n")
                        .arg(c + 1)
-                       .arg(minWorkTimeA_ms, 0, 'f', 2)
-                       .arg(minWorkTimeReboundA_ms, 0, 'f', 2)
-                       .arg(minCutTimeA_ms, 0, 'f', 2)
-                       .arg(minCutTimeReboundA_ms, 0, 'f', 2));
+                       .arg(formatResultValue(minWorkTimeA_ms, successValues.minWorkTime_no_ms >= 0, successValues.minWorkTime_no_ms, successValues.maxWorkTime_no_ms >= 0, successValues.maxWorkTime_no_ms, pretty))
+                       .arg(formatResultValue(minWorkTimeReboundA_ms, successValues.minWorkTimeRebound_no_ms >= 0, successValues.minWorkTimeRebound_no_ms, successValues.maxWorkTimeRebound_no_ms >= 0, successValues.maxWorkTimeRebound_no_ms, pretty))
+                       .arg(formatResultValue(minCutTimeA_ms, successValues.minCutTime_no_ms >= 0, successValues.minCutTime_no_ms, successValues.maxCutTime_no_ms >= 0, successValues.maxCutTime_no_ms, pretty))
+                       .arg(formatResultValue(minCutTimeReboundA_ms, successValues.minCutTimeRebound_no_ms >= 0, successValues.minCutTimeRebound_no_ms, successValues.maxCutTimeRebound_no_ms >= 0, successValues.maxCutTimeRebound_no_ms, pretty)));
         str.append(QString("max %1/A: %2, %3, %4, %5\n")
                        .arg(c + 1)
-                       .arg(maxWorkTimeA_ms, 0, 'f', 2)
-                       .arg(maxWorkTimeReboundA_ms, 0, 'f', 2)
-                       .arg(maxCutTimeA_ms, 0, 'f', 2)
-                       .arg(maxCutTimeReboundA_ms, 0, 'f', 2));
+                       .arg(formatResultValue(maxWorkTimeA_ms, successValues.minWorkTime_no_ms >= 0, successValues.minWorkTime_no_ms, successValues.maxWorkTime_no_ms >= 0, successValues.maxWorkTime_no_ms, pretty))
+                       .arg(formatResultValue(maxWorkTimeReboundA_ms, successValues.minWorkTimeRebound_no_ms >= 0, successValues.minWorkTimeRebound_no_ms, successValues.maxWorkTimeRebound_no_ms >= 0, successValues.maxWorkTimeRebound_no_ms, pretty))
+                       .arg(formatResultValue(maxCutTimeA_ms, successValues.minCutTime_no_ms >= 0, successValues.minCutTime_no_ms, successValues.maxCutTime_no_ms >= 0, successValues.maxCutTime_no_ms, pretty))
+                       .arg(formatResultValue(maxCutTimeReboundA_ms, successValues.minCutTimeRebound_no_ms >= 0, successValues.minCutTimeRebound_no_ms, successValues.maxCutTimeRebound_no_ms >= 0, successValues.maxCutTimeRebound_no_ms, pretty)));
         str.append(QString("deviation %1/A: %2, %3, %4, %5\n")
                        .arg(c + 1)
-                       .arg(signmaWorkTimeA_ms, 0, 'f', 2)
-                       .arg(signmaWorkTimeReboundA_ms, 0, 'f', 2)
-                       .arg(signmaCutTimeA_ms, 0, 'f', 2)
-                       .arg(signmaCutTimeReboundA_ms, 0, 'f', 2));
+                       .arg(formatResultValue(signmaWorkTimeA_ms, false, -1, false, -1, pretty))
+                       .arg(formatResultValue(signmaWorkTimeReboundA_ms, false, -1, false, -1, pretty))
+                       .arg(formatResultValue(signmaCutTimeA_ms, false, -1, false, -1, pretty))
+                       .arg(formatResultValue(signmaCutTimeReboundA_ms, false, -1, false, -1, pretty)));
         str.append("-------\n");
         str.append(QString("temps %1/B: %2, %3, %4, %5\n")
                        .arg(c + 1)
-                       .arg(avrgWorkTimeB_ms, 0, 'f', 2)
-                       .arg(avrgWorkTimeReboundB_ms, 0, 'f', 2)
-                       .arg(avrgCutTimeB_ms, 0, 'f', 2)
-                       .arg(avrgCutTimeReboundB_ms, 0, 'f', 2));
+                       .arg(formatResultValue(avrgWorkTimeB_ms, successValues.minWorkTime_nc_ms >= 0, successValues.minWorkTime_nc_ms, successValues.maxWorkTime_nc_ms >= 0, successValues.maxWorkTime_nc_ms, pretty))
+                       .arg(formatResultValue(avrgWorkTimeReboundB_ms, successValues.minWorkTimeRebound_nc_ms >= 0, successValues.minWorkTimeRebound_nc_ms, successValues.maxWorkTimeRebound_nc_ms >= 0, successValues.maxWorkTimeRebound_nc_ms, pretty))
+                       .arg(formatResultValue(avrgCutTimeB_ms, successValues.minCutTime_nc_ms >= 0, successValues.minCutTime_nc_ms, successValues.maxCutTime_nc_ms >= 0, successValues.maxCutTime_nc_ms, pretty))
+                       .arg(formatResultValue(avrgCutTimeReboundB_ms, successValues.minCutTimeRebound_nc_ms >= 0, successValues.minCutTimeRebound_nc_ms, successValues.maxCutTimeRebound_nc_ms >= 0, successValues.maxCutTimeRebound_nc_ms, pretty)));
         str.append(QString("min %1/B: %2, %3, %4, %5\n")
                        .arg(c + 1)
-                       .arg(minWorkTimeB_ms, 0, 'f', 2)
-                       .arg(minWorkTimeReboundB_ms, 0, 'f', 2)
-                       .arg(minCutTimeB_ms, 0, 'f', 2)
-                       .arg(minCutTimeReboundB_ms, 0, 'f', 2));
+                       .arg(formatResultValue(minWorkTimeB_ms, successValues.minWorkTime_nc_ms >= 0, successValues.minWorkTime_nc_ms, successValues.maxWorkTime_nc_ms >= 0, successValues.maxWorkTime_nc_ms, pretty))
+                       .arg(formatResultValue(minWorkTimeReboundB_ms, successValues.minWorkTimeRebound_nc_ms >= 0, successValues.minWorkTimeRebound_nc_ms, successValues.maxWorkTimeRebound_nc_ms >= 0, successValues.maxWorkTimeRebound_nc_ms, pretty))
+                       .arg(formatResultValue(minCutTimeB_ms, successValues.minCutTime_nc_ms >= 0, successValues.minCutTime_nc_ms, successValues.maxCutTime_nc_ms >= 0, successValues.maxCutTime_nc_ms, pretty))
+                       .arg(formatResultValue(minCutTimeReboundB_ms, successValues.minCutTimeRebound_nc_ms >= 0, successValues.minCutTimeRebound_nc_ms, successValues.maxCutTimeRebound_nc_ms >= 0, successValues.maxCutTimeRebound_nc_ms, pretty)));
         str.append(QString("max %1/B: %2, %3, %4, %5\n")
                        .arg(c + 1)
-                       .arg(maxWorkTimeB_ms, 0, 'f', 2)
-                       .arg(maxWorkTimeReboundB_ms, 0, 'f', 2)
-                       .arg(maxCutTimeB_ms, 0, 'f', 2)
-                       .arg(maxCutTimeReboundB_ms, 0, 'f', 2));
+                       .arg(formatResultValue(maxWorkTimeB_ms, successValues.minWorkTime_nc_ms >= 0, successValues.minWorkTime_nc_ms, successValues.maxWorkTime_nc_ms >= 0, successValues.maxWorkTime_nc_ms, pretty))
+                       .arg(formatResultValue(maxWorkTimeReboundB_ms, successValues.minWorkTimeRebound_nc_ms >= 0, successValues.minWorkTimeRebound_nc_ms, successValues.maxWorkTimeRebound_nc_ms >= 0, successValues.maxWorkTimeRebound_nc_ms, pretty))
+                       .arg(formatResultValue(maxCutTimeB_ms, successValues.minCutTime_nc_ms >= 0, successValues.minCutTime_nc_ms, successValues.maxCutTime_nc_ms >= 0, successValues.maxCutTime_nc_ms, pretty))
+                       .arg(formatResultValue(maxCutTimeReboundB_ms, successValues.minCutTimeRebound_nc_ms >= 0, successValues.minCutTimeRebound_nc_ms, successValues.maxCutTimeRebound_nc_ms >= 0, successValues.maxCutTimeRebound_nc_ms, pretty)));
         str.append(QString("deviation %1/B: %2, %3, %4, %5\n")
                        .arg(c + 1)
-                       .arg(signmaWorkTimeB_ms, 0, 'f', 2)
-                       .arg(signmaWorkTimeReboundB_ms, 0, 'f', 2)
-                       .arg(signmaCutTimeB_ms, 0, 'f', 2)
-                       .arg(signmaCutTimeReboundB_ms, 0, 'f', 2));
+                       .arg(formatResultValue(signmaWorkTimeB_ms, false, -1, false, -1, pretty))
+                       .arg(formatResultValue(signmaWorkTimeReboundB_ms, false, -1, false, -1, pretty))
+                       .arg(formatResultValue(signmaCutTimeB_ms, false, -1, false, -1, pretty))
+                       .arg(formatResultValue(signmaCutTimeReboundB_ms, false, -1, false, -1, pretty)));
         str.append("\n");
     }
     return str;
 }
 
-QString StepSwitchingTime::getResultSummary() const {
+QString StepSwitchingTime::getResultSummary(bool pretty) const {
     switch (resultStatus) {
     case ResultSuccess:
         return QString::fromUtf8(R"(SUCCES
 %1)")
-            .arg(getFormattedResults());
+            .arg(getFormattedResults(pretty));
     case ResultFailure:
         return QString::fromUtf8(R"(ECHEC
 %1)")
-            .arg(getFormattedResults());
+            .arg(getFormattedResults(pretty));
     default:
         return GenericStep::getResultSummary();
     }

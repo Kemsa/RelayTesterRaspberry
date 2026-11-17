@@ -22,7 +22,7 @@ QString StepSelfTestResistance::getDescription() const {
     return QString();
 }
 
-QString StepSelfTestResistance::getResultSummary() const {
+QString StepSelfTestResistance::getResultSummary(bool pretty) const {
     return QString();
 }
 

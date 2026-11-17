@@ -96,7 +96,9 @@ RelayMeasureScreen::RelayMeasureScreen(QWidget* parent)
     connect(ui->measureSteps_LW, &QListWidget::currentRowChanged, this, [this](int row) {
         if (m_relayMeasure) {
             ui->stepDescription_TB->setText(m_relayMeasure->getStepDescription(row));
-            ui->stepResult_TB->setText(m_relayMeasure->getStepResultSummary(row));
+            QString resultSummary = m_relayMeasure->getStepResultSummary(row);
+            resultSummary.replace(QLatin1Char('\n'), QStringLiteral("<br>"));
+            ui->stepResult_TB->setHtml(resultSummary);
         } else {
             ui->stepDescription_TB->clear();
             ui->stepResult_TB->clear();
@@ -282,7 +284,9 @@ void RelayMeasureScreen::onNavigatedTo(const QString& path) {
             auto* stepItem = ui->measureSteps_LW->item(index);
             stepItem->setIcon(iconForResultStatus(status));
 
-            ui->stepResult_TB->setText(m_relayMeasure->getStepResultSummary(index));
+            QString resultSummary = m_relayMeasure->getStepResultSummary(index);
+            resultSummary.replace(QLatin1Char('\n'), QStringLiteral("<br>"));
+            ui->stepResult_TB->setHtml(resultSummary);
         }
     });
     connect(m_relayMeasure.get(), &RelayMeasure::measureAllFinished, this, [this]() {

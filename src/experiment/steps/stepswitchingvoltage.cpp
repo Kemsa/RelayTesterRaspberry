@@ -20,6 +20,7 @@ void StepSwitchingVoltage::fromJSON(const QJsonObject& object) {
     nMeasures = intValueOrDefault(object, QStringLiteral("nMeasures"), nMeasures);
 
     const QJsonObject successObject = object.value(QStringLiteral("successValues")).toObject();
+    hasMaxSwitchingVoltageThreshold = successObject.contains(QStringLiteral("maxSwitchingVoltage_cV"));
     successValues.maxSwitchingVoltage_cV = intValueOrDefault(successObject, QStringLiteral("maxSwitchingVoltage_cV"), successValues.maxSwitchingVoltage_cV);
 }
 
@@ -39,13 +40,21 @@ QString StepSwitchingVoltage::getDescription() const {
     return str;
 }
 
-QString StepSwitchingVoltage::getResultSummary() const {
+QString StepSwitchingVoltage::getResultSummary(bool pretty) const {
+    const QString formattedVoltage = formatResultValue(
+        measurementValues.switchingVoltage_V,
+        false,
+        0,
+        hasMaxSwitchingVoltageThreshold,
+        successValues.maxSwitchingVoltage_cV / 100.0,
+        pretty);
+
     switch (resultStatus) {
     case ResultSuccess:
         return QString::fromUtf8(R"(SUCCES
 
 Tension de commutation: %1 V (max autorisée: %2 V))")
-            .arg(measurementValues.switchingVoltage_V, 0, 'f', 2)
+            .arg(formattedVoltage)
             .arg(successValues.maxSwitchingVoltage_cV / 100.0f, 0, 'f', 2);
 
     case ResultFailure:

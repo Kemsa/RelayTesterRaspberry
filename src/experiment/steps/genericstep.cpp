@@ -29,6 +29,29 @@ QString GenericStep::stringValueOrDefault(const QJsonObject& object, const QStri
     return value.isString() ? value.toString() : defaultValue;
 }
 
+QString GenericStep::formatResultValue(double value,
+                                       bool hasMinThreshold,
+                                       double minThreshold,
+                                       bool hasMaxThreshold,
+                                       double maxThreshold,
+                                       bool pretty,
+                                       int precision) const {
+    const QString formattedValue = QString::number(value, 'f', precision);
+    const bool outsideThresholds = (hasMinThreshold && value < minThreshold) ||
+        (hasMaxThreshold && value > maxThreshold);
+
+    if (!pretty) {
+        return outsideThresholds ? QStringLiteral("*%1*").arg(formattedValue) : formattedValue;
+    }
+
+    if (!hasMinThreshold && !hasMaxThreshold) {
+        return formattedValue;
+    }
+
+    const QString color = outsideThresholds ? QStringLiteral("red") : QStringLiteral("green");
+    return QStringLiteral("<span style=\"color:%1;\">%2</span>").arg(color, formattedValue);
+}
+
 void GenericStep::setResultStatus(ResultStatus status) {
     if (resultStatus != status) {
         resultStatus = status;
@@ -75,7 +98,7 @@ void GenericStep::stopMeasure() {
     stopRequested.store(true, std::memory_order_relaxed);
 }
 
-QString GenericStep::getResultSummary() const {
+QString GenericStep::getResultSummary(bool pretty) const {
     switch (resultStatus) {
     case ResultSuccess:
         return QString::fromUtf8(R"(Résultat: Succès

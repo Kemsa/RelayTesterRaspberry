@@ -13,7 +13,7 @@ public:
     void fromJSON(const QJsonObject& object) override;
     QString getName() const override;
     QString getDescription() const override;
-    QString getResultSummary() const override;
+    QString getResultSummary(bool pretty = true) const override;
 
 private:
     const QString measureType = QStringLiteral("coilResistance");
@@ -27,6 +27,8 @@ private:
         int minResistance_ohm = 0;
         int maxResistance_ohm = 0;
     } successValues;
+    bool hasMinResistanceThreshold = false;
+    bool hasMaxResistanceThreshold = false;
 
     struct MeasurementValues {
         double averageCurrent_mA;
@@ -36,7 +38,7 @@ private:
 
     ResultStatus runMeasureAsync(const std::atomic<bool>& stopToken) override;
 
-    QString getFormattedResults() const;
+    QString getFormattedResults(bool pretty) const;
 };
 
 #endif // STEPCOILRESISTANCE_H

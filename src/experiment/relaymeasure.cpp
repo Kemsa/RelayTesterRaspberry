@@ -252,7 +252,7 @@ QString RelayMeasure::getFullSummary() const {
             summary += step->getName() + "\n";
             summary += step->getDescription() + "\n";
             summary += "----------\n";
-            summary += step->getResultSummary() + "\n\n";
+            summary += step->getResultSummary(false) + "\n\n";
         }
     }
     return summary;

@@ -47,7 +47,7 @@ public:
     void stopMeasure();
     virtual QString getName() const;
     virtual QString getDescription() const = 0;
-    virtual QString getResultSummary() const;
+    virtual QString getResultSummary(bool pretty = true) const;
     GenericStep::ResultStatus getResultStatus() const;
 
 signals:
@@ -61,6 +61,13 @@ protected:
     static int intValueOrDefault(const QJsonObject& object, const QString& key, int defaultValue);
     static double doubleValueOrDefault(const QJsonObject& object, const QString& key, double defaultValue);
     static QString stringValueOrDefault(const QJsonObject& object, const QString& key, const QString& defaultValue);
+    QString formatResultValue(double value,
+                              bool hasMinThreshold,
+                              double minThreshold,
+                              bool hasMaxThreshold,
+                              double maxThreshold,
+                              bool pretty,
+                              int precision = 2) const;
 
     QString name;
     const QString measureType = QStringLiteral("generic measure");
