@@ -13,6 +13,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFont>
+#include <QStyle>
 
 QtMessageHandler prevLoggerHandler = nullptr;
 
@@ -65,7 +66,13 @@ int main(int argc, char* argv[]) {
         appDir.filePath("UI/styles.css"),
         appDir.filePath("UI/colors.csv"));
     if (!styleSheet.isEmpty()) {
-        a.setStyleSheet(styleSheet);
+        const int scrollbarExtent = a.style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+        const int enlargedScrollbarExtent = (scrollbarExtent * 3 + 1) / 2;
+        const QString scrollbarStyle = QStringLiteral(
+            "\nQScrollBar:vertical { width: %1px; }\n"
+            "QScrollBar:horizontal { height: %1px; }\n")
+                                           .arg(enlargedScrollbarExtent);
+        a.setStyleSheet(styleSheet + scrollbarStyle);
         qDebug() << "Stylesheet applied successfully.";
     }
 
